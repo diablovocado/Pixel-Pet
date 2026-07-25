@@ -143,15 +143,15 @@ window.addEventListener('mousemove', (e) => {
     const dragDistanceY = Math.max(0, dragStartY - e.clientY);
     scaleY = 1 + Math.min(dragDistanceY / 100, 0.7);
     scaleX = 1 / scaleY; // Area volume preservation
-  } else if (mouseY >= window.innerHeight - 80 && !isDragging) {
-    // Move cursor down near dock -> Cat sleeps near dock and stops following cursor
-    if (currentState !== 'SLEEPING') {
-      currentState = 'SLEEPING';
-      catY = window.innerHeight - catHeight - 12;
+  } else if (currentState === 'SLEEPING') {
+    // While sleeping near dock, wake up ONLY when cursor moves directly over her
+    if (isOverCat(e.clientX, e.clientY)) {
+      currentState = 'IDLE';
     }
-  } else if (mouseY < window.innerHeight - 140 && currentState === 'SLEEPING') {
-    // Wake up when cursor moves back up
-    currentState = 'IDLE';
+  } else if (mouseY >= window.innerHeight - 80 && !isDragging && currentState !== 'PETTED') {
+    // Move cursor down near dock -> Cat sleeps near dock and stops following cursor
+    currentState = 'SLEEPING';
+    catY = window.innerHeight - catHeight - 12;
   }
 });
 
