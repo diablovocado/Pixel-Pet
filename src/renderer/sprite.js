@@ -531,7 +531,7 @@ function isOnCat(mx, my) {
 // ─── Init ────────────────────────────────────────────────────
 function initSprite(canvasEl, fxCanvasEl, imgEl) {
   window._catCanvas = canvasEl;
-  window._fxCtx     = fxCanvasEl.getContext('2d');
+  window._fxCtx     = fxCanvasEl ? fxCanvasEl.getContext('2d') : null;
   window._ctx       = canvasEl.getContext('2d');
 
   pepImg = new Image();
@@ -550,9 +550,11 @@ function initSprite(canvasEl, fxCanvasEl, imgEl) {
   window._ctx.imageSmoothingEnabled = false;
   window._ctx['webkitImageSmoothingEnabled'] = false;
 
-  fxCanvasEl.width  = window.innerWidth;
-  fxCanvasEl.height = window.innerHeight;
-  window._fxCtx.imageSmoothingEnabled = false;
+  if (fxCanvasEl && window._fxCtx) {
+    fxCanvasEl.width  = window.innerWidth;
+    fxCanvasEl.height = window.innerHeight;
+    window._fxCtx.imageSmoothingEnabled = false;
+  }
 }
 
 window.sprite = {
