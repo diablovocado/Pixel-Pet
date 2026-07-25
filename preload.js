@@ -1,5 +1,10 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
+contextBridge.exposeInMainWorld('catAPI', {
+  onKeystroke: (cb) =>
+    ipcRenderer.on('keystroke', (_e, d) => cb(d)),
+});
+
 contextBridge.exposeInMainWorld('deskpet', {
   // Mouse event pass-through
   setIgnoreMouseEvents: (ignore, opts) =>

@@ -276,58 +276,93 @@ function drawCat(cat, lastCursor) {
       ctx.fillRect(pX + 44, pY + 42,  2,  2); ctx.fillRect(pX + 74, pY + 42,  2,  2);
     }
 
+// Typing Keypad State
+let leftKeyPressed = false;
+let rightKeyPressed = false;
+let keyToggle = false;
+
+// Listen to keystrokes from Electron IPC
+if (typeof window !== 'undefined') {
+  const listenToKeystrokes = () => {
+    const api = window.catAPI || window.deskpet;
+    if (api && api.onKeystroke) {
+      api.onKeystroke(() => {
+        keyToggle = !keyToggle;
+        leftKeyPressed = keyToggle;
+        rightKeyPressed = !keyToggle;
+
+        setTimeout(() => {
+          leftKeyPressed = false;
+          rightKeyPressed = false;
+        }, 150);
+      });
+    }
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', listenToKeystrokes);
+  } else {
+    listenToKeystrokes();
+  }
+}
+
+function drawTypingKeypad(ctx, catX, catY) {
+  // Key Dimensions
+  const keyWidth = 24;
+  const keyHeight = 16;
+  
+  const leftKeyX = catX - 12;
+  const rightKeyX = catX + 14;
+  const baseY = catY + 28;
+
+  // Key Y-offsets (pressed state shifts down by 4px)
+  const leftOffsetY = leftKeyPressed ? 4 : 0;
+  const rightOffsetY = rightKeyPressed ? 4 : 0;
+
+  // --- DRAW LEFT KEYCAP ---
+  // Key base / shadow
+  ctx.fillStyle = '#6e6e78';
+  ctx.fillRect(leftKeyX, baseY + 6, keyWidth, keyHeight);
+  // Key top cap
+  ctx.fillStyle = leftKeyPressed ? '#a0a0aa' : '#e0e0e8';
+  ctx.fillRect(leftKeyX, baseY + leftOffsetY, keyWidth, keyHeight - 2);
+
+  // --- DRAW RIGHT KEYCAP ---
+  // Key base / shadow
+  ctx.fillStyle = '#6e6e78';
+  ctx.fillRect(rightKeyX, baseY + 6, keyWidth, keyHeight);
+  // Key top cap
+  ctx.fillStyle = rightKeyPressed ? '#a0a0aa' : '#e0e0e8';
+  ctx.fillRect(rightKeyX, baseY + rightOffsetY, keyWidth, keyHeight - 2);
+}
+
     // ── Pixel keyboard graphic + alternating paw Y-positions (TYPING state) ──
-    const isTypingState = cat.isTypingMode || cat.typingTimer > 0 || a === 'typing';
+    const isTypingState = cat.isTypingMode || cat.typingTimer > 0 || a === 'typing' || leftKeyPressed || rightKeyPressed;
     if (isTypingState && a !== 'sleep' && a !== 'drag') {
       const P = window.P || { F: '#ffb0c0', N: '#e08090' };
       cat.typingTick = (cat.typingTick || 0) + 1;
 
       ctx.save();
 
-      // Keyboard graphic under front paws
-      const kx = pX + 26;
-      const ky = pY + 84;
-      const kw = 74;
-      const kh = 18;
+      // Render keycaps via drawTypingKeypad
+      const catCenterX = pX + 63;
+      const catPawBaseY = pY + 54;
+      drawTypingKeypad(ctx, catCenterX, catPawBaseY);
 
-      ctx.fillStyle = '#1c1c24';
-      ctx.fillRect(kx, ky, kw, kh);
-      ctx.fillStyle = '#2d2d3c';
-      ctx.fillRect(kx + 2, ky + 2, kw - 4, kh - 4);
+      // Alternating paw Y-offsets matching keycaps
+      const leftOffsetY = leftKeyPressed ? 4 : ( (cat.typingTick % 2 === 0) ? 0 : 4 );
+      const rightOffsetY = rightKeyPressed ? 4 : ( (cat.typingTick % 2 === 0) ? 4 : 0 );
 
-      // Keys (row 1 & 2)
-      ctx.fillStyle = '#e6e6f2';
-      for (let ix = kx + 4; ix <= kx + kw - 8; ix += 6) {
-        ctx.fillRect(ix, ky + 4, 4, 3);
-      }
-      for (let ix = kx + 5; ix <= kx + kw - 9; ix += 6) {
-        ctx.fillRect(ix, ky + 8, 4, 3);
-      }
-      // Spacebar
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(kx + 22, ky + 12, 30, 3);
-
-      if (cat.heatLevel > 0.1) {
-        ctx.fillStyle = `rgba(255, ${Math.round(100 * (1 - cat.heatLevel))}, 30, ${Math.min(cat.heatLevel * 0.7, 0.7)})`;
-        ctx.fillRect(kx, ky, kw, kh);
-      }
-
-      // Alternating paw Y-positions on each tick
-      const isEven = (cat.typingTick % 2) === 0;
-      const liftL = isEven ? 5 : 0;
-      const liftR = isEven ? 0 : 5;
-
-      // Left paw
+      // Left paw over left key
       ctx.fillStyle = P.F;
-      ctx.fillRect(pX + 28, pY + 82 - liftL, 14, 10);
+      ctx.fillRect(pX + 38, pY + 76 + leftOffsetY, 14, 10);
       ctx.fillStyle = P.N;
-      ctx.fillRect(pX + 30, pY + 85 - liftL, 4, 4);
+      ctx.fillRect(pX + 40, pY + 79 + leftOffsetY, 4, 4);
 
-      // Right paw
+      // Right paw over right key
       ctx.fillStyle = P.F;
-      ctx.fillRect(pX + 80, pY + 82 - liftR, 14, 10);
+      ctx.fillRect(pX + 74, pY + 76 + rightOffsetY, 14, 10);
       ctx.fillStyle = P.N;
-      ctx.fillRect(pX + 82, pY + 85 - liftR, 4, 4);
+      ctx.fillRect(pX + 76, pY + 79 + rightOffsetY, 4, 4);
 
       ctx.restore();
     }

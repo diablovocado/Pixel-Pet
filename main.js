@@ -77,7 +77,12 @@ function createWindow() {
 
     // Start global keyboard listener
     keyboard.start(
-      (data) => { if (win && !win.isDestroyed()) win.webContents.send('typing-update', data); },
+      (data) => {
+        if (win && !win.isDestroyed()) {
+          win.webContents.send('typing-update', data);
+          win.webContents.send('keystroke', data);
+        }
+      },
       (data) => { if (win && !win.isDestroyed()) win.webContents.send('typing-update', data); }
     );
 
