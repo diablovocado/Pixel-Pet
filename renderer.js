@@ -73,15 +73,26 @@ function updateMousePassthrough(mx, my) {
   }
 }
 
+let isKeyPressed = false;
+let keyDepressTimeout = null;
+
 // --- 1. KEYBOARD LISTENER ---
 if (window.catAPI && window.catAPI.onKeystroke) {
   window.catAPI.onKeystroke(() => {
-    // Ignore keyboard input if petted or dragging
-    if (currentState === 'PETTED' || currentState === 'DRAGGING') return;
+    // Ensure mouse clicks, touchpad taps, or dragging NEVER trigger the keypad
+    if (currentState === 'PETTED' || currentState === 'DRAGGING' || isDragging) return;
 
     currentState = 'TYPING';
     activeKey = (activeKey === 'left') ? 'right' : 'left';
+    isKeyPressed = true;
 
+    // Depress active keycap down by 4px for 120ms before raising back up
+    if (keyDepressTimeout) clearTimeout(keyDepressTimeout);
+    keyDepressTimeout = setTimeout(() => {
+      isKeyPressed = false;
+    }, 120);
+
+    // Return to IDLE 150ms after typing pauses
     if (keyTimeout) clearTimeout(keyTimeout);
     keyTimeout = setTimeout(() => {
       if (currentState === 'TYPING') {
@@ -180,26 +191,27 @@ function updateAndDrawParticles() {
 }
 
 // --- KEYPAD RENDER (LAYER 1) ---
-function drawKeypad() {
+function drawKeypad(ctx, x, y) {
   const keyWidth = 24;
   const keyHeight = 14;
-  const baseY = catY + catHeight - 10;
-  const leftX = catX + 6;
-  const rightX = catX + 38;
+  const baseY = y + catHeight - 12;
+  const leftX = x + 12;
+  const rightX = x + 44;
 
-  const leftKeyY = (activeKey === 'left') ? baseY + 4 : baseY;
-  const rightKeyY = (activeKey === 'right') ? baseY + 4 : baseY;
+  const leftKeyY = (activeKey === 'left' && isKeyPressed) ? baseY + 4 : baseY;
+  const rightKeyY = (activeKey === 'right' && isKeyPressed) ? baseY + 4 : baseY;
 
+  // 3D Mechanical Keycaps (Base + Cap)
   // Left Keycap
-  ctx.fillStyle = '#4a4a52';
+  ctx.fillStyle = '#2d2d34';
   ctx.fillRect(leftX, baseY + 4, keyWidth, keyHeight);
-  ctx.fillStyle = (activeKey === 'left') ? '#8e8e99' : '#d0d0d8';
+  ctx.fillStyle = (activeKey === 'left' && isKeyPressed) ? '#90909a' : '#e0e0e8';
   ctx.fillRect(leftX, leftKeyY, keyWidth, keyHeight - 2);
 
   // Right Keycap
-  ctx.fillStyle = '#4a4a52';
+  ctx.fillStyle = '#2d2d34';
   ctx.fillRect(rightX, baseY + 4, keyWidth, keyHeight);
-  ctx.fillStyle = (activeKey === 'right') ? '#8e8e99' : '#d0d0d8';
+  ctx.fillStyle = (activeKey === 'right' && isKeyPressed) ? '#90909a' : '#e0e0e8';
   ctx.fillRect(rightX, rightKeyY, keyWidth, keyHeight - 2);
 }
 
@@ -213,7 +225,7 @@ function render() {
 
     // Layer 1: Prop Keypad (ONLY during TYPING)
     if (currentState === 'TYPING') {
-      drawKeypad();
+      drawKeypad(ctx, catX, catY);
     }
 
     // Layer 2: Character Cat PNG with Transforms
