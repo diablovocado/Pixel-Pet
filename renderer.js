@@ -6,9 +6,9 @@
  */
 
 // ─── Canvas & image refs ──────────────────────────────────────
-const catCanvas = document.getElementById('catCanvas');
-const fxCanvas  = document.getElementById('fxCanvas');
-const pepImg    = document.getElementById('pepImg');
+const catCanvas  = document.getElementById('catCanvas');
+const fxCanvas   = document.getElementById('fxCanvas');
+const _pepImgEl  = document.getElementById('pepImg');
 
 const SW = window.innerWidth;
 const SH = window.innerHeight;
@@ -20,7 +20,7 @@ cat.x = SW * 0.45;
 cat.y = SH - window.CAT_H - 12;  // CAT_H set by sprite.js
 
 // Init sprite (sets window._catCanvas, window._ctx, window._fxCtx)
-window.sprite.init(catCanvas, fxCanvas, pepImg);
+window.sprite.init(catCanvas, fxCanvas, _pepImgEl);
 
 // Init bubbles
 window.bubbles.init({

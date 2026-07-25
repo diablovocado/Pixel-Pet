@@ -52,6 +52,7 @@ function createWindow() {
   win.setIgnoreMouseEvents(true, { forward: true });
   win.loadFile('index.html');
 
+
   win.webContents.on('did-finish-load', () => {
     const cfg = settings.load();
 

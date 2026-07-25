@@ -10,17 +10,17 @@
 const parts = [];
 
 // ─── Helpers ────────────────────────────────────────────────
-const rand = (a, b) => a + Math.random() * (b - a);
+const _rand = (a, b) => a + Math.random() * (b - a);
 
 // ─── Spawn Functions ─────────────────────────────────────────
 function spawnHearts(n = 5) {
   const cat = window.CAT_STATE;
   for (let i = 0; i < n; i++) parts.push({
     type: 'heart',
-    x:  cat.x + CAT_W * 0.65 + rand(-14, 14),
+    x:  cat.x + CAT_W * 0.65 + _rand(-14, 14),
     y:  cat.y + CAT_H * 0.15,
-    vx: rand(-0.7, 0.7), vy: rand(-1.3, -0.5),
-    life: 1, decay: rand(0.003, 0.006), sz: rand(5, 9),
+    vx: _rand(-0.7, 0.7), vy: _rand(-1.3, -0.5),
+    life: 1, decay: _rand(0.003, 0.006), sz: _rand(5, 9),
   });
 }
 
@@ -30,8 +30,8 @@ function spawnZzz() {
     type: 'zzz',
     x:  cat.x + CAT_W * 0.82,
     y:  cat.y + CAT_H * 0.06,
-    vx: rand(0.08, 0.20), vy: -0.35,
-    life: 1, decay: 0.0016, sz: rand(10, 14),
+    vx: _rand(0.08, 0.20), vy: -0.35,
+    life: 1, decay: 0.0016, sz: _rand(10, 14),
   });
 }
 
@@ -39,10 +39,10 @@ function spawnSparks() {
   const cat = window.CAT_STATE;
   for (let i = 0; i < 2; i++) parts.push({
     type: 'spark',
-    x:  cat.x + CAT_W * 0.65 + rand(-12, 12),
+    x:  cat.x + CAT_W * 0.65 + _rand(-12, 12),
     y:  cat.y + CAT_H * 0.45,
-    vx: rand(-0.8, 0.8), vy: rand(-1.2, -0.4),
-    life: 1, decay: 0.02, sz: rand(3, 5),
+    vx: _rand(-0.8, 0.8), vy: _rand(-1.2, -0.4),
+    life: 1, decay: 0.02, sz: _rand(3, 5),
     color: Math.random() < 0.5 ? '#ff7700' : '#ffcc00',
   });
 }
@@ -52,10 +52,10 @@ function spawnSteam() {
   // Puffs above head
   for (let i = 0; i < 2; i++) parts.push({
     type: 'steam',
-    x:  cat.x + CAT_W * 0.5 + rand(-18, 18),
+    x:  cat.x + CAT_W * 0.5 + _rand(-18, 18),
     y:  cat.y + CAT_H * 0.0,
-    vx: rand(-0.15, 0.15), vy: rand(-0.6, -0.3),
-    life: 0.9, decay: 0.007, sz: rand(6, 10),
+    vx: _rand(-0.15, 0.15), vy: _rand(-0.6, -0.3),
+    life: 0.9, decay: 0.007, sz: _rand(6, 10),
   });
 }
 
@@ -63,10 +63,10 @@ function spawnWaterDrop() {
   const cat = window.CAT_STATE;
   for (let i = 0; i < 6; i++) parts.push({
     type: 'water',
-    x:  cat.x + CAT_W * 0.5 + rand(-20, 20),
-    y:  cat.y + rand(-30, -10),
-    vx: rand(-0.5, 0.5), vy: rand(-1.0, 0.2),
-    life: 1, decay: 0.012, sz: rand(4, 7),
+    x:  cat.x + CAT_W * 0.5 + _rand(-20, 20),
+    y:  cat.y + _rand(-30, -10),
+    vx: _rand(-0.5, 0.5), vy: _rand(-1.0, 0.2),
+    life: 1, decay: 0.012, sz: _rand(4, 7),
   });
 }
 
@@ -75,10 +75,10 @@ function spawnBounce() {
   // Dust puff at feet on landing
   for (let i = 0; i < 4; i++) parts.push({
     type: 'dust',
-    x:  cat.x + CAT_W * 0.5 + rand(-20, 20),
+    x:  cat.x + CAT_W * 0.5 + _rand(-20, 20),
     y:  cat.y + CAT_H - 4,
-    vx: rand(-0.8, 0.8), vy: rand(-0.4, 0.1),
-    life: 0.8, decay: 0.018, sz: rand(3, 6),
+    vx: _rand(-0.8, 0.8), vy: _rand(-0.4, 0.1),
+    life: 0.8, decay: 0.018, sz: _rand(3, 6),
   });
 }
 

@@ -44,7 +44,7 @@ function isInHeadBox(cat, mx, my) {
   return mx >= headLeft && mx <= headRight && my >= headTop && my <= headBot;
 }
 
-function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+function _clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
 // ─── Mochi squash/stretch physics ────────────────────────────
 function updateDragPhysics(cat, e) {
