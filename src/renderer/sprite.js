@@ -335,34 +335,34 @@ function drawTypingKeypad(ctx, catX, catY) {
   ctx.fillRect(rightKeyX, baseY + rightOffsetY, keyWidth, keyHeight - 2);
 }
 
+function renderCatPaws(ctx, catX, catY, state) {
+  if (state === 'TYPING') {
+    const pawWidth = 8;
+    const pawHeight = 8;
+
+    // Left paw follows left key offset
+    const leftPawY = catY + 22 + (leftKeyPressed ? 4 : 0);
+    // Right paw follows right key offset
+    const rightPawY = catY + 22 + (rightKeyPressed ? 4 : 0);
+
+    ctx.fillStyle = '#ffffff'; // White paw color
+    ctx.fillRect(catX - 6, leftPawY, pawWidth, pawHeight);
+    ctx.fillRect(catX + 18, rightPawY, pawWidth, pawHeight);
+  }
+}
+
     // ── Pixel keyboard graphic + alternating paw Y-positions (TYPING state) ──
     const isTypingState = cat.isTypingMode || cat.typingTimer > 0 || a === 'typing' || leftKeyPressed || rightKeyPressed;
     if (isTypingState && a !== 'sleep' && a !== 'drag') {
-      const P = window.P || { F: '#ffb0c0', N: '#e08090' };
       cat.typingTick = (cat.typingTick || 0) + 1;
 
       ctx.save();
 
-      // Render keycaps via drawTypingKeypad
+      // Render keycaps via drawTypingKeypad and paws via renderCatPaws
       const catCenterX = pX + 63;
       const catPawBaseY = pY + 54;
       drawTypingKeypad(ctx, catCenterX, catPawBaseY);
-
-      // Alternating paw Y-offsets matching keycaps
-      const leftOffsetY = leftKeyPressed ? 4 : ( (cat.typingTick % 2 === 0) ? 0 : 4 );
-      const rightOffsetY = rightKeyPressed ? 4 : ( (cat.typingTick % 2 === 0) ? 4 : 0 );
-
-      // Left paw over left key
-      ctx.fillStyle = P.F;
-      ctx.fillRect(pX + 38, pY + 76 + leftOffsetY, 14, 10);
-      ctx.fillStyle = P.N;
-      ctx.fillRect(pX + 40, pY + 79 + leftOffsetY, 4, 4);
-
-      // Right paw over right key
-      ctx.fillStyle = P.F;
-      ctx.fillRect(pX + 74, pY + 76 + rightOffsetY, 14, 10);
-      ctx.fillStyle = P.N;
-      ctx.fillRect(pX + 76, pY + 79 + rightOffsetY, 4, 4);
+      renderCatPaws(ctx, catCenterX, catPawBaseY, 'TYPING');
 
       ctx.restore();
     }
