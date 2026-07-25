@@ -16,8 +16,8 @@ const SH = window.innerHeight;
 // ─── Module init ──────────────────────────────────────────────
 // state.js already ran: window.CAT_STATE exists
 const cat = window.CAT_STATE;
-cat.x = SW * 0.45;
-cat.y = SH - window.CAT_H - 120;
+cat.x = SW * 0.42;
+cat.y = SH * 0.45;
 
 // Init sprite (sets window._catCanvas, window._ctx, window._fxCtx)
 window.sprite.init(catCanvas, fxCanvas, _pepImgEl);
@@ -30,9 +30,6 @@ window.bubbles.init({
   agent:         'agentBubble',
   reminder:      'reminderBubble',
 });
-
-// Default click-through
-window.deskpet.setIgnoreMouseEvents(true, { forward: true });
 
 // Init interactions
 window.interactions.initInteractions(cat, window.deskpet);
