@@ -299,6 +299,43 @@ function drawCat(cat, lastCursor) {
       drawPaperScroll(cat, cat.paperUnroll || 0);
       ctx.restore();
     }
+  } else {
+    // ── Fallback Procedural Pixel Cat (guarantees cat is NEVER invisible) ──
+    const P = window.P;
+    const hy = 2 + bob;
+    const by = 8 + bob;
+
+    // Ears
+    px(4, hy, 4, 4, P.K);    px(5, hy+1, 2, 2, P.N);
+    px(14, hy, 4, 4, P.K);   px(15, hy+1, 2, 2, P.N);
+
+    // Head
+    px(4, hy+3, 14, 7, P.F);
+    px(4, hy+3, 14, 1, P.K);
+    px(3, hy+4, 1, 5, P.K);
+    px(18, hy+4, 1, 5, P.K);
+
+    // Eyes
+    drawEyes(cat, lastCursor);
+
+    // Nose
+    px(10, hy+7, 2, 1, P.N);
+
+    // Body
+    px(6, by+2, 10, 8, P.F);
+    px(7, by+3, 8, 6, P.B);
+    px(5, by+2, 1, 7, P.K);
+    px(16, by+2, 1, 7, P.K);
+    px(6, by+9, 10, 1, P.K);
+
+    // Paws
+    px(6, by+8, 4, 2, P.B);
+    px(12, by+8, 4, 2, P.B);
+
+    // Tail
+    const tailSway = iround(Math.sin(Date.now() * 0.003) * 2);
+    px(17 + tailSway, by+4, 4, 2, P.F);
+    px(19 + tailSway, by+2, 2, 3, P.F);
   }
 
   ctx.restore();
@@ -366,7 +403,12 @@ function initSprite(canvasEl, fxCanvasEl, imgEl) {
   window._catCanvas = canvasEl;
   window._fxCtx     = fxCanvasEl.getContext('2d');
   window._ctx       = canvasEl.getContext('2d');
-  pepImg            = imgEl;
+
+  pepImg = imgEl || new Image();
+  if (!pepImg.complete || pepImg.naturalWidth === 0) {
+    pepImg = new Image();
+    pepImg.src = 'assets/pepperino_cropped.png';
+  }
 
   canvasEl.width  = CAT_W;
   canvasEl.height = CAT_H;

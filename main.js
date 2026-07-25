@@ -28,7 +28,8 @@ let win;
 
 // ─── Window ──────────────────────────────────────────────────
 function createWindow() {
-  const { x: wx, y: wy, width, height } = screen.getPrimaryDisplay().workArea;
+  const { x: wx, y: wy, width, height } = screen.getPrimaryDisplay().bounds;
+
 
   win = new BrowserWindow({
     x: wx, y: wy,
@@ -89,7 +90,8 @@ function createWindow() {
 
   screen.on('display-metrics-changed', () => {
     if (!win || win.isDestroyed()) return;
-    const { x, y, width: w, height: h } = screen.getPrimaryDisplay().workArea;
+    const { x, y, width: w, height: h } = screen.getPrimaryDisplay().bounds;
+
     win.setBounds({ x, y, width: w, height: h });
   });
 }
