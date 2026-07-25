@@ -42,14 +42,13 @@ function createWindow() {
     skipTaskbar:     true,
     focusable:       false,
     fullscreenable:  false,
-    type:            'panel',
     webPreferences: {
       preload:          path.join(__dirname, 'preload.js'),
       contextIsolation: true,
     },
   });
 
-  win.setAlwaysOnTop(true, 'floating', 1);
+  win.setAlwaysOnTop(true, 'floating');
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   win.setIgnoreMouseEvents(true, { forward: true });
   win.loadFile('index.html');

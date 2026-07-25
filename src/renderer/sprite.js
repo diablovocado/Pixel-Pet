@@ -412,6 +412,8 @@ function initSprite(canvasEl, fxCanvasEl, imgEl) {
 
   canvasEl.width  = CAT_W;
   canvasEl.height = CAT_H;
+  canvasEl.style.width  = `${CAT_W}px`;
+  canvasEl.style.height = `${CAT_H}px`;
   window._ctx.imageSmoothingEnabled = false;
   window._ctx['webkitImageSmoothingEnabled'] = false;
 
