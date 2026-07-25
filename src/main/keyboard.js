@@ -23,11 +23,13 @@ function start(onKey, onStop) {
     keyListener = new GlobalKeyboardListener();
 
     keyListener.addListener((e, down) => {
-      // Ignore mouse events (e.g. MOUSE LEFT, MOUSE RIGHT, MOUSE WHEEL)
-      if (e.name && e.name.startsWith('MOUSE')) return;
+      // Diagnostic log
+      // console.log('[deskpet] raw event:', JSON.stringify({ name: e.name, state: e.state, vKey: e.vKey, rawKey: e.rawKey }));
 
-      // Only proceed for actual keyboard DOWN events
+      // Whitelist-style guard: Only proceed for real keyboard DOWN events
       if (e.state !== 'DOWN') return;
+      if (!e.name || e.name.startsWith('MOUSE')) return;
+      if (typeof e.vKey === 'undefined' && typeof e.rawKey === 'undefined') return;
 
       const now = Date.now();
       keyTimestamps.push(now);
