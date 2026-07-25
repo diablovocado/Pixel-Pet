@@ -140,6 +140,15 @@ function loop(t) {
   const dt = Math.min(t - lastT, 80);
   lastT = t;
 
+  const h = window.innerHeight || 900;
+  const w = window.innerWidth || 1440;
+  if (!cat.y || isNaN(cat.y) || cat.y > h - 40 || cat.y < 0) {
+    cat.y = h - (window.CAT_H || 140) - 20 - (cat.bottomInset || 0);
+  }
+  if (!cat.x || isNaN(cat.x) || cat.x > w - 40 || cat.x < 0) {
+    cat.x = w * 0.45;
+  }
+
   const lastCursor = window.interactions.lastCursor;
 
   // Behavior state machine
