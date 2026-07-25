@@ -214,10 +214,46 @@ function safeScale(value, fallback = 1) {
   return Number.isFinite(value) && !isNaN(value) ? value : fallback;
 }
 
+let faceDir = 1; // 1 = facing right, -1 = facing left
+
+// --- CURSOR PURSUIT / RUNNING MATH ---
+function updateCursorPursuit() {
+  if (isDragging || currentState === 'DRAGGING' || currentState === 'PETTED') return 0;
+
+  const targetX = mouseX - catWidth / 2;
+  const targetY = mouseY - catHeight / 2;
+
+  const dx = targetX - catX;
+  const dy = targetY - catY;
+  const dist = Math.hypot(dx, dy);
+
+  // If cursor is further than 45px, run towards it
+  if (dist > 45) {
+    const pursuitSpeed = Math.min(0.09, (dist - 40) * 0.0035 + 0.04);
+    catX += dx * pursuitSpeed;
+    catY += dy * pursuitSpeed;
+
+    // Screen bounds safety
+    catX = Math.max(0, Math.min(window.innerWidth - catWidth, catX));
+    catY = Math.max(0, Math.min(window.innerHeight - catHeight, catY));
+
+    // Flip face direction based on movement direction
+    if (dx < -5) faceDir = -1;
+    else if (dx > 5) faceDir = 1;
+
+    // Running bounce stride
+    return Math.sin(Date.now() * 0.018) * 3;
+  }
+  return 0;
+}
+
 // --- SELF-HEALING RENDER LOOP ---
 function render() {
   try {
     if (!ctx) return;
+
+    // Update cursor pursuit (cat runs behind cursor)
+    const bounceY = updateCursorPursuit();
 
     // Layer 0: Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -227,12 +263,12 @@ function render() {
       drawKeypad(ctx, catX, catY);
     }
 
-    // Layer 2: Character Cat PNG with Safe Transforms
-    const sX = safeScale(scaleX, 1);
+    // Layer 2: Character Cat PNG with Safe Transforms & Direction Flip
+    const sX = safeScale(scaleX * faceDir, 1);
     const sY = safeScale(scaleY, 1);
 
     ctx.save();
-    ctx.translate(catX + catWidth / 2, catY + catHeight / 2);
+    ctx.translate(catX + catWidth / 2, catY + catHeight / 2 + bounceY);
     ctx.scale(sX, sY);
 
     if (catImg.complete && catImg.naturalWidth !== 0) {
