@@ -215,6 +215,11 @@ if (typeof window !== 'undefined') {
     if (api && api.onKeystroke) {
       api.onKeystroke(handleKeystroke);
     }
+    if (api && api.onKpsUpdate) {
+      api.onKpsUpdate((currentKps) => {
+        if (window.CAT_STATE) window.CAT_STATE.kps = currentKps;
+      });
+    }
     window.addEventListener('keydown', handleKeystroke);
   };
   if (document.readyState === 'loading') {
@@ -298,6 +303,14 @@ function drawCat(cat, lastCursor) {
   const canvas = window._catCanvas;
   if (!canvas) return;
   ctx = window._ctx;
+
+  // 1. Calculate Overheat Level (Heat shifts from 0 -> 1 based on KPS)
+  const currentKps = cat.kps || 0;
+  if (currentKps >= 5) {
+    cat.heatLevel = Math.min(1, (cat.heatLevel || 0) + 0.05);
+  } else {
+    cat.heatLevel = Math.max(0, (cat.heatLevel || 0) - 0.02);
+  }
 
   ctx.clearRect(0, 0, CAT_W, CAT_H);
   ctx.save();

@@ -56,16 +56,13 @@ function updateDragPhysics(cat, e) {
   _dragVelX = _dragVelX * 0.7 + dx * 0.3;
   _dragVelY = _dragVelY * 0.7 + dy * 0.3;
 
-  // Vertical drag stretch based on mouse displacement from initial click point
-  const totalDy = e.clientY - (cat.dragStartY || e.clientY);
-  const speed = Math.hypot(_dragVelX, _dragVelY);
-  
-  // Primary vertical stretch factor
-  const stretchY = clamp(1 + Math.abs(totalDy) * 0.012 + Math.abs(_dragVelY) * 0.008, 1.0, 2.4);
-  const stretchX = clamp(1 / Math.sqrt(stretchY), 0.45, 1.2);
+  // Mochi stretch vertical physics (preserve area volume)
+  const stretchAmount = Math.max(0, (cat.dragStartY || e.clientY) - e.clientY);
+  const scaleY = 1 + Math.min(stretchAmount / 120, 0.8);
+  const scaleX = 1 / scaleY; // Preserve area volume
 
-  cat.dragStretchY = stretchY;
-  cat.dragStretchX = stretchX;
+  cat.dragStretchY = scaleY;
+  cat.dragStretchX = scaleX;
 
   // Shake detection: track sign changes in dx
   _dragDxHistory.push(dx > 2 ? 1 : dx < -2 ? -1 : 0);

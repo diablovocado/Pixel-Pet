@@ -81,9 +81,15 @@ function createWindow() {
         if (win && !win.isDestroyed()) {
           win.webContents.send('typing-update', data);
           win.webContents.send('keystroke', data);
+          win.webContents.send('kps-update', data.cps);
         }
       },
-      (data) => { if (win && !win.isDestroyed()) win.webContents.send('typing-update', data); }
+      (data) => {
+        if (win && !win.isDestroyed()) {
+          win.webContents.send('typing-update', data);
+          win.webContents.send('kps-update', 0);
+        }
+      }
     );
 
     // Start app context polling
