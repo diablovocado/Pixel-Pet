@@ -179,19 +179,19 @@ function drawKneadingPaws(pX, pY) {
 // ─── Typing Keypad State & Event Listener ───────────────────────
 let leftKeyPressed = false;
 let rightKeyPressed = false;
-let activeKey = 'left'; // Toggle between 'left' and 'right'
-let keyPressTimeout = null;
+let isTyping = false;
+let activeKey = 'left';
+let keyTimeout = null;
 
 function handleKeystroke() {
+  isTyping = true;
   if (window.CAT_STATE) {
     window.CAT_STATE.isTypingMode = true;
     window.CAT_STATE.typingTimer = 350;
   }
 
-  // 1. Instantly switch sides on every single key press
+  // Alternate left and right keycaps on every single keydown
   activeKey = (activeKey === 'left') ? 'right' : 'left';
-
-  // 2. Set active depressed key
   if (activeKey === 'left') {
     leftKeyPressed = true;
     rightKeyPressed = false;
@@ -200,23 +200,23 @@ function handleKeystroke() {
     rightKeyPressed = true;
   }
 
-  // 3. Reset paw/keycap back to rest state after 120ms
-  if (keyPressTimeout) clearTimeout(keyPressTimeout);
-  keyPressTimeout = setTimeout(() => {
+  // Reset back to resting position 150ms after typing pauses
+  if (keyTimeout) clearTimeout(keyTimeout);
+  keyTimeout = setTimeout(() => {
+    isTyping = false;
     leftKeyPressed = false;
     rightKeyPressed = false;
-  }, 120);
+  }, 150);
 }
 
 // Listen to single keystrokes from IPC contextBridge AND window keydown fallback
 if (typeof window !== 'undefined') {
   const initKeystrokeListeners = () => {
-    const api = window.catAPI || window.deskpet;
-    if (api && api.onKeystroke) {
-      api.onKeystroke(handleKeystroke);
+    if (window.catAPI && window.catAPI.onKeystroke) {
+      window.catAPI.onKeystroke(handleKeystroke);
     }
-    if (api && api.onKpsUpdate) {
-      api.onKpsUpdate((currentKps) => {
+    if (window.catAPI && window.catAPI.onKpsUpdate) {
+      window.catAPI.onKpsUpdate((currentKps) => {
         if (window.CAT_STATE) window.CAT_STATE.kps = currentKps;
       });
     }

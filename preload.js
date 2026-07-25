@@ -1,8 +1,10 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('catAPI', {
-  onKeystroke: (cb) =>
-    ipcRenderer.on('keystroke', (_e, d) => cb(d)),
+  onKeystroke: (cb) => {
+    ipcRenderer.on('global-keydown', () => cb());
+    ipcRenderer.on('keystroke',      () => cb());
+  },
   onKpsUpdate: (cb) =>
     ipcRenderer.on('kps-update', (_e, kps) => cb(kps)),
 });

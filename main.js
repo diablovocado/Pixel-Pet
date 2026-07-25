@@ -81,6 +81,7 @@ function createWindow() {
         if (win && !win.isDestroyed()) {
           win.webContents.send('typing-update', data);
           win.webContents.send('keystroke', data);
+          win.webContents.send('global-keydown');
           win.webContents.send('kps-update', data.cps);
         }
       },
