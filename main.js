@@ -145,11 +145,21 @@ function createTray() {
   }
   tray = new Tray(icon);
   tray.setToolTip('Pixel Deskpet');
-  tray.setContextMenu(Menu.buildFromTemplate([
+  const menu = Menu.buildFromTemplate([
     { label: '🐱 Pixel Deskpet', enabled: false },
     { type: 'separator' },
+    {
+      label: 'Cat Pattern / Color',
+      submenu: [
+        { label: 'Orange Tabby', type: 'radio', checked: true, click: () => win?.webContents.send('set-variant', 'tabby') },
+        { label: 'Black Cat', type: 'radio', click: () => win?.webContents.send('set-variant', 'black') },
+        { label: 'Grey Mackerel', type: 'radio', click: () => win?.webContents.send('set-variant', 'grey') },
+      ]
+    },
+    { type: 'separator' },
     { label: 'Quit', accelerator: 'Cmd+Q', click: () => app.quit() },
-  ]));
+  ]);
+  tray.setContextMenu(menu);
 }
 
 // ─── Lifecycle ─────────────────────────────────────────

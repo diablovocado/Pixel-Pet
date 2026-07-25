@@ -6,4 +6,7 @@ contextBridge.exposeInMainWorld('deskpet', {
 
   onActivityTick: (cb) =>
     ipcRenderer.on('activity-tick', (_e, data) => cb(data)),
+
+  onSetVariant: (cb) =>
+    ipcRenderer.on('set-variant', (_e, variant) => cb(variant)),
 });
