@@ -1,56 +1,100 @@
-# Pixel Deskpet 🐱
+# Pixel Deskpet 🐱 (macOS Native Desktop Pet)
 
-A tiny pixel-art cat that lives at the bottom of your Mac screen — walks around, sits, blinks,
-watches your cursor, and can be picked up and dragged.
+An interactive, responsive pixel-art desktop cat overlay built for macOS using Electron. It sits on top of all windows, reacts live to your typing, mouse speed, and active application context, and features a built-in Pomodoro timer, custom pinned notes, and selectable cat patterns.
 
-## Setup (Mac, one-time)
+---
 
-You need [Node.js](https://nodejs.org) installed. If you don't have it:
+## 🚀 Quick Start
 
+### Prerequisites
+- **Node.js** (v18 or higher recommended)
 ```bash
 brew install node
 ```
 
-Then, in this project folder:
-
+### Run Locally
 ```bash
+# Install dependencies
 npm install
+
+# Start the desktop pet
 npm start
 ```
 
-The cat should appear walking along the bottom of your screen, on top of everything else.
+---
 
-## What it does right now
+## 🔒 macOS Permissions & Privacy
 
-- Walks left/right along the bottom of your screen, pauses to idle or sit
-- Blinks, sways its tail, has a little walk-cycle
-- Eyes track your cursor when you're nearby
-- Click it → heart eyes + a "mew!" speech bubble
-- Click-and-drag it → pick it up and move it anywhere along the bottom strip
-- Lives in your menu bar (tray icon) with a Quit option
-- Fully click-through everywhere except the cat itself, so it never blocks your work
+Pixel Deskpet requests two macOS system permissions for its interactive features. **Privacy Notice:** All processing happens 100% locally in-memory on your Mac in real time. No keystrokes, window titles, or personal data are ever logged, saved, or transmitted.
 
-## Ideas for what to add next
+### 1. Accessibility Permission (`System Settings > Privacy & Security > Accessibility`)
+- **Required for**: Global Keyboard Activity Detection (`node-global-key-listener`).
+- **Why**: Allows the deskpet to know when you are actively typing in *any* application (VS Code, browser, terminal) so it can switch to its typing laptop animation and heat up when typing in fast bursts.
+- **Privacy Guarantee**: Does **never** log or record key names, characters, or text. Only measures keypress frequency (Keys Per Second / CPS).
 
-- A real walk-cycle sprite sheet instead of procedural pixel art
-- Pomodoro / focus timer bubble like Comnyang's
-- Reacting to typing speed or specific apps in focus
-- Multiple color patterns (orange tabby / black / siamese / grey) picked from a settings menu
-- Sound effects (meows) on click
-- Auto-launch on login
+### 2. System Events / Automation (`System Settings > Privacy & Security > Automation`)
+- **Required for**: Task Awareness & Active App Category Detection.
+- **Why**: Allows the deskpet to know whether your frontmost app is a coding tool, web browser, design software, or chat app to display context-aware quips and reactive moods.
+- **Privacy Guarantee**: Checked in-memory only. No window contents or document data are inspected.
 
-## Packaging as a real .app (later)
+---
 
-Once you're happy with it, `electron-builder` or `electron-forge` can package this into a
-double-clickable `.app` you can drag into Applications, instead of running it via `npm start`
-every time. Ask me when you're ready and I'll set that up.
+## ✨ Features
 
-## Project structure
+- **Crisp Pixel-Art Aesthetic (8-Bit/16-Bit)**: Built with zero anti-aliasing (`SCALE = 7`, hard integer grid pixel snapping).
+- **3 Color Patterns / Variants**:
+  - **Orange Tabby**: Classic orange fur, dark stripes, cream belly, green eyes.
+  - **Black Cat**: Sleek midnight black fur, amber/gold eyes.
+  - **Grey Mackerel**: Cool grey fur, dark grey stripes, green eyes.
+  - Switchable live via macOS Menu Bar Tray -> `Cat Pattern / Color`.
+- **9 Animation States**: `idle`, `walk`, `sit`, `run`, `excited`, `sleep`, `wakeup`, `drag`, `pet`.
+- **Global Keyboard Typing Reaction**: Cat sits with a tiny pixel laptop and taps its paws rapidly. Burst typing (>4 CPS) triggers determined eyes `(ò_ó)`, screen heat glow, and spark particles!
+- **Dynamic Mouse Speed Reaction**: Fast cursor movements (>270 px/s) trigger sprint/run animation.
+- **60-Second Idle Sleep**: After 60 seconds of inactivity, cat lies down to sleep with floating Zzz text/particles. Wakes up immediately upon input.
+- **Task Awareness Engine**: Detects active app category (`coding`, `browser`, `design`, `chat`) to display matching quips (*"ship it!"*, *"so many tabs!"*, *"pixel perfect!"*).
+- **Pomodoro / Focus Timer**: Built-in 15m, 25m, and 50m timers with a live countdown badge and celebratory heart dance upon completion.
+- **Pinned Note / Message Bubble**: Pin custom notes (*"Drink water! 💧"*, *"Focus mode! 🚀"*) above the cat.
+- **Full macOS Overlay Window**:
+  - `alwaysOnTop` at `'screen-saver'` level (stays on top of all windows and fullscreen apps).
+  - Dynamic click-through (`setIgnoreMouseEvents`) everywhere except the cat's own pixel bounds.
+  - Full drag-and-drop anywhere on screen.
+
+---
+
+## 🛠 Technical Architecture & Code Structure
+
+The project is structured into distinct, decoupled modules:
 
 ```
-main.js       — Electron main process (window, tray, click-through logic)
-preload.js    — safe bridge between main process and the page
-index.html    — the transparent page that hosts the cat
-renderer.js   — the cat itself: pixel art drawing, animation, AI/behavior, drag handling
-assets/       — tray icon
+Pixel-Pet/
+├── main.js       — Electron Main Process
+│                   • Window creation (transparent, screen-saver level, click-through)
+│                   • System idle polling via powerMonitor.getSystemIdleTime()
+│                   • Global cursor velocity tracking via screen.getCursorScreenPoint()
+│                   • Global keyboard listener integration (node-global-key-listener)
+│                   • macOS Active App Detection (osascript)
+│                   • macOS Menu Bar Tray controller (generated pixel-art icon)
+│
+├── preload.js    — Safe Context Isolation IPC Bridge
+│                   • Exposes secure event listeners: onActivityTick, onTypingUpdate,
+│                     onAppContextUpdate, onSetVariant, onStartTimer, onSetPinnedNote.
+│
+├── index.html    — Transparent HTML Stage & Styling
+│                   • Dual Canvas setup: catCanvas (sprite) + fxCanvas (particles)
+│                   • Pixel font styling (Press Start 2P)
+│                   • Speech, Pinned Note, and Timer Pixel Badges
+│
+└── renderer.js   — Animation, Rendering & Behavior Engine
+                    • Canvas Rendering Engine (SCALE = 7, integer grid snapping)
+                    • Color Palettes & Variant Engine (tabby, black, grey)
+                    • Behavior State Machine (9 states + priority rules)
+                    • Particle Engine (hearts, Zzz, sparks)
+                    • Eye & Pupil Tracking (binary cursor tracking, 3-frame blinking)
+                    • Ear Twitching Engine
 ```
+
+---
+
+## 📜 License
+
+MIT License
