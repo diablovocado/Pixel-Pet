@@ -31,7 +31,10 @@ function createWindow() {
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   win.setIgnoreMouseEvents(true, { forward: true });
   win.loadFile('index.html');
-  win.webContents.on('did-finish-load', startPolling);
+  win.webContents.on('did-finish-load', () => {
+    startPolling();
+    initKeyboardListener();
+  });
   screen.on('display-metrics-changed', reposition);
 }
 
@@ -39,6 +42,42 @@ function reposition() {
   if (!win || win.isDestroyed()) return;
   const { x, y, width, height } = screen.getPrimaryDisplay().workArea;
   win.setBounds({ x, y, width, height });
+}
+
+// ─── Global Keyboard Listener (Privacy-First: Counts frequency only) ───
+let keyListener = null;
+let keyTimestamps = [];
+let typingCooldownTimer = null;
+
+function initKeyboardListener() {
+  try {
+    const { GlobalKeyboardListener } = require('node-global-key-listener');
+    keyListener = new GlobalKeyboardListener();
+    keyListener.addListener((e) => {
+      if (e.state === 'DOWN') {
+        const now = Date.now();
+        keyTimestamps.push(now);
+        // keep timestamps from the last 1000ms
+        keyTimestamps = keyTimestamps.filter(t => now - t <= 1000);
+        const cps = keyTimestamps.length;
+        const isFast = cps >= 4;
+
+        if (win && !win.isDestroyed()) {
+          win.webContents.send('typing-update', { isTyping: true, cps, isFast });
+        }
+
+        clearTimeout(typingCooldownTimer);
+        typingCooldownTimer = setTimeout(() => {
+          keyTimestamps = [];
+          if (win && !win.isDestroyed()) {
+            win.webContents.send('typing-update', { isTyping: false, cps: 0, isFast: false });
+          }
+        }, 1400);
+      }
+    });
+  } catch (err) {
+    console.log('Global key listener initialized with fallback polling');
+  }
 }
 
 // ─── Activity Polling ──────────────────────────────────

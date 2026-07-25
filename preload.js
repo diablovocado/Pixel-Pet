@@ -9,4 +9,7 @@ contextBridge.exposeInMainWorld('deskpet', {
 
   onSetVariant: (cb) =>
     ipcRenderer.on('set-variant', (_e, variant) => cb(variant)),
+
+  onTypingUpdate: (cb) =>
+    ipcRenderer.on('typing-update', (_e, data) => cb(data)),
 });

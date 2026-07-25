@@ -179,6 +179,17 @@ function spawnZzz() {
   });
 }
 
+function spawnSparks() {
+  for (let i = 0; i < 2; i++) parts.push({
+    type: 'spark',
+    x:  cat.x + CAT_W * 0.65 + rand(-12, 12),
+    y:  cat.y + CAT_H * 0.45,
+    vx: rand(-0.8, 0.8), vy: rand(-1.2, -0.4),
+    life: 1, decay: 0.02, sz: rand(3, 5),
+    color: Math.random() < 0.5 ? '#ff7700' : '#ffcc00',
+  });
+}
+
 function updateParts(dt) {
   for (let i = parts.length - 1; i >= 0; i--) {
     const pt = parts[i];
@@ -197,6 +208,9 @@ function drawParts() {
     fxCtx.globalAlpha = Math.max(0, pt.life);
     if (pt.type === 'heart') {
       drawPixelHeart(fxCtx, pt.x, pt.y, pt.sz);
+    } else if (pt.type === 'spark') {
+      fxCtx.fillStyle = pt.color || '#ff7700';
+      fxCtx.fillRect(pt.x, pt.y, pt.sz, pt.sz);
     } else {
       const fs = Math.round(pt.sz);
       fxCtx.font        = `bold ${fs}px monospace`;
@@ -285,6 +299,15 @@ function drawEyes(hx, hy) {
     // Heart eyes ♥
     drawMiniHeart(eL, eY - 1);
     drawMiniHeart(eR, eY - 1);
+
+  } else if (cat.typingIsFast || (cat.isTypingMode && cat.typingCPS >= 4)) {
+    // Determined / super-focused eyes (ò_ó) with angled brows!
+    px(eL, eY,     2, 2, P.EY);
+    px(eL + 1, eY + 1, 1, 1, P.K);
+    px(eL,     eY - 1, 3, 1, P.K); // left angled brow
+    px(eR, eY,     2, 2, P.EY);
+    px(eR,     eY + 1, 1, 1, P.K);
+    px(eR - 1, eY - 1, 3, 1, P.K); // right angled brow
 
   } else if (a === 'excited') {
     // Big sparkly eyes (^ω^)
@@ -405,9 +428,35 @@ function drawCat(timestamp) {
   }
 
   // ═══════════════════════════════════════
-  //   LEGS
+  //   LEGS & PAWS
   // ═══════════════════════════════════════
-  if (sitting) {
+  if (cat.isTypingMode || a === 'excited') {
+    // Sitting base legs
+    px(bx + 1, by + 8, 3, 2, P.K);
+    px(bx + 5, by + 8, 3, 2, P.K);
+
+    // Animated typing paws tapping an invisible/tiny keyboard
+    const pawSpd = cat.typingIsFast ? 0.045 : 0.025;
+    cat.walk += pawSpd;
+    const tap1 = Math.sin(cat.walk * Math.PI * 4) > 0 ? 0 : 1;
+    const tap2 = Math.sin(cat.walk * Math.PI * 4) <= 0 ? 0 : 1;
+
+    px(hx + 2, hy + 6 - tap1, 2, 2, P.K);
+    px(hx + 3, hy + 7 - tap1, 1, 1, P.B);
+    px(hx + 5, hy + 6 - tap2, 2, 2, P.K);
+    px(hx + 6, hy + 7 - tap2, 1, 1, P.B);
+
+    // Tiny Pixel Laptop / Keyboard
+    px(hx + 2, hy + 7, 7, 2, P.K);         // keyboard base
+    px(hx + 3, hy + 7, 5, 1, '#d8d8d8');   // keys
+    px(hx + 8, hy + 4, 1, 4, P.K);         // screen lid
+    px(hx + 7, hy + 4, 1, 3, '#7090d8');   // screen glow
+
+    if (cat.typingIsFast) {
+      px(hx + 7, hy + 4, 1, 3, '#ff7700'); // heat glow screen
+      if (Math.random() < 0.25) spawnSparks();
+    }
+  } else if (sitting) {
     // Tucked paws — two rectangular stubs
     px(bx + 1, by + 8, 3, 2, P.K);
     px(bx + 5, by + 8, 3, 2, P.K);
@@ -708,6 +757,15 @@ window.deskpet.onActivityTick(({ cursorX, cursorY, mouseSpeed, idleSeconds, like
 
 window.deskpet.onSetVariant?.((variant) => {
   setVariant(variant);
+});
+
+window.deskpet.onTypingUpdate?.(({ isTyping, cps, isFast }) => {
+  cat.isTypingMode = isTyping;
+  cat.typingCPS    = cps;
+  cat.typingIsFast = isFast;
+  if (isTyping && cat.action !== 'sleep' && cat.action !== 'drag') {
+    cat.typingTimer = 1800;
+  }
 });
 
 // ─── Mouse Events ──────────────────────────────────────────
