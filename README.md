@@ -14,10 +14,13 @@ brew install node
 
 ### Run Locally
 ```bash
-# Install dependencies
+# 1. Clone & enter project
+cd /Users/maithilipawar/Project/Pixel-Pet
+
+# 2. Install dependencies
 npm install
 
-# Start the desktop pet
+# 3. Start the desktop pet
 npm start
 ```
 
@@ -58,6 +61,45 @@ Pixel Deskpet requests two macOS system permissions for its interactive features
   - `alwaysOnTop` at `'screen-saver'` level (stays on top of all windows and fullscreen apps).
   - Dynamic click-through (`setIgnoreMouseEvents`) everywhere except the cat's own pixel bounds.
   - Full drag-and-drop anywhere on screen.
+
+---
+
+## 💡 How to Extend Task Awareness Behavior Mapping
+
+The Task Awareness Engine is designed to be modular and easy to customize.
+
+### Step 1: Add App Keywords or Categories in [`main.js`](file:///Users/maithilipawar/Project/Pixel-Pet/main.js)
+Locate the `APP_CATEGORIES` dictionary in `main.js`:
+
+```javascript
+const APP_CATEGORIES = {
+  coding: [
+    'code', 'vscode', 'visual studio code', 'cursor', 'xcode', 'terminal',
+    'iterm', 'iterm2', 'antigravity', 'webstorm', 'pycharm', 'sublime text',
+    'intellij idea', 'ghostty', 'warp', 'neovim', 'vim', 'electron'
+  ],
+  browser: [
+    'safari', 'google chrome', 'chrome', 'firefox', 'arc', 'brave browser',
+    'orion', 'opera', 'edge', 'microsoft edge'
+  ],
+  music: [  // 👈 Example: Add a new category!
+    'spotify', 'apple music', 'music', 'tidal', 'soundcloud'
+  ]
+};
+```
+
+### Step 2: Add Custom Quips in [`renderer.js`](file:///Users/maithilipawar/Project/Pixel-Pet/renderer.js)
+Locate `CONTEXT_QUIPS` in `renderer.js` and add matching quips for your new category:
+
+```javascript
+const CONTEXT_QUIPS = {
+  coding:  ['coding time!', 'clean syntax!', 'ship it!', 'npm run dev', 'git push~', 'debugging...'],
+  browser: ['browsing~', 'so many tabs!', 'finding tuna?', 'web surfing~'],
+  design:  ['pixel perfect!', 'nice colors!', 'design time!'],
+  chat:    ['meow back?', 'who typed?', 'new message!'],
+  music:   ['vibing to beats~', 'groovy cat! 🎵', 'jamming out! 🎧'], // 👈 Add matching category quips!
+};
+```
 
 ---
 
