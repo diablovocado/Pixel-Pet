@@ -718,7 +718,13 @@ function updateEars(dt) {
   }
 }
 
-// ─── Speech Bubble ─────────────────────────────────────────
+const pinnedBubble = document.getElementById('pinnedBubble');
+const timerBubble  = document.getElementById('timerBubble');
+
+let pinnedNoteText    = '';
+let timerEndTimestamp = null;
+
+// Speech Bubble
 let bubbleTO = null;
 function showBubble(text, duration = 1600) {
   bubble.textContent  = text;
@@ -730,6 +736,35 @@ function showBubble(text, duration = 1600) {
 function updateBubble() {
   bubble.style.left = `${cat.x + CAT_W * 0.5}px`;
   bubble.style.top  = `${cat.y - 42}px`;
+}
+
+function updatePinnedBubble() {
+  if (pinnedNoteText) {
+    pinnedBubble.style.left = `${cat.x + CAT_W * 0.5}px`;
+    const isRegularVisible = bubble.style.opacity === '1';
+    pinnedBubble.style.top  = `${cat.y - (isRegularVisible ? 68 : 42)}px`;
+  }
+}
+
+function updateTimerBubble() {
+  if (!timerEndTimestamp) {
+    timerBubble.style.opacity = '0';
+    return;
+  }
+  const remaining = Math.max(0, Math.ceil((timerEndTimestamp - Date.now()) / 1000));
+  if (remaining <= 0) {
+    timerEndTimestamp = null;
+    timerBubble.style.opacity = '0';
+    enterAction('excited');
+    showBubble('Focus Complete! 🎉', 3500);
+    spawnHearts(12);
+    return;
+  }
+  const m = Math.floor(remaining / 60).toString().padStart(2, '0');
+  const s = (remaining % 60).toString().padStart(2, '0');
+  timerBubble.textContent = `⏱ ${m}:${s}`;
+  timerBubble.style.left  = `${cat.x + CAT_W * 0.5}px`;
+  timerBubble.style.top   = `${cat.y - (pinnedNoteText ? 94 : 70)}px`;
 }
 
 // ─── Canvas Positioning ────────────────────────────────────
@@ -835,6 +870,30 @@ document.addEventListener('mouseup', () => {
   }, 80);
 });
 
+window.deskpet.onStartTimer?.((minutes) => {
+  timerEndTimestamp = Date.now() + minutes * 60 * 1000;
+  timerBubble.style.opacity = '1';
+  showBubble(`Timer: ${minutes}m started! ⏱`, 2000);
+});
+
+window.deskpet.onCancelTimer?.(() => {
+  timerEndTimestamp = null;
+  timerBubble.style.opacity = '0';
+  showBubble('Timer cancelled', 1500);
+});
+
+window.deskpet.onSetPinnedNote?.((text) => {
+  pinnedNoteText = text || '';
+  if (pinnedNoteText) {
+    pinnedBubble.textContent = pinnedNoteText;
+    pinnedBubble.style.opacity = '1';
+    showBubble('Note pinned! 📌', 1500);
+  } else {
+    pinnedBubble.style.opacity = '0';
+    showBubble('Note cleared', 1200);
+  }
+});
+
 // ─── Main Loop ─────────────────────────────────────────────
 let lastT = performance.now();
 function loop(t) {
@@ -847,6 +906,8 @@ function loop(t) {
   drawCat(t);
   drawParts();
   updateBubble();
+  updatePinnedBubble();
+  updateTimerBubble();
 
   requestAnimationFrame(loop);
 }

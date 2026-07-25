@@ -230,6 +230,31 @@ function buildTrayIcon() {
   return nativeImage.createFromBuffer(buf, { width: S, height: S, scaleFactor: 2 });
 }
 
+let isCatVisible = true;
+let activeVariantName = 'tabby';
+
+function selectVariant(name) {
+  activeVariantName = name;
+  win?.webContents.send('set-variant', name);
+  updateTrayMenu();
+}
+
+function promptCustomNote() {
+  const options = ['Drink water! 💧', 'Focus mode! 🚀', 'Take a break! 🧘', 'Cancel'];
+  const { dialog } = require('electron');
+  dialog.showMessageBox({
+    type: 'question',
+    buttons: options,
+    title: 'Pinned Note / Message',
+    message: 'Select a pinned note to display above your deskpet:'
+  }).then(res => {
+    const idx = res.response;
+    if (idx < 3) {
+      win?.webContents.send('set-pinned-note', options[idx]);
+    }
+  });
+}
+
 function createTray() {
   let icon;
   try {
@@ -239,15 +264,48 @@ function createTray() {
   }
   tray = new Tray(icon);
   tray.setToolTip('Pixel Deskpet');
+  updateTrayMenu();
+}
+
+function updateTrayMenu() {
+  if (!tray) return;
   const menu = Menu.buildFromTemplate([
     { label: '🐱 Pixel Deskpet', enabled: false },
     { type: 'separator' },
     {
+      label: isCatVisible ? 'Hide Deskpet' : 'Show Deskpet',
+      click: () => {
+        isCatVisible = !isCatVisible;
+        if (win && !win.isDestroyed()) {
+          isCatVisible ? win.show() : win.hide();
+        }
+        updateTrayMenu();
+      }
+    },
+    { type: 'separator' },
+    {
+      label: 'Focus / Pomodoro Timer',
+      submenu: [
+        { label: 'Start 25m Focus', click: () => win?.webContents.send('start-timer', 25) },
+        { label: 'Start 15m Short Focus', click: () => win?.webContents.send('start-timer', 15) },
+        { label: 'Start 50m Deep Work', click: () => win?.webContents.send('start-timer', 50) },
+        { type: 'separator' },
+        { label: 'Cancel Timer', click: () => win?.webContents.send('cancel-timer') },
+      ]
+    },
+    {
+      label: 'Pinned Note / Message',
+      submenu: [
+        { label: 'Set Quick Note...', click: () => promptCustomNote() },
+        { label: 'Clear Note', click: () => win?.webContents.send('set-pinned-note', '') }
+      ]
+    },
+    {
       label: 'Cat Pattern / Color',
       submenu: [
-        { label: 'Orange Tabby', type: 'radio', checked: true, click: () => win?.webContents.send('set-variant', 'tabby') },
-        { label: 'Black Cat', type: 'radio', click: () => win?.webContents.send('set-variant', 'black') },
-        { label: 'Grey Mackerel', type: 'radio', click: () => win?.webContents.send('set-variant', 'grey') },
+        { label: 'Orange Tabby', type: 'radio', checked: activeVariantName === 'tabby', click: () => selectVariant('tabby') },
+        { label: 'Black Cat', type: 'radio', checked: activeVariantName === 'black', click: () => selectVariant('black') },
+        { label: 'Grey Mackerel', type: 'radio', checked: activeVariantName === 'grey', click: () => selectVariant('grey') },
       ]
     },
     { type: 'separator' },

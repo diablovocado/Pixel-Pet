@@ -31,7 +31,7 @@
       cursor: default;
     }
 
-    /* Full-screen fx canvas for particles (hearts, zzz) */
+    /* Full-screen fx canvas for particles (hearts, zzz, sparks) */
     #fxCanvas {
       position: absolute;
       top: 0; left: 0;
@@ -40,7 +40,7 @@
       image-rendering: pixelated;
     }
 
-    /* Speech bubble */
+    /* Dynamic Speech Bubble */
     #bubble {
       position: absolute;
       font-family: 'Press Start 2P', monospace;
@@ -78,6 +78,46 @@
       border-top-color: #fdf6ec;
       z-index: 1;
     }
+
+    /* Pinned Note Bubble */
+    #pinnedBubble {
+      position: absolute;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      line-height: 1.4;
+      background: #eef7ff;
+      color: #0c2040;
+      padding: 4px 8px;
+      border: 2px solid #0c2040;
+      border-radius: 4px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-50%);
+      transition: opacity 0.2s ease;
+      box-shadow: 2px 2px 0 #0c2040;
+      z-index: 9;
+    }
+
+    /* Pomodoro / Focus Timer Bubble */
+    #timerBubble {
+      position: absolute;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      line-height: 1.4;
+      background: #fff8e8;
+      color: #402800;
+      padding: 4px 8px;
+      border: 2px solid #a06800;
+      border-radius: 4px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-50%);
+      transition: opacity 0.2s ease;
+      box-shadow: 2px 2px 0 #a06800;
+      z-index: 9;
+    }
   </style>
 </head>
 <body>
@@ -85,6 +125,8 @@
     <canvas id="catCanvas"></canvas>
     <canvas id="fxCanvas"></canvas>
     <div id="bubble"></div>
+    <div id="pinnedBubble"></div>
+    <div id="timerBubble"></div>
   </div>
   <script src="renderer.js"></script>
 </body>

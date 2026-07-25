@@ -15,4 +15,13 @@ contextBridge.exposeInMainWorld('deskpet', {
 
   onAppContextUpdate: (cb) =>
     ipcRenderer.on('app-context-update', (_e, data) => cb(data)),
+
+  onStartTimer: (cb) =>
+    ipcRenderer.on('start-timer', (_e, minutes) => cb(minutes)),
+
+  onCancelTimer: (cb) =>
+    ipcRenderer.on('cancel-timer', () => cb()),
+
+  onSetPinnedNote: (cb) =>
+    ipcRenderer.on('set-pinned-note', (_e, text) => cb(text)),
 });
