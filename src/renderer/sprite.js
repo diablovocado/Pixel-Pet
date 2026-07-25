@@ -229,48 +229,71 @@ if (typeof window !== 'undefined') {
 }
 
 function drawTypingKeypad(ctx, catX, catY) {
-  // Key Dimensions
-  const keyWidth = 24;
-  const keyHeight = 16;
+  // 3D Keycap dimensions matching tyoe.mov video
+  const keyWidth = 40;
+  const keyHeight = 22;
   
-  const leftKeyX = catX - 12;
-  const rightKeyX = catX + 14;
-  const baseY = catY + 28;
+  const leftKeyX = catX - 32;
+  const rightKeyX = catX + 10;
+  const baseY = catY + 22;
 
-  // Key Y-offsets (pressed state shifts down by 4px)
-  const leftOffsetY = leftKeyPressed ? 4 : 0;
-  const rightOffsetY = rightKeyPressed ? 4 : 0;
+  // Key Y-offsets (pressed state shifts down by 6px)
+  const leftOffsetY = leftKeyPressed ? 6 : 0;
+  const rightOffsetY = rightKeyPressed ? 6 : 0;
 
-  // --- DRAW LEFT KEYCAP ---
-  // Key base / shadow
-  ctx.fillStyle = '#6e6e78';
-  ctx.fillRect(leftKeyX, baseY + 6, keyWidth, keyHeight);
+  // --- DRAW LEFT 3D KEYCAP ---
+  // Key base / shadow 3D body
+  ctx.fillStyle = '#444450';
+  ctx.fillRect(leftKeyX - 2, baseY + 4, keyWidth + 4, keyHeight + 6);
+  ctx.fillStyle = '#22222a';
+  ctx.fillRect(leftKeyX - 2, baseY + keyHeight + 4, keyWidth + 4, 6);
+
   // Key top cap
-  ctx.fillStyle = leftKeyPressed ? '#a0a0aa' : '#e0e0e8';
-  ctx.fillRect(leftKeyX, baseY + leftOffsetY, keyWidth, keyHeight - 2);
+  ctx.fillStyle = leftKeyPressed ? '#9090a0' : '#e2e2ec';
+  ctx.fillRect(leftKeyX, baseY + leftOffsetY, keyWidth, keyHeight);
+  // Inner top highlight
+  ctx.fillStyle = leftKeyPressed ? '#787888' : '#ffffff';
+  ctx.fillRect(leftKeyX + 2, baseY + leftOffsetY + 2, keyWidth - 4, 3);
 
-  // --- DRAW RIGHT KEYCAP ---
-  // Key base / shadow
-  ctx.fillStyle = '#6e6e78';
-  ctx.fillRect(rightKeyX, baseY + 6, keyWidth, keyHeight);
+  // --- DRAW RIGHT 3D KEYCAP ---
+  // Key base / shadow 3D body
+  ctx.fillStyle = '#444450';
+  ctx.fillRect(rightKeyX - 2, baseY + 4, keyWidth + 4, keyHeight + 6);
+  ctx.fillStyle = '#22222a';
+  ctx.fillRect(rightKeyX - 2, baseY + keyHeight + 4, keyWidth + 4, 6);
+
   // Key top cap
-  ctx.fillStyle = rightKeyPressed ? '#a0a0aa' : '#e0e0e8';
-  ctx.fillRect(rightKeyX, baseY + rightOffsetY, keyWidth, keyHeight - 2);
+  ctx.fillStyle = rightKeyPressed ? '#9090a0' : '#e2e2ec';
+  ctx.fillRect(rightKeyX, baseY + rightOffsetY, keyWidth, keyHeight);
+  // Inner top highlight
+  ctx.fillStyle = rightKeyPressed ? '#787888' : '#ffffff';
+  ctx.fillRect(rightKeyX + 2, baseY + rightOffsetY + 2, keyWidth - 4, 3);
 }
 
 function renderCatPaws(ctx, catX, catY, state) {
   if (state === 'TYPING') {
-    const pawWidth = 8;
-    const pawHeight = 8;
+    const pawWidth = 14;
+    const pawHeight = 14;
 
+    const baseY = catY + 22;
     // Left paw follows left key offset
-    const leftPawY = catY + 22 + (leftKeyPressed ? 4 : 0);
+    const leftPawY = baseY + (leftKeyPressed ? 6 : 0) - 8;
     // Right paw follows right key offset
-    const rightPawY = catY + 22 + (rightKeyPressed ? 4 : 0);
+    const rightPawY = baseY + (rightKeyPressed ? 6 : 0) - 8;
 
-    ctx.fillStyle = '#ffffff'; // White paw color
-    ctx.fillRect(catX - 6, leftPawY, pawWidth, pawHeight);
-    ctx.fillRect(catX + 18, rightPawY, pawWidth, pawHeight);
+    const P = window.P || { F: '#ffffff', N: '#dddddd' };
+
+    // Left Paw stomp
+    ctx.fillStyle = P.F || '#ffffff';
+    ctx.fillRect(catX - 22, leftPawY, pawWidth, pawHeight);
+    ctx.fillStyle = P.N || '#dddddd';
+    ctx.fillRect(catX - 19, leftPawY + 3, 4, 4);
+
+    // Right Paw stomp
+    ctx.fillStyle = P.F || '#ffffff';
+    ctx.fillRect(catX + 20, rightPawY, pawWidth, pawHeight);
+    ctx.fillStyle = P.N || '#dddddd';
+    ctx.fillRect(catX + 23, rightPawY + 3, 4, 4);
   }
 }
 
