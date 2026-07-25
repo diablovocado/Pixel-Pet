@@ -177,18 +177,21 @@ function drawKneadingPaws(pX, pY) {
 }
 
 // ─── Typing Keypad State & Event Listener ───────────────────────
+// --- STATES ---
+let currentState = 'IDLE'; // 'IDLE' | 'TYPING' | 'PETTED' | 'DRAGGING'
 let leftKeyPressed = false;
 let rightKeyPressed = false;
-let isTyping = false;
 let activeKey = 'left';
 let keyTimeout = null;
+let petTimeout = null;
 
 function handleKeystroke(e) {
-  // Ignore clicks, touch taps, and touchpad drag events
+  // DO NOT trigger typing if the user is currently clicking or dragging the cat
+  if (currentState === 'PETTED' || currentState === 'DRAGGING') return;
   if (e && (e.type === 'mousedown' || e.type === 'touchstart' || e.type === 'pointerdown')) return;
   if (window.CAT_STATE && (window.CAT_STATE.action === 'drag' || window.CAT_STATE.isDragging)) return;
 
-  isTyping = true;
+  currentState = 'TYPING';
   if (window.CAT_STATE) {
     window.CAT_STATE.isTypingMode = true;
     window.CAT_STATE.typingTimer = 350;
@@ -204,10 +207,14 @@ function handleKeystroke(e) {
     rightKeyPressed = true;
   }
 
-  // Reset back to resting position 150ms after typing pauses
+  // Clear existing timeout so typing stays smooth while continuous
   if (keyTimeout) clearTimeout(keyTimeout);
+
+  // Return to IDLE 150ms after typing stops
   keyTimeout = setTimeout(() => {
-    isTyping = false;
+    if (currentState === 'TYPING') {
+      currentState = 'IDLE';
+    }
     leftKeyPressed = false;
     rightKeyPressed = false;
   }, 150);
