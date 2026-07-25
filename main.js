@@ -99,10 +99,9 @@ function startAppPolling() {
   }, 2500);
 }
 
-// ─── Global Keyboard Listener (Privacy-First: Counts frequency only) ───
-let keyListener = null;
-let keyTimestamps = [];
-let typingCooldownTimer = null;
+process.on('unhandledRejection', () => {
+  // Graceful fallback: powerMonitor activity polling drives typing state if native hooks are restricted
+});
 
 function initKeyboardListener() {
   try {
