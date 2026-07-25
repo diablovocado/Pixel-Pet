@@ -139,7 +139,7 @@ function startAppPolling() {
   appPollInterval = setInterval(() => {
     if (!win || win.isDestroyed()) return;
     exec(`osascript -e 'tell application "System Events" to get name of first process whose frontmost is true'`,
-      { timeout: 2000 }, (err, stdout) => {
+      { timeout: 1500, maxBuffer: 1024 * 64 }, (err, stdout) => {
         if (!err && stdout) {
           const appName  = stdout.trim();
           const category = getCategoryForApp(appName);
@@ -149,7 +149,7 @@ function startAppPolling() {
           }
         }
       });
-  }, 2500);
+  }, 5000);
 }
 
 // ─── IPC ─────────────────────────────────────────────────────

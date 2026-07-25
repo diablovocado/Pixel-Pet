@@ -185,7 +185,7 @@ let keyPressTimeout = null;
 function handleKeystroke() {
   if (window.CAT_STATE) {
     window.CAT_STATE.isTypingMode = true;
-    window.CAT_STATE.typingTimer = 1800;
+    window.CAT_STATE.typingTimer = 350;
   }
 
   // 1. Instantly switch sides on every single key press
@@ -214,11 +214,6 @@ if (typeof window !== 'undefined') {
     const api = window.catAPI || window.deskpet;
     if (api && api.onKeystroke) {
       api.onKeystroke(handleKeystroke);
-    }
-    if (api && api.onTypingUpdate) {
-      api.onTypingUpdate((d) => {
-        if (d && d.isTyping) handleKeystroke();
-      });
     }
     window.addEventListener('keydown', handleKeystroke);
   };
@@ -410,7 +405,7 @@ function drawCat(cat, lastCursor) {
         const tY = (CAT_H - tH) / 2 + 8;
         ctx.drawImage(activeFrame, tX, tY, tW, tH);
         ctx.restore();
-        ctx.restore();
+        ctx.restore(); // Balance the main outer ctx.save() from start of drawCat
         return;
       }
     }
