@@ -1,5 +1,9 @@
 # 🐱 Pixel Deskpet
 
+<p align="center">
+  <img src="assets/cat.png" alt="Pixel Deskpet" width="140" style="image-rendering: pixelated;" />
+</p>
+
 A living, interactive pixel-art cat that sits on your Mac desktop — transparent overlay, click-through everywhere except on its own body, with zero rendering glitches or input conflicts.
 
 ---
