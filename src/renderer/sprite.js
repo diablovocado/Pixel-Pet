@@ -175,6 +175,105 @@ function drawKneadingPaws(pX, pY) {
   ctx.fillRect(pX + 82,        pY + 93 - liftR * SCALE, 4, 4);
 }
 
+// ─── Typing Keypad State & Event Listener ───────────────────────
+let leftKeyPressed = false;
+let rightKeyPressed = false;
+let activeKey = 'left'; // Toggle between 'left' and 'right'
+let keyPressTimeout = null;
+
+function handleKeystroke() {
+  if (window.CAT_STATE) {
+    window.CAT_STATE.isTypingMode = true;
+    window.CAT_STATE.typingTimer = 1800;
+  }
+
+  // 1. Instantly switch sides on every single key press
+  activeKey = (activeKey === 'left') ? 'right' : 'left';
+
+  // 2. Set active depressed key
+  if (activeKey === 'left') {
+    leftKeyPressed = true;
+    rightKeyPressed = false;
+  } else {
+    leftKeyPressed = false;
+    rightKeyPressed = true;
+  }
+
+  // 3. Reset paw/keycap back to rest state after 120ms
+  if (keyPressTimeout) clearTimeout(keyPressTimeout);
+  keyPressTimeout = setTimeout(() => {
+    leftKeyPressed = false;
+    rightKeyPressed = false;
+  }, 120);
+}
+
+// Listen to single keystrokes from IPC contextBridge AND window keydown fallback
+if (typeof window !== 'undefined') {
+  const initKeystrokeListeners = () => {
+    const api = window.catAPI || window.deskpet;
+    if (api && api.onKeystroke) {
+      api.onKeystroke(handleKeystroke);
+    }
+    if (api && api.onTypingUpdate) {
+      api.onTypingUpdate((d) => {
+        if (d && d.isTyping) handleKeystroke();
+      });
+    }
+    window.addEventListener('keydown', handleKeystroke);
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initKeystrokeListeners);
+  } else {
+    initKeystrokeListeners();
+  }
+}
+
+function drawTypingKeypad(ctx, catX, catY) {
+  // Key Dimensions
+  const keyWidth = 24;
+  const keyHeight = 16;
+  
+  const leftKeyX = catX - 12;
+  const rightKeyX = catX + 14;
+  const baseY = catY + 28;
+
+  // Key Y-offsets (pressed state shifts down by 4px)
+  const leftOffsetY = leftKeyPressed ? 4 : 0;
+  const rightOffsetY = rightKeyPressed ? 4 : 0;
+
+  // --- DRAW LEFT KEYCAP ---
+  // Key base / shadow
+  ctx.fillStyle = '#6e6e78';
+  ctx.fillRect(leftKeyX, baseY + 6, keyWidth, keyHeight);
+  // Key top cap
+  ctx.fillStyle = leftKeyPressed ? '#a0a0aa' : '#e0e0e8';
+  ctx.fillRect(leftKeyX, baseY + leftOffsetY, keyWidth, keyHeight - 2);
+
+  // --- DRAW RIGHT KEYCAP ---
+  // Key base / shadow
+  ctx.fillStyle = '#6e6e78';
+  ctx.fillRect(rightKeyX, baseY + 6, keyWidth, keyHeight);
+  // Key top cap
+  ctx.fillStyle = rightKeyPressed ? '#a0a0aa' : '#e0e0e8';
+  ctx.fillRect(rightKeyX, baseY + rightOffsetY, keyWidth, keyHeight - 2);
+}
+
+function renderCatPaws(ctx, catX, catY, state) {
+  if (state === 'TYPING') {
+    const pawWidth = 8;
+    const pawHeight = 8;
+
+    // Left paw follows left key offset
+    const leftPawY = catY + 22 + (leftKeyPressed ? 4 : 0);
+    // Right paw follows right key offset
+    const rightPawY = catY + 22 + (rightKeyPressed ? 4 : 0);
+
+    ctx.fillStyle = '#ffffff'; // White paw color
+    ctx.fillRect(catX - 6, leftPawY, pawWidth, pawHeight);
+    ctx.fillRect(catX + 18, rightPawY, pawWidth, pawHeight);
+  }
+}
+
 // ─── Main draw function ───────────────────────────────────────
 function drawCat(cat, lastCursor) {
   const canvas = window._catCanvas;
@@ -275,98 +374,6 @@ function drawCat(cat, lastCursor) {
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(pX + 44, pY + 42,  2,  2); ctx.fillRect(pX + 74, pY + 42,  2,  2);
     }
-
-// State variables for instant single-key reaction
-let leftKeyPressed = false;
-let rightKeyPressed = false;
-let activeKey = 'left'; // Toggle between 'left' and 'right'
-let keyPressTimeout = null;
-
-// Listen to single keystrokes from IPC contextBridge
-if (typeof window !== 'undefined') {
-  const listenToKeystrokes = () => {
-    const api = window.catAPI || window.deskpet;
-    if (api && api.onKeystroke) {
-      api.onKeystroke(() => {
-        // Refresh typing state on CAT_STATE
-        if (window.CAT_STATE) {
-          window.CAT_STATE.isTypingMode = true;
-          window.CAT_STATE.typingTimer = 1800;
-        }
-
-        // 1. Instantly switch sides on every single key press
-        activeKey = (activeKey === 'left') ? 'right' : 'left';
-
-        // 2. Set active depressed key
-        if (activeKey === 'left') {
-          leftKeyPressed = true;
-          rightKeyPressed = false;
-        } else {
-          leftKeyPressed = false;
-          rightKeyPressed = true;
-        }
-
-        // 3. Reset paw/keycap back to rest state after 120ms
-        if (keyPressTimeout) clearTimeout(keyPressTimeout);
-        keyPressTimeout = setTimeout(() => {
-          leftKeyPressed = false;
-          rightKeyPressed = false;
-        }, 120);
-      });
-    }
-  };
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', listenToKeystrokes);
-  } else {
-    listenToKeystrokes();
-  }
-}
-
-function drawTypingKeypad(ctx, catX, catY) {
-  // Key Dimensions
-  const keyWidth = 24;
-  const keyHeight = 16;
-  
-  const leftKeyX = catX - 12;
-  const rightKeyX = catX + 14;
-  const baseY = catY + 28;
-
-  // Key Y-offsets (pressed state shifts down by 4px)
-  const leftOffsetY = leftKeyPressed ? 4 : 0;
-  const rightOffsetY = rightKeyPressed ? 4 : 0;
-
-  // --- DRAW LEFT KEYCAP ---
-  // Key base / shadow
-  ctx.fillStyle = '#6e6e78';
-  ctx.fillRect(leftKeyX, baseY + 6, keyWidth, keyHeight);
-  // Key top cap
-  ctx.fillStyle = leftKeyPressed ? '#a0a0aa' : '#e0e0e8';
-  ctx.fillRect(leftKeyX, baseY + leftOffsetY, keyWidth, keyHeight - 2);
-
-  // --- DRAW RIGHT KEYCAP ---
-  // Key base / shadow
-  ctx.fillStyle = '#6e6e78';
-  ctx.fillRect(rightKeyX, baseY + 6, keyWidth, keyHeight);
-  // Key top cap
-  ctx.fillStyle = rightKeyPressed ? '#a0a0aa' : '#e0e0e8';
-  ctx.fillRect(rightKeyX, baseY + rightOffsetY, keyWidth, keyHeight - 2);
-}
-
-function renderCatPaws(ctx, catX, catY, state) {
-  if (state === 'TYPING') {
-    const pawWidth = 8;
-    const pawHeight = 8;
-
-    // Left paw follows left key offset
-    const leftPawY = catY + 22 + (leftKeyPressed ? 4 : 0);
-    // Right paw follows right key offset
-    const rightPawY = catY + 22 + (rightKeyPressed ? 4 : 0);
-
-    ctx.fillStyle = '#ffffff'; // White paw color
-    ctx.fillRect(catX - 6, leftPawY, pawWidth, pawHeight);
-    ctx.fillRect(catX + 18, rightPawY, pawWidth, pawHeight);
-  }
-}
 
     // ── Pixel keyboard graphic + alternating paw Y-positions (TYPING state) ──
     const isTypingState = cat.isTypingMode || cat.typingTimer > 0 || a === 'typing' || leftKeyPressed || rightKeyPressed;
