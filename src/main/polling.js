@@ -29,7 +29,6 @@ function start(win, onTick) {
     const dist = Math.hypot(cur.x - lastCX, cur.y - lastCY);
     const mouseSpeed    = (dist / dt) * 1000; // px/s
     const idleSeconds   = powerMonitor.getSystemIdleTime();
-    const likelyTyping  = lastIdle > 0.7 && idleSeconds < 0.4 && dist < 8;
 
     lastCX = cur.x; lastCY = cur.y;
     lastPoll = now;  lastIdle = idleSeconds;
@@ -42,7 +41,7 @@ function start(win, onTick) {
       rawY:       cur.y,
       mouseSpeed,
       idleSeconds,
-      likelyTyping,
+      likelyTyping: false,
     });
   }, 50);
 }
