@@ -403,11 +403,17 @@ function render() {
     ctx.scale(sX, sY);
 
     if (isTypingNow && typingVideo.readyState >= 2) {
-      ctx.drawImage(typingVideo, -catWidth / 2, -catHeight / 2, catWidth, catHeight);
+      const vScale = 1.38;
+      const vW = catWidth * vScale;
+      const vH = catHeight * vScale;
+      ctx.drawImage(typingVideo, -vW / 2, -vH / 2 + 4, vW, vH);
     } else if (isTypingNow) {
       const activeFrame = (activeKey === 'left') ? tyoeLeftImg : tyoeRightImg;
+      const vScale = 1.38;
+      const vW = catWidth * vScale;
+      const vH = catHeight * vScale;
       if (activeFrame.complete && activeFrame.naturalWidth > 0) {
-        ctx.drawImage(activeFrame, -catWidth / 2, -catHeight / 2, catWidth, catHeight);
+        ctx.drawImage(activeFrame, -vW / 2, -vH / 2 + 4, vW, vH);
       } else if (catImgNormal.complete && catImgNormal.naturalWidth !== 0) {
         ctx.drawImage(catImgNormal, -catWidth / 2, -catHeight / 2, catWidth, catHeight);
       }
