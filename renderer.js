@@ -1,190 +1,267 @@
 'use strict';
-/**
- * renderer.js — Boot & main loop
- * All logic lives in src/renderer/ modules.
- * This file only: initializes modules, wires IPC, runs the rAF loop.
- */
 
-// ─── Canvas refs ──────────────────────────────────────────────
-const catCanvas  = document.getElementById('catCanvas');
-const fxCanvas   = document.getElementById('fxCanvas');
+// --- SINGLE CANVAS ENGINE ---
+const canvas = document.getElementById('catCanvas');
+const ctx = canvas ? canvas.getContext('2d') : null;
 
-const SW = window.innerWidth;
-const SH = window.innerHeight;
+function resizeCanvas() {
+  if (!canvas) return;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 
-// ─── Module init ──────────────────────────────────────────────
-// state.js already ran: window.CAT_STATE exists
-const cat = window.CAT_STATE;
-cat.x = SW * 0.42;
-cat.y = SH * 0.45;
+// --- STATE MANAGEMENT ---
+let currentState = 'IDLE'; // 'IDLE' | 'TYPING' | 'PETTED' | 'DRAGGING'
+let activeKey = 'left';
+let keyTimeout = null;
+let petTimeout = null;
 
-// Init sprite (sets window._catCanvas, window._ctx, window._fxCtx)
-window.sprite.init(catCanvas, fxCanvas);
+let catX = window.innerWidth / 2 - 40;
+let catY = window.innerHeight / 2 - 40;
+const catWidth = 80;
+const catHeight = 80;
 
-// Init bubbles
-window.bubbles.init({
-  bubble:        'bubble',
-  pinned:        'pinnedBubble',
-  timer:         'timerBubble',
-  agent:         'agentBubble',
-  reminder:      'reminderBubble',
-});
+let scaleX = 1;
+let scaleY = 1;
 
-// Init interactions
-window.interactions.initInteractions(cat, window.deskpet);
+let dragStartY = 0;
+let isDragging = false;
 
-// ─── IPC handlers ────────────────────────────────────────────
-window.deskpet.onInitSettings((cfg) => {
-  // Apply stored variant
-  if (cfg.variant) window.setVariant(cfg.variant);
-  // Apply stored pinned note
-  if (cfg.pinnedNote) window.bubbles.setPinnedNote(cfg.pinnedNote);
-  // Apply stored name
-  cat.settings = cfg;
-  // Init reminders with settings
-  window.reminders.initReminders(cfg);
-});
+let mouseX = window.innerWidth / 2;
+let mouseY = window.innerHeight / 2;
 
-window.deskpet.onDisplayMetrics(({ bottomInset }) => {
-  cat.bottomInset = bottomInset || 0;
-});
+let kps = 0;
+let heatLevel = 0;
+let particles = [];
 
-window.deskpet.onSettingsUpdate((cfg) => {
-  cat.settings = cfg;
-  if (cfg.variant)    window.setVariant(cfg.variant);
-  if ('pinnedNote' in cfg) window.bubbles.setPinnedNote(cfg.pinnedNote);
-  window.reminders.updateSettings(cfg);
-});
+// Load Cat Image Asset
+const catImg = new Image();
+catImg.src = './assets/cat.png';
 
-window.deskpet.onActivityTick(({ cursorX, cursorY, mouseSpeed, idleSeconds, likelyTyping }) => {
-  cat.idleSeconds   = idleSeconds;
-  cat.mouseSpeed    = mouseSpeed;
-  cat.likelyTyping  = likelyTyping;
-  if (likelyTyping) cat.typingTimer = 3500;
+// Check hit bounding box
+function isOverCat(mx, my) {
+  return (
+    mx >= catX &&
+    mx <= catX + catWidth &&
+    my >= catY &&
+    my <= catY + catHeight
+  );
+}
 
-  const lc = window.interactions.lastCursor;
-  lc.x = cursorX;
-  lc.y = cursorY;
-});
+// Mouse passthrough throttling
+let lastPassthroughTime = 0;
+let isIgnoringMouse = true;
 
-window.deskpet.onTypingUpdate(({ isTyping, cps, isFast, heatLevel }) => {
-  cat.isTypingMode  = isTyping;
-  cat.typingCPS     = cps;
-  cat.typingIsFast  = isFast;
-  cat.heatLevel     = heatLevel ?? 0;
+function updateMousePassthrough(mx, my) {
+  const now = Date.now();
+  if (now - lastPassthroughTime < 30) return;
+  lastPassthroughTime = now;
 
-  // Update heat palette in real time
-  window.updateHeatPalette(cat.heatLevel);
-
-  if (isTyping && cat.action !== 'sleep' && cat.action !== 'drag') {
-    cat.typingTimer = 1800;
-  }
-
-  // Spawn steam particles when overheating
-  if (isFast && Math.random() < 0.25) {
-    window.particles.spawnSteam();
-  }
-  if (isTyping && Math.random() < 0.15) {
-    window.particles.spawnSparks();
-  }
-});
-
-window.deskpet.onAppContextUpdate(({ appName, category }) => {
-  cat.currentApp  = appName;
-  cat.appCategory = category;
-});
-
-window.deskpet.onSetVariant((variant) => {
-  window.setVariant(variant);
-});
-
-window.deskpet.onSetPinnedNote((text) => {
-  window.bubbles.setPinnedNote(text);
-  if (text) window.bubbles.showBubble('Note pinned! 📌', 1500);
-  else      window.bubbles.showBubble('Note cleared',    1200);
-});
-
-window.deskpet.onStartTimer((minutes) => {
-  window.bubbles.startTimer(minutes);
-});
-
-window.deskpet.onPauseTimer(() => {
-  window.bubbles.pauseTimer();
-});
-
-window.deskpet.onCancelTimer(() => {
-  window.bubbles.cancelTimer();
-});
-
-window.deskpet.onAgentStatus((data) => {
-  window.agentDisplay.handleAgentStatus(cat, data);
-});
-
-window.deskpet.onFullscreenChange((isFullscreen) => {
-  cat.isPeekMode = isFullscreen;
-  if (!isFullscreen) {
-    // Return to ground position above Dock
-    cat.y = SH - window.CAT_H - 12 - (cat.bottomInset || 0);
-  }
-});
-
-// ─── Main loop ────────────────────────────────────────────────
-let lastT = performance.now();
-
-function loop(t) {
-  try {
-    const dt = Math.min(t - lastT, 80);
-    lastT = t;
-
-    const h = window.innerHeight || 900;
-    const w = window.innerWidth || 1440;
-    const catH = window.CAT_H || 140;
-    const catW = window.CAT_W || 168;
-
-    if (cat.y === undefined || cat.y === null || isNaN(cat.y)) {
-      cat.y = h - catH - 20 - (cat.bottomInset || 0);
-    } else {
-      cat.y = Math.max(0, Math.min(cat.y, h - catH));
+  const over = isOverCat(mx, my);
+  if (over && isIgnoringMouse) {
+    isIgnoringMouse = false;
+    if (window.deskpet && window.deskpet.setIgnoreMouseEvents) {
+      window.deskpet.setIgnoreMouseEvents(false, { forward: true });
     }
-
-    if (cat.x === undefined || cat.x === null || isNaN(cat.x)) {
-      cat.x = w * 0.45;
-    } else {
-      cat.x = Math.max(0, Math.min(cat.x, w - catW));
+  } else if (!over && !isIgnoringMouse && !isDragging) {
+    isIgnoringMouse = true;
+    if (window.deskpet && window.deskpet.setIgnoreMouseEvents) {
+      window.deskpet.setIgnoreMouseEvents(true, { forward: true });
     }
-
-    const lastCursor = window.interactions.lastCursor;
-
-    // Behavior state machine across 100% full screen
-    window.behavior.updateBehavior(cat, lastCursor, dt, w, h);
-
-    // Per-frame interaction updates (hover purr, drag physics)
-    window.interactions.updateInteractions(cat, dt);
-
-    // Check reminders
-    window.reminders.checkReminders(cat);
-
-    // Particles
-    window.particles.update(dt);
-
-    // Canvas positioning
-    window.sprite.positionCanvas(cat);
-
-    // Draw cat
-    window.sprite.draw(cat, lastCursor);
-
-    // Draw particles
-    window.particles.draw();
-
-    // Update bubbles
-    window.bubbles.update(cat);
-  } catch (err) {
-    console.error('[PixelPet] Render loop exception:', err);
-  } finally {
-    requestAnimationFrame(loop);
   }
 }
 
-// ─── Boot ────────────────────────────────────────────────────
-window.behavior.enterAction(cat, 'idle');
-requestAnimationFrame(loop);
+// --- 1. KEYBOARD LISTENER ---
+if (window.catAPI && window.catAPI.onKeystroke) {
+  window.catAPI.onKeystroke(() => {
+    // Ignore keyboard input if petted or dragging
+    if (currentState === 'PETTED' || currentState === 'DRAGGING') return;
+
+    currentState = 'TYPING';
+    activeKey = (activeKey === 'left') ? 'right' : 'left';
+
+    if (keyTimeout) clearTimeout(keyTimeout);
+    keyTimeout = setTimeout(() => {
+      if (currentState === 'TYPING') {
+        currentState = 'IDLE';
+      }
+    }, 150);
+  });
+}
+
+if (window.catAPI && window.catAPI.onKpsUpdate) {
+  window.catAPI.onKpsUpdate((currentKps) => {
+    kps = currentKps || 0;
+  });
+}
+
+// --- 2. MOUSE / TOUCHPAD LISTENERS ---
+window.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+
+  updateMousePassthrough(e.clientX, e.clientY);
+
+  if (isDragging) {
+    currentState = 'DRAGGING';
+    catX = Math.max(0, Math.min(window.innerWidth - catWidth, e.clientX - catWidth / 2));
+    catY = Math.max(0, Math.min(window.innerHeight - catHeight, e.clientY - catHeight / 2));
+
+    // Vertical Mochi stretch physics
+    const stretch = Math.max(0, dragStartY - e.clientY);
+    scaleY = 1 + Math.min(stretch / 100, 0.7);
+    scaleX = 1 / scaleY; // Area volume preservation
+  }
+});
+
+window.addEventListener('mousedown', (e) => {
+  if (isOverCat(e.clientX, e.clientY)) {
+    e.stopPropagation();
+
+    isDragging = true;
+    dragStartY = e.clientY;
+    currentState = 'PETTED';
+
+    // Spawn heart particle
+    particles.push({
+      x: catX + catWidth / 2 + (Math.random() * 20 - 10),
+      y: catY - 10,
+      opacity: 1,
+      size: Math.random() * 6 + 4,
+      type: 'heart'
+    });
+
+    if (petTimeout) clearTimeout(petTimeout);
+    petTimeout = setTimeout(() => {
+      if (currentState === 'PETTED' && !isDragging) {
+        currentState = 'IDLE';
+      }
+    }, 600);
+  }
+});
+
+window.addEventListener('mouseup', () => {
+  if (isDragging) {
+    isDragging = false;
+    scaleX = 1;
+    scaleY = 1;
+    currentState = 'IDLE';
+  }
+});
+
+// --- PARTICLES ---
+function updateAndDrawParticles() {
+  if (kps >= 5 && Math.random() < 0.25) {
+    particles.push({
+      x: catX + catWidth / 2 + (Math.random() * 20 - 10),
+      y: catY - 5,
+      opacity: 1,
+      size: Math.random() * 4 + 2,
+      type: 'steam'
+    });
+  }
+
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    if (p.type === 'steam') {
+      ctx.fillStyle = `rgba(255, 90, 110, ${p.opacity})`;
+      ctx.fillRect(p.x, p.y, p.size, p.size);
+      p.y -= 1.2;
+    } else {
+      ctx.fillStyle = `rgba(255, 60, 120, ${p.opacity})`;
+      ctx.fillRect(p.x, p.y, p.size, p.size);
+      p.y -= 0.8;
+    }
+    p.opacity -= 0.025;
+    if (p.opacity <= 0) particles.splice(i, 1);
+  }
+}
+
+// --- KEYPAD RENDER (LAYER 1) ---
+function drawKeypad() {
+  const keyWidth = 24;
+  const keyHeight = 14;
+  const baseY = catY + catHeight - 10;
+  const leftX = catX + 6;
+  const rightX = catX + 38;
+
+  const leftKeyY = (activeKey === 'left') ? baseY + 4 : baseY;
+  const rightKeyY = (activeKey === 'right') ? baseY + 4 : baseY;
+
+  // Left Keycap
+  ctx.fillStyle = '#4a4a52';
+  ctx.fillRect(leftX, baseY + 4, keyWidth, keyHeight);
+  ctx.fillStyle = (activeKey === 'left') ? '#8e8e99' : '#d0d0d8';
+  ctx.fillRect(leftX, leftKeyY, keyWidth, keyHeight - 2);
+
+  // Right Keycap
+  ctx.fillStyle = '#4a4a52';
+  ctx.fillRect(rightX, baseY + 4, keyWidth, keyHeight);
+  ctx.fillStyle = (activeKey === 'right') ? '#8e8e99' : '#d0d0d8';
+  ctx.fillRect(rightX, rightKeyY, keyWidth, keyHeight - 2);
+}
+
+// --- SELF-HEALING RENDER LOOP ---
+function render() {
+  try {
+    if (!ctx) return;
+
+    // Layer 0: Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Layer 1: Prop Keypad (ONLY during TYPING)
+    if (currentState === 'TYPING') {
+      drawKeypad();
+    }
+
+    // Layer 2: Character Cat PNG with Transforms
+    ctx.save();
+    ctx.translate(catX + catWidth / 2, catY + catHeight / 2);
+    ctx.scale(scaleX, scaleY);
+
+    if (catImg.complete && catImg.naturalWidth !== 0) {
+      ctx.drawImage(catImg, -catWidth / 2, -catHeight / 2, catWidth, catHeight);
+    } else {
+      // Fallback base pixel rectangle if image loading
+      ctx.fillStyle = '#202025';
+      ctx.fillRect(-catWidth / 2, -catHeight / 2, catWidth, catHeight);
+    }
+
+    // Layer 3: Overlay Expressions
+    if (currentState === 'PETTED') {
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 12px monospace';
+      ctx.fillText('^ w ^', -16, -6);
+    } else if (currentState === 'IDLE' || currentState === 'TYPING') {
+      // Pupil Cursor Tracking
+      const dx = mouseX - catX;
+      const dy = mouseY - catY;
+      const angle = Math.atan2(dy, dx);
+      const pupilX = Math.cos(angle) * 3;
+      const pupilY = Math.sin(angle) * 3;
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(-16, -12, 10, 10);
+      ctx.fillRect(6, -12, 10, 10);
+
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(-14 + pupilX, -10 + pupilY, 4, 4);
+      ctx.fillRect(8 + pupilX, -10 + pupilY, 4, 4);
+    }
+
+    ctx.restore();
+
+    // Layer 4: Particles
+    updateAndDrawParticles();
+
+  } catch (err) {
+    console.error('[PixelPet] Render error:', err);
+  } finally {
+    requestAnimationFrame(render);
+  }
+}
+
+// Start animation loop
+requestAnimationFrame(render);

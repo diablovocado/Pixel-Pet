@@ -12,46 +12,24 @@
     html, body {
       width: 100vw;
       height: 100vh;
+      margin: 0;
+      padding: 0;
       overflow: hidden;
-      background: transparent;
+      background: transparent !important;
       user-select: none;
       -webkit-user-select: none;
     }
-    #catCanvas, #fxCanvas {
-      position: absolute;
-      top: 0;
-      left: 0;
+    #catCanvas {
       width: 100%;
       height: 100%;
       display: block;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
     }
-    #catCanvas {
-      z-index: 5;
-    }
-    #fxCanvas {
-      z-index: 6;
-      pointer-events: none;
-    }
   </style>
 </head>
 <body>
   <canvas id="catCanvas"></canvas>
-  <canvas id="fxCanvas"></canvas>
-
-  <!-- ── Renderer modules ── -->
-  <script src="src/renderer/state.js"></script>
-  <script src="src/renderer/variants.js"></script>
-  <script src="src/renderer/particles.js"></script>
-  <script src="src/renderer/bubbles.js"></script>
-  <script src="src/renderer/sprite.js"></script>
-  <script src="src/renderer/behavior.js"></script>
-  <script src="src/renderer/interactions.js"></script>
-  <script src="src/renderer/reminders.js"></script>
-  <script src="src/renderer/agentDisplay.js"></script>
-
-  <!-- ── Main renderer (boot + loop) ── -->
   <script src="renderer.js"></script>
 </body>
 </html>
