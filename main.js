@@ -34,7 +34,8 @@ function createWindow() {
   win = new BrowserWindow({
     x: wx, y: wy,
     width, height,
-    transparent:     true,
+    transparent:     false,
+    backgroundColor: '#00FF00',
     frame:           false,
     resizable:       false,
     movable:         false,
@@ -52,6 +53,7 @@ function createWindow() {
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   win.setIgnoreMouseEvents(true, { forward: true });
   win.loadFile('index.html');
+  win.webContents.openDevTools({ mode: 'detach' });
   win.show();
   win.showInactive();
 
