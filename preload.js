@@ -1,27 +1,48 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('deskpet', {
+  // Mouse event pass-through
   setIgnoreMouseEvents: (ignore, opts) =>
     ipcRenderer.send('set-ignore-mouse-events', ignore, opts),
 
-  onActivityTick: (cb) =>
-    ipcRenderer.on('activity-tick', (_e, data) => cb(data)),
+  // Settings
+  saveSettings: (data) =>
+    ipcRenderer.send('save-settings', data),
 
-  onSetVariant: (cb) =>
-    ipcRenderer.on('set-variant', (_e, variant) => cb(variant)),
+  // ── Incoming events (main → renderer) ──────────────────────
+  onInitSettings: (cb) =>
+    ipcRenderer.on('init-settings',     (_e, d) => cb(d)),
+
+  onSettingsUpdate: (cb) =>
+    ipcRenderer.on('settings-update',   (_e, d) => cb(d)),
+
+  onActivityTick: (cb) =>
+    ipcRenderer.on('activity-tick',     (_e, d) => cb(d)),
 
   onTypingUpdate: (cb) =>
-    ipcRenderer.on('typing-update', (_e, data) => cb(data)),
+    ipcRenderer.on('typing-update',     (_e, d) => cb(d)),
 
   onAppContextUpdate: (cb) =>
-    ipcRenderer.on('app-context-update', (_e, data) => cb(data)),
+    ipcRenderer.on('app-context-update',(_e, d) => cb(d)),
 
-  onStartTimer: (cb) =>
-    ipcRenderer.on('start-timer', (_e, minutes) => cb(minutes)),
-
-  onCancelTimer: (cb) =>
-    ipcRenderer.on('cancel-timer', () => cb()),
+  onSetVariant: (cb) =>
+    ipcRenderer.on('set-variant',       (_e, v) => cb(v)),
 
   onSetPinnedNote: (cb) =>
-    ipcRenderer.on('set-pinned-note', (_e, text) => cb(text)),
+    ipcRenderer.on('set-pinned-note',   (_e, t) => cb(t)),
+
+  onStartTimer: (cb) =>
+    ipcRenderer.on('start-timer',       (_e, m) => cb(m)),
+
+  onPauseTimer: (cb) =>
+    ipcRenderer.on('pause-timer',       ()      => cb()),
+
+  onCancelTimer: (cb) =>
+    ipcRenderer.on('cancel-timer',      ()      => cb()),
+
+  onAgentStatus: (cb) =>
+    ipcRenderer.on('agent-status',      (_e, d) => cb(d)),
+
+  onFullscreenChange: (cb) =>
+    ipcRenderer.on('fullscreen-change', (_e, b) => cb(b)),
 });
