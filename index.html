@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Pixel Deskpet</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      overflow: hidden;
+      user-select: none;
+    }
+    #stage {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    #catCanvas {
+      position: absolute;
+      bottom: 0;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      cursor: default;
+    }
+    #bubble {
+      position: absolute;
+      transform: translateX(-50%);
+      background: #fdf6ec;
+      color: #1a1a1a;
+      font: 12px monospace;
+      padding: 3px 7px;
+      border: 2px solid #1a1a1a;
+      border-radius: 3px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+    }
+  </style>
+</head>
+<body>
+  <div id="stage">
+    <canvas id="catCanvas"></canvas>
+    <div id="bubble"></div>
+  </div>
+  <script src="renderer.js"></script>
+</body>
+</html>
