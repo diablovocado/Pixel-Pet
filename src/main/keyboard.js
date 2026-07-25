@@ -24,7 +24,7 @@ function start(onKey, onStop) {
 
     keyListener.addListener((e, down) => {
       // Diagnostic log
-      // console.log('[deskpet] raw event:', JSON.stringify({ name: e.name, state: e.state, vKey: e.vKey, rawKey: e.rawKey }));
+      console.log('[deskpet] raw event:', JSON.stringify({ name: e.name, state: e.state, vKey: e.vKey, rawKey: e.rawKey }));
 
       // Whitelist-style guard: Only proceed for real keyboard DOWN events
       if (e.state !== 'DOWN') return;
