@@ -131,6 +131,10 @@ const cat = {
   blinkTimer: rand(3, 6),
   blinkStep:  0,
 
+  // Ear twitching
+  earTwitchSide: 0,   // 0=none, 1=left, 2=right
+  earTwitchTimer: rand(2, 5),
+
   // Activity (from main process via IPC)
   idleSeconds:  0,
   mouseSpeed:   0,
@@ -148,7 +152,7 @@ let dragOffX    = 0,     dragOffY  = 0;
 let mouseDownAt = null,  ignoring  = true;
 let lastCursor  = { x: SW / 2, y: SH - 80 };
 
-const SLEEP_THRESH  = 35;
+const SLEEP_THRESH  = 60;
 const RUN_THRESH    = 270;
 const TYPING_WINDOW = 3500;
 
@@ -431,13 +435,15 @@ function drawCat(timestamp) {
   // ═══════════════════════════════════════
   //   HEAD
   // ═══════════════════════════════════════
-  // Left ear
-  px(hx,     hy - 2, 2, 3, P.K);    // ear outline
-  px(hx + 1, hy - 1, 1, 2, P.N);   // ear inner pink
+  // Left ear (with twitch shift during idle/sit)
+  const lEarOff = (cat.earTwitchSide === 1) ? 1 : 0;
+  px(hx,     hy - 2 + lEarOff, 2, 3, P.K);    // ear outline
+  px(hx + 1, hy - 1 + lEarOff, 1, 2, P.N);   // ear inner pink
 
-  // Right ear
-  px(hx + 6, hy - 2, 2, 3, P.K);
-  px(hx + 7, hy - 1, 1, 2, P.N);
+  // Right ear (with twitch shift during idle/sit)
+  const rEarOff = (cat.earTwitchSide === 2) ? 1 : 0;
+  px(hx + 6, hy - 2 + rEarOff, 2, 3, P.K);
+  px(hx + 7, hy - 1 + rEarOff, 1, 2, P.N);
 
   // Head block (9 wide × 8 tall)
   px(hx,     hy,     9, 8, P.K);   // outline
@@ -639,7 +645,25 @@ function updateBehavior(dt) {
   }
 
   updateBlink(dt);
+  updateEars(dt);
   cat.x = clamp(cat.x, 0, SW - CAT_W);
+}
+
+function updateEars(dt) {
+  if (cat.action === 'idle' || cat.action === 'sit') {
+    cat.earTwitchTimer -= dt / 1000;
+    if (cat.earTwitchTimer <= 0) {
+      if (cat.earTwitchSide === 0) {
+        cat.earTwitchSide = Math.random() < 0.5 ? 1 : 2;
+        cat.earTwitchTimer = 0.15;
+      } else {
+        cat.earTwitchSide = 0;
+        cat.earTwitchTimer = rand(2.5, 6.5);
+      }
+    }
+  } else {
+    cat.earTwitchSide = 0;
+  }
 }
 
 // ─── Speech Bubble ─────────────────────────────────────────
