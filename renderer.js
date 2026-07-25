@@ -223,32 +223,6 @@ function render() {
 
     if (catImg.complete && catImg.naturalWidth !== 0) {
       ctx.drawImage(catImg, -catWidth / 2, -catHeight / 2, catWidth, catHeight);
-    } else {
-      // Fallback base pixel rectangle if image loading
-      ctx.fillStyle = '#202025';
-      ctx.fillRect(-catWidth / 2, -catHeight / 2, catWidth, catHeight);
-    }
-
-    // Layer 3: Overlay Expressions
-    if (currentState === 'PETTED') {
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 12px monospace';
-      ctx.fillText('^ w ^', -16, -6);
-    } else if (currentState === 'IDLE' || currentState === 'TYPING') {
-      // Pupil Cursor Tracking
-      const dx = mouseX - catX;
-      const dy = mouseY - catY;
-      const angle = Math.atan2(dy, dx);
-      const pupilX = Math.cos(angle) * 3;
-      const pupilY = Math.sin(angle) * 3;
-
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(-16, -12, 10, 10);
-      ctx.fillRect(6, -12, 10, 10);
-
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(-14 + pupilX, -10 + pupilY, 4, 4);
-      ctx.fillRect(8 + pupilX, -10 + pupilY, 4, 4);
     }
 
     ctx.restore();
