@@ -140,8 +140,8 @@ function initInteractions(cat, deskpet) {
       return;
     }
 
-    const on = window.sprite?.isOnCat(e.clientX, e.clientY);
-    if (on === ignoring) {
+    const on = Boolean(window.sprite?.isOnCat(e.clientX, e.clientY));
+    if (on !== !ignoring) {
       ignoring = !on;
       deskpet.setIgnoreMouseEvents(!on, { forward: true });
     }
