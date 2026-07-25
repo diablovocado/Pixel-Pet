@@ -210,6 +210,10 @@ function drawKeypad(ctx, x, y) {
   ctx.fillRect(rightX, rightKeyY, keyWidth, keyHeight - 2);
 }
 
+function safeScale(value, fallback = 1) {
+  return Number.isFinite(value) && !isNaN(value) ? value : fallback;
+}
+
 // --- SELF-HEALING RENDER LOOP ---
 function render() {
   try {
@@ -223,10 +227,13 @@ function render() {
       drawKeypad(ctx, catX, catY);
     }
 
-    // Layer 2: Character Cat PNG with Transforms
+    // Layer 2: Character Cat PNG with Safe Transforms
+    const sX = safeScale(scaleX, 1);
+    const sY = safeScale(scaleY, 1);
+
     ctx.save();
     ctx.translate(catX + catWidth / 2, catY + catHeight / 2);
-    ctx.scale(scaleX, scaleY);
+    ctx.scale(sX, sY);
 
     if (catImg.complete && catImg.naturalWidth !== 0) {
       ctx.drawImage(catImg, -catWidth / 2, -catHeight / 2, catWidth, catHeight);

@@ -23,7 +23,8 @@ function start(onKey, onStop) {
     keyListener = new GlobalKeyboardListener();
 
     keyListener.addListener((e) => {
-      if (e.state !== 'DOWN') return;
+      // Defensive: only proceed for actual keyboard DOWN events
+      if (e.state !== 'DOWN' || (typeof e.name === 'undefined' && typeof e.rawKey === 'undefined')) return;
 
       const now = Date.now();
       keyTimestamps.push(now);

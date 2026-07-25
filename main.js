@@ -24,6 +24,19 @@ const fullscreenWatcher = require('./src/main/fullscreenWatcher');
 
 const { exec } = require('child_process');
 
+const gotLock = app.requestSingleInstanceLock();
+if (!gotLock) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    if (win) {
+      if (win.isMinimized()) win.restore();
+      win.show();
+      win.focus();
+    }
+  });
+}
+
 let win;
 
 // ─── Window ──────────────────────────────────────────────────
