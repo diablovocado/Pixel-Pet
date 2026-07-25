@@ -44,6 +44,10 @@ fxCtx.imageSmoothingEnabled = false;
 const BX = 5,  BY = 9;   // body top-left
 const HX = 14, HY = 2;   // head top-left  (overlaps body right at col 14)
 
+// ─── Image Assets ──────────────────────────────────────────
+const pepperinoImg = new Image();
+pepperinoImg.src = 'assets/pepperino_cropped.png';
+
 // ─── Colour Variants ───────────────────────────────────────
 const VARIANTS = {
   pepperino: {
@@ -380,16 +384,65 @@ function drawCat(timestamp) {
   const excited  = a === 'excited';
   const sleeping = a === 'sleep';
 
-  // ── VERTICAL BOB (rounded to integer grid unit) ───────────
+  // ── VERTICAL BOB ───────────────────────────────────────────
   let bob = 0;
   if (excited) {
-    // Hop: moves up by up to −2 grid units
     cat.bounce += 0.020;
     bob = iround(-Math.abs(Math.sin(cat.bounce * Math.PI)) * 2);
   } else if (!sitting) {
-    // Gentle breathing: stays at 0 or −1
     cat.breath += 0.0008;
     bob = iround(Math.sin(cat.breath * Math.PI * 2) * 0.4);
+  }
+
+  // ─── Pepperino Image Renderer (Uses exact pepperino.png artwork) ───
+  if (activeVariant === 'pepperino' && pepperinoImg.complete && pepperinoImg.naturalWidth > 0) {
+    const pW = 126;
+    const pH = 128;
+    const pX = (CAT_W - pW) / 2;
+    const pY = (CAT_H - pH) / 2 + bob * SCALE * 0.4;
+
+    ctx.save();
+    if (walking || running) {
+      cat.walk += (running ? 0.025 : 0.014);
+      const tilt = Math.sin(cat.walk * Math.PI * 2) * 0.08;
+      ctx.translate(pX + pW / 2, pY + pH / 2);
+      ctx.rotate(tilt);
+      ctx.drawImage(pepperinoImg, -pW / 2, -pH / 2, pW, pH);
+    } else {
+      ctx.drawImage(pepperinoImg, pX, pY, pW, pH);
+    }
+    ctx.restore();
+
+    // Expression Overlays
+    if (a === 'sleep') {
+      ctx.fillStyle = '#141414';
+      ctx.fillRect(pX + 42, pY + 44, 12, 3);
+      ctx.fillRect(pX + 72, pY + 44, 12, 3);
+    } else if (a === 'drag') {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(pX + 40, pY + 38, 16, 16);
+      ctx.fillRect(pX + 70, pY + 38, 16, 16);
+      ctx.fillStyle = '#141414';
+      ctx.fillRect(pX + 44, pY + 42, 8, 8);
+      ctx.fillRect(pX + 74, pY + 42, 8, 8);
+    }
+
+    if (cat.isTypingMode || a === 'excited') {
+      const lx = pX + 32;
+      const ly = pY + 75;
+      ctx.fillStyle = '#141414';
+      ctx.fillRect(lx, ly, 46, 12);
+      ctx.fillStyle = '#d8d8d8';
+      ctx.fillRect(lx + 4, ly + 2, 38, 5);
+      ctx.fillStyle = '#141414';
+      ctx.fillRect(lx + 42, ly - 18, 6, 22);
+      ctx.fillStyle = cat.typingIsFast ? '#ff7700' : '#7090d8';
+      ctx.fillRect(lx + 38, ly - 16, 5, 18);
+
+      if (cat.typingIsFast && Math.random() < 0.25) spawnSparks();
+    }
+    ctx.restore();
+    return;
   }
 
   // ── TAIL PHASE ────────────────────────────────────────────
