@@ -147,10 +147,8 @@ window.addEventListener('mousemove', (e) => {
     scaleY = 1 + Math.min(dragDistanceY / 100, 0.7);
     scaleX = 1 / scaleY; // Area volume preservation
   } else if (currentState === 'SLEEPING') {
-    // While sleeping near dock, wake up ONLY when cursor moves directly over her
-    if (isOverCat(e.clientX, e.clientY)) {
-      currentState = 'IDLE';
-    }
+    // Stays stuck asleep at dock regardless of mouse movement
+    return;
   } else if (mouseY >= window.innerHeight - 80 && !isDragging && currentState !== 'PETTED') {
     // Move cursor down near dock -> Cat sleeps near dock and stops following cursor
     currentState = 'SLEEPING';
@@ -242,6 +240,11 @@ function drawSpeechBubble() {
 window.addEventListener('mousedown', (e) => {
   if (isOverCat(e.clientX, e.clientY)) {
     e.stopPropagation();
+
+    if (currentState === 'SLEEPING') {
+      // Wake up on click!
+      currentState = 'IDLE';
+    }
 
     isMouseDownOnCat = true;
     dragStartY = e.clientY;
