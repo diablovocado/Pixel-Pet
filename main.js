@@ -230,7 +230,7 @@ function buildTrayIcon() {
 }
 
 let isCatVisible = true;
-let activeVariantName = 'tabby';
+let activeVariantName = 'pepperino';
 
 function selectVariant(name) {
   activeVariantName = name;
@@ -302,6 +302,7 @@ function updateTrayMenu() {
     {
       label: 'Cat Pattern / Color',
       submenu: [
+        { label: 'Pepperino (Tuxedo)', type: 'radio', checked: activeVariantName === 'pepperino', click: () => selectVariant('pepperino') },
         { label: 'Orange Tabby', type: 'radio', checked: activeVariantName === 'tabby', click: () => selectVariant('tabby') },
         { label: 'Black Cat', type: 'radio', checked: activeVariantName === 'black', click: () => selectVariant('black') },
         { label: 'Grey Mackerel', type: 'radio', checked: activeVariantName === 'grey', click: () => selectVariant('grey') },

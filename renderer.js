@@ -46,6 +46,16 @@ const HX = 14, HY = 2;   // head top-left  (overlaps body right at col 14)
 
 // ─── Colour Variants ───────────────────────────────────────
 const VARIANTS = {
+  pepperino: {
+    K:  '#141414',   // dark tuxedo outline
+    F:  '#242424',   // black tuxedo fur
+    FD: '#101010',   // dark accent
+    FL: '#505050',   // fur sheen
+    B:  '#ffffff',   // crisp white chest & belly
+    N:  '#e07080',   // pink nose
+    EY: '#3a7848',   // green eyes
+    EW: '#ffffff',   // eye shine
+  },
   tabby: {
     K:  '#1d120c',   // outline / black
     F:  '#e07830',   // main fur orange
@@ -78,8 +88,8 @@ const VARIANTS = {
   },
 };
 
-let P            = { ...VARIANTS.tabby };   // active palette
-let activeVariant = 'tabby';
+let P            = { ...VARIANTS.pepperino };   // active palette
+let activeVariant = 'pepperino';
 
 /** Switch the cat's colour variant. Call from console or tray menu. */
 function setVariant(name) {
