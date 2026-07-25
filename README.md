@@ -1,4 +1,4 @@
-# 🐱 Pixel Deskpet
+# Pixel Deskpet
 
 <p align="center">
   <img src="assets/cat.png" alt="Pixel Deskpet" width="140" style="image-rendering: pixelated;" />
