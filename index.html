@@ -3,8 +3,34 @@
 <head>
   <meta charset="UTF-8" />
   <title>Pixel Deskpet</title>
-  <link rel="stylesheet" href="src/renderer/styles.css">
-</head>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      background: transparent;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #stage {
+      position: relative;
+      width: 100%; height: 100%;
+    }
+
+    /* ── Cat sprite canvas ── */
+    #catCanvas {
+      position: absolute;
+      top: 0; left: 0;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      cursor: default;
+      z-index: 5;
+    }
 
     /* ── Full-screen fx canvas (particles) ── */
     #fxCanvas {
