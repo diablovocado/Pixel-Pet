@@ -177,6 +177,11 @@ function initInteractions(cat, deskpet) {
   document.addEventListener('mouseup', () => {
     if (!dragging) return;
     dragging = false;
+
+    // Reset scaleX and scaleY to 1 on mouseup
+    cat.dragStretchX = 1;
+    cat.dragStretchY = 1;
+
     if (!dragMoved) {
       // Tap → pet reaction
       window.behavior?.enterAction(cat, 'pet');

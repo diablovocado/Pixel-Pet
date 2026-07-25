@@ -132,57 +132,57 @@ window.deskpet.onFullscreenChange((isFullscreen) => {
 let lastT = performance.now();
 
 function loop(t) {
-  const dt = Math.min(t - lastT, 80);
-  lastT = t;
+  try {
+    const dt = Math.min(t - lastT, 80);
+    lastT = t;
 
-  const h = window.innerHeight || 900;
-  const w = window.innerWidth || 1440;
-  const catH = window.CAT_H || 140;
-  const catW = window.CAT_W || 168;
+    const h = window.innerHeight || 900;
+    const w = window.innerWidth || 1440;
+    const catH = window.CAT_H || 140;
+    const catW = window.CAT_W || 168;
 
-  if (cat.y === undefined || cat.y === null || isNaN(cat.y)) {
-    cat.y = h - catH - 20 - (cat.bottomInset || 0);
-  } else if (cat.y > h - catH) {
-    cat.y = h - catH;
-  } else if (cat.y < 0) {
-    cat.y = 0;
+    if (cat.y === undefined || cat.y === null || isNaN(cat.y)) {
+      cat.y = h - catH - 20 - (cat.bottomInset || 0);
+    } else {
+      cat.y = Math.max(0, Math.min(cat.y, h - catH));
+    }
+
+    if (cat.x === undefined || cat.x === null || isNaN(cat.x)) {
+      cat.x = w * 0.45;
+    } else {
+      cat.x = Math.max(0, Math.min(cat.x, w - catW));
+    }
+
+    const lastCursor = window.interactions.lastCursor;
+
+    // Behavior state machine across 100% full screen
+    window.behavior.updateBehavior(cat, lastCursor, dt, w, h);
+
+    // Per-frame interaction updates (hover purr, drag physics)
+    window.interactions.updateInteractions(cat, dt);
+
+    // Check reminders
+    window.reminders.checkReminders(cat);
+
+    // Particles
+    window.particles.update(dt);
+
+    // Canvas positioning
+    window.sprite.positionCanvas(cat);
+
+    // Draw cat
+    window.sprite.draw(cat, lastCursor);
+
+    // Draw particles
+    window.particles.draw();
+
+    // Update bubbles
+    window.bubbles.update(cat);
+  } catch (err) {
+    console.error('[PixelPet] Render loop exception:', err);
+  } finally {
+    requestAnimationFrame(loop);
   }
-
-  if (cat.x === undefined || cat.x === null || isNaN(cat.x)) {
-    cat.x = w * 0.45;
-  } else if (cat.x > w - catW) {
-    cat.x = w - catW;
-  } else if (cat.x < 0) {
-    cat.x = 0;
-  }
-
-  const lastCursor = window.interactions.lastCursor;
-
-  // Behavior state machine across 100% full screen
-  window.behavior.updateBehavior(cat, lastCursor, dt, w, h);
-
-  // Per-frame interaction updates (hover purr, drag physics)
-  window.interactions.updateInteractions(cat, dt);
-
-  // Check reminders
-  window.reminders.checkReminders(cat);
-
-  // Particles
-  window.particles.update(dt);
-
-  // Canvas positioning
-  window.sprite.positionCanvas(cat);
-
-  // Draw cat
-  window.sprite.draw(cat, lastCursor);
-
-  // Draw particles
-  window.particles.draw();
-
-  // Update bubbles
-  window.bubbles.update(cat);
-
-  requestAnimationFrame(loop);
 }
 
 // ─── Boot ────────────────────────────────────────────────────
