@@ -125,12 +125,12 @@ function drawParts() {
       }
 
       case 'steam': {
-        // Soft grey-white squares → steam look
-        const alpha = pt.life * 0.7;
+        // Floating pink/red steam particle
+        const alpha = Math.max(0, pt.life * 0.9);
         fxCtx.globalAlpha = alpha;
-        fxCtx.fillStyle = `rgba(220,200,180,0.6)`;
+        fxCtx.fillStyle = `rgba(255, 90, 110, ${alpha})`;
         fxCtx.fillRect(pt.x, pt.y, pt.sz, pt.sz);
-        fxCtx.fillStyle = `rgba(255,255,255,0.4)`;
+        fxCtx.fillStyle = `rgba(255, 180, 200, ${alpha * 0.6})`;
         fxCtx.fillRect(pt.x + 1, pt.y + 1, pt.sz * 0.5, pt.sz * 0.5);
         break;
       }
