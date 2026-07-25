@@ -418,12 +418,12 @@ function drawCat(cat, lastCursor) {
       ctx.fillRect(pX + 44, pY + 42,  2,  2); ctx.fillRect(pX + 74, pY + 42,  2,  2);
     }
 
-    // ── Pixel keyboard animation from tyoe.mov (TYPING state) ──
-    const isTypingState = isTyping || cat.isTypingMode || cat.typingTimer > 0 || a === 'typing' || leftKeyPressed || rightKeyPressed;
-    if (isTypingState && a !== 'sleep' && a !== 'drag') {
+    // ── Pixel keyboard animation from tyoe.mov (TYPING state ONLY) ──
+    const isTypingState = (currentState === 'TYPING') || isTyping || cat.isTypingMode || leftKeyPressed || rightKeyPressed;
+    if (isTypingState && a !== 'sleep' && a !== 'drag' && currentState !== 'PETTED') {
       const activeFrame = (activeKey === 'left' || leftKeyPressed) ? tyoeLeftImg : tyoeRightImg;
       
-      // 1. Render Keypad FIRST underneath paws
+      // 1. Render Keypad ONLY during actual keyboard typing
       const catCenterX = CAT_W / 2;
       const catPawBaseY = CAT_H / 2 + 30;
       drawTypingKeypad(ctx, catCenterX, catPawBaseY);
@@ -439,6 +439,15 @@ function drawCat(cat, lastCursor) {
         ctx.restore();
         return;
       }
+    }
+
+    // 3. Render Happy 'PETTED' Eye Overlay (^w^)
+    if (currentState === 'PETTED' || a === 'pet' || a === 'purr') {
+      ctx.save();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 12px monospace';
+      ctx.fillText('^ w ^', pX + 44, pY + 48);
+      ctx.restore();
     }
 
     // ── Scroll paper (during scroll reaction) ──
