@@ -40,6 +40,9 @@ let particles = [];
 const catImgNormal = new Image();
 catImgNormal.src = './assets/cat.png';
 
+const sleepImg = new Image();
+sleepImg.src = './assets/sleep.png';
+
 const tyoeLeftImg = new Image();
 tyoeLeftImg.src = './assets/tyoe_left.png';
 const tyoeRightImg = new Image();
@@ -402,7 +405,16 @@ function render() {
     ctx.translate(drawX + catWidth / 2, drawY + catHeight / 2);
     ctx.scale(sX, sY);
 
-    if (isTypingNow && typingVideo.readyState >= 2) {
+    if (currentState === 'SLEEPING') {
+      const sScale = 1.25;
+      const sW = catWidth * sScale;
+      const sH = catHeight * sScale;
+      if (sleepImg.complete && sleepImg.naturalWidth !== 0) {
+        ctx.drawImage(sleepImg, -sW / 2, -sH / 2, sW, sH);
+      } else if (catImgNormal.complete && catImgNormal.naturalWidth !== 0) {
+        ctx.drawImage(catImgNormal, -catWidth / 2, -catHeight / 2, catWidth, catHeight);
+      }
+    } else if (isTypingNow && typingVideo.readyState >= 2) {
       const vScale = 1.38;
       const vW = catWidth * vScale;
       const vH = catHeight * vScale;
