@@ -382,9 +382,8 @@ function drawCat(timestamp) {
   const running  = a === 'run';
   const walking  = a === 'walk';
   const excited  = a === 'excited';
-  const sleeping = a === 'sleep';
 
-  // ── VERTICAL BOB ───────────────────────────────────────────
+  // Vertical bobbing
   let bob = 0;
   if (excited) {
     cat.bounce += 0.020;
@@ -394,8 +393,8 @@ function drawCat(timestamp) {
     bob = iround(Math.sin(cat.breath * Math.PI * 2) * 0.4);
   }
 
-  // ─── Pepperino Image Renderer (Uses exact pepperino.png artwork) ───
-  if (activeVariant === 'pepperino' && pepperinoImg.complete && pepperinoImg.naturalWidth > 0) {
+  // Draw Pepperino Image
+  if (pepperinoImg.complete && pepperinoImg.naturalWidth > 0) {
     const pW = 126;
     const pH = 128;
     const pX = (CAT_W - pW) / 2;
@@ -441,163 +440,6 @@ function drawCat(timestamp) {
 
       if (cat.typingIsFast && Math.random() < 0.25) spawnSparks();
     }
-    ctx.restore();
-    return;
-  }
-
-  // ── TAIL PHASE ────────────────────────────────────────────
-  cat.tail += excited ? 0.09 : (sleeping ? 0.01 : 0.035);
-  // Integer wag: −2 to +2 grid units
-  const tw = iround(Math.sin(cat.tail) * (sitting ? 1 : running ? 3 : 2));
-
-  // Offsets (all integer)
-  const bx = BX, by = BY + bob;
-  const hx = HX, hy = HY + bob;
-
-  // ═══════════════════════════════════════
-  //   TAIL
-  // ═══════════════════════════════════════
-  if (sitting) {
-    // Tail wraps around to front-bottom of body
-    px(bx,     by + 6, 2, 1, P.K);
-    px(bx + 1, by + 7, 3, 1, P.FD);
-    px(bx + 2, by + 8, 2, 1, P.FL);
-  } else {
-    // Flowing tail behind body (to the left when facing right)
-    px(bx - 1, by + 4,      2, 1, P.K);
-    px(bx - 2, by + 3 + tw, 2, 2, P.F);
-    px(bx - 3, by + 2 + tw, 1, 2, P.FD);
-    px(bx - 3, by + 1 + tw, 1, 1, P.FL);
-  }
-
-  // ═══════════════════════════════════════
-  //   BODY
-  // ═══════════════════════════════════════
-  // Outline block
-  px(bx,     by,     10, 8, P.K);
-  // Main fur
-  px(bx + 1, by + 1, 8,  7, P.F);
-  // Belly patch
-  px(bx + 3, by + 3, 4,  4, P.B);
-
-  // Tabby stripes (tabby + grey variants only)
-  if (activeVariant !== 'black') {
-    px(bx + 2, by + 1, 1, 5, P.FD);   // left stripe
-    px(bx + 6, by + 1, 1, 4, P.FD);   // center stripe
-    px(bx + 8, by + 1, 1, 3, P.FD);   // right stripe
-  } else {
-    // Black cat: subtle sheen highlight
-    px(bx + 3, by + 2, 3, 1, P.FL);
-  }
-
-  // ═══════════════════════════════════════
-  //   LEGS & PAWS
-  // ═══════════════════════════════════════
-  if (cat.isTypingMode || a === 'excited') {
-    // Sitting base legs
-    px(bx + 1, by + 8, 3, 2, P.K);
-    px(bx + 5, by + 8, 3, 2, P.K);
-
-    // Animated typing paws tapping an invisible/tiny keyboard
-    const pawSpd = cat.typingIsFast ? 0.045 : 0.025;
-    cat.walk += pawSpd;
-    const tap1 = Math.sin(cat.walk * Math.PI * 4) > 0 ? 0 : 1;
-    const tap2 = Math.sin(cat.walk * Math.PI * 4) <= 0 ? 0 : 1;
-
-    px(hx + 2, hy + 6 - tap1, 2, 2, P.K);
-    px(hx + 3, hy + 7 - tap1, 1, 1, P.B);
-    px(hx + 5, hy + 6 - tap2, 2, 2, P.K);
-    px(hx + 6, hy + 7 - tap2, 1, 1, P.B);
-
-    // Tiny Pixel Laptop / Keyboard
-    px(hx + 2, hy + 7, 7, 2, P.K);         // keyboard base
-    px(hx + 3, hy + 7, 5, 1, '#d8d8d8');   // keys
-    px(hx + 8, hy + 4, 1, 4, P.K);         // screen lid
-    px(hx + 7, hy + 4, 1, 3, '#7090d8');   // screen glow
-
-    if (cat.typingIsFast) {
-      px(hx + 7, hy + 4, 1, 3, '#ff7700'); // heat glow screen
-      if (Math.random() < 0.25) spawnSparks();
-    }
-  } else if (sitting) {
-    // Tucked paws — two rectangular stubs
-    px(bx + 1, by + 8, 3, 2, P.K);
-    px(bx + 5, by + 8, 3, 2, P.K);
-    px(bx + 2, by + 9, 1, 1, P.B);    // paw highlight
-    px(bx + 6, by + 9, 1, 1, P.B);
-  } else {
-    // Animated walk/run cycle — 4 legs, offset phases
-    const spd = running ? 0.025 : (walking ? 0.014 : 0.005);
-    cat.walk += spd;
-    // Each leg gets an integer offset (0 to +3 or 0)
-    const l1 = iround(Math.sin(cat.walk             ) * (running ? 3 : 2));
-    const l2 = iround(Math.sin(cat.walk + Math.PI   ) * (running ? 3 : 2));
-    const l3 = iround(Math.sin(cat.walk + 0.5       ) * (running ? 3 : 2));
-    const l4 = iround(Math.sin(cat.walk + Math.PI+0.5)* (running ? 3 : 2));
-    const h1 = 2 + Math.max(0, l1);
-    const h2 = 2 + Math.max(0, l2);
-    const h3 = 2 + Math.max(0, l3);
-    const h4 = 2 + Math.max(0, l4);
-    px(bx + 1, by + 8, 2, h1, P.K);
-    px(bx + 3, by + 8, 2, h2, P.K);
-    px(bx + 6, by + 8, 2, h3, P.K);
-    px(bx + 8, by + 8, 2, h4, P.K);
-  }
-
-  // ═══════════════════════════════════════
-  //   HEAD
-  // ═══════════════════════════════════════
-  // Left ear (with twitch shift during idle/sit)
-  const lEarOff = (cat.earTwitchSide === 1) ? 1 : 0;
-  px(hx,     hy - 2 + lEarOff, 2, 3, P.K);    // ear outline
-  px(hx + 1, hy - 1 + lEarOff, 1, 2, P.N);   // ear inner pink
-
-  // Right ear (with twitch shift during idle/sit)
-  const rEarOff = (cat.earTwitchSide === 2) ? 1 : 0;
-  px(hx + 6, hy - 2 + rEarOff, 2, 3, P.K);
-  px(hx + 7, hy - 1 + rEarOff, 1, 2, P.N);
-
-  // Head block (9 wide × 8 tall)
-  px(hx,     hy,     9, 8, P.K);   // outline
-  px(hx + 1, hy + 1, 7, 7, P.F);  // fur fill
-
-  // Forehead stripe (only tabby/grey)
-  if (activeVariant !== 'black') {
-    px(hx + 3, hy + 1, 1, 3, P.FD);
-  } else {
-    // Black: tiny gloss mark
-    px(hx + 3, hy + 1, 2, 1, P.FL);
-  }
-
-  // Eyes
-  drawEyes(hx, hy);
-
-  // Nose (2×1 pixel block)
-  px(hx + 3, hy + 5, 2, 1, P.N);
-
-  // Whiskers — ultra-thin (ctx direct, not px(), so they're 1px lines)
-  if (a !== 'sleep' && a !== 'wakeup') {
-    ctx.fillStyle   = P.K;
-    ctx.globalAlpha = 0.50;
-    // Left whiskers
-    ctx.fillRect((hx - 2) * SCALE, (hy + 5) * SCALE, 2 * SCALE, 1);
-    ctx.fillRect((hx - 2) * SCALE, (hy + 6) * SCALE, 2 * SCALE, 1);
-    // Right whiskers
-    ctx.fillRect((hx + 9) * SCALE, (hy + 5) * SCALE, 2 * SCALE, 1);
-    ctx.fillRect((hx + 9) * SCALE, (hy + 6) * SCALE, 2 * SCALE, 1);
-    ctx.globalAlpha = 1;
-  }
-
-  // Mouth expression
-  if (a === 'excited' || (cat.petTimer > 500)) {
-    // Happy :3 — two small vertical dashes + horizontal join
-    ctx.fillStyle = P.K;
-    ctx.fillRect((hx + 2) * SCALE, (hy + 6) * SCALE, SCALE, SCALE);
-    ctx.fillRect((hx + 5) * SCALE, (hy + 6) * SCALE, SCALE, SCALE);
-    ctx.fillRect((hx + 3) * SCALE, (hy + 7) * SCALE, 2 * SCALE, SCALE);
-  } else if (a === 'sleep') {
-    // Sleeping pout
-    px(hx + 3, hy + 6, 2, 1, P.K);
   }
 
   ctx.restore();

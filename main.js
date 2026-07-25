@@ -299,15 +299,6 @@ function updateTrayMenu() {
         { label: 'Clear Note', click: () => win?.webContents.send('set-pinned-note', '') }
       ]
     },
-    {
-      label: 'Cat Pattern / Color',
-      submenu: [
-        { label: 'Pepperino (Tuxedo)', type: 'radio', checked: activeVariantName === 'pepperino', click: () => selectVariant('pepperino') },
-        { label: 'Orange Tabby', type: 'radio', checked: activeVariantName === 'tabby', click: () => selectVariant('tabby') },
-        { label: 'Black Cat', type: 'radio', checked: activeVariantName === 'black', click: () => selectVariant('black') },
-        { label: 'Grey Mackerel', type: 'radio', checked: activeVariantName === 'grey', click: () => selectVariant('grey') },
-      ]
-    },
     { type: 'separator' },
     { label: 'Quit', accelerator: 'Cmd+Q', click: () => app.quit() },
   ]);
