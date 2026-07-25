@@ -22,7 +22,9 @@ function start(onKey, onStop) {
     const { GlobalKeyboardListener } = require('node-global-key-listener');
     keyListener = new GlobalKeyboardListener();
 
-    keyListener.addListener((e) => {
+    keyListener.addListener((e, down) => {
+      console.log('[deskpet] raw event:', e.name, e.state); // TEMPORARY
+
       // Defensive: only proceed for actual keyboard DOWN events
       if (e.state !== 'DOWN' || (typeof e.name === 'undefined' && typeof e.rawKey === 'undefined')) return;
 
