@@ -276,25 +276,42 @@ function drawCat(cat, lastCursor) {
       ctx.fillRect(pX + 44, pY + 42,  2,  2); ctx.fillRect(pX + 74, pY + 42,  2,  2);
     }
 
-// Typing Keypad State
+// State variables for instant single-key reaction
 let leftKeyPressed = false;
 let rightKeyPressed = false;
-let keyToggle = false;
+let activeKey = 'left'; // Toggle between 'left' and 'right'
+let keyPressTimeout = null;
 
-// Listen to keystrokes from Electron IPC
+// Listen to single keystrokes from IPC contextBridge
 if (typeof window !== 'undefined') {
   const listenToKeystrokes = () => {
     const api = window.catAPI || window.deskpet;
     if (api && api.onKeystroke) {
       api.onKeystroke(() => {
-        keyToggle = !keyToggle;
-        leftKeyPressed = keyToggle;
-        rightKeyPressed = !keyToggle;
+        // Refresh typing state on CAT_STATE
+        if (window.CAT_STATE) {
+          window.CAT_STATE.isTypingMode = true;
+          window.CAT_STATE.typingTimer = 1800;
+        }
 
-        setTimeout(() => {
+        // 1. Instantly switch sides on every single key press
+        activeKey = (activeKey === 'left') ? 'right' : 'left';
+
+        // 2. Set active depressed key
+        if (activeKey === 'left') {
+          leftKeyPressed = true;
+          rightKeyPressed = false;
+        } else {
+          leftKeyPressed = false;
+          rightKeyPressed = true;
+        }
+
+        // 3. Reset paw/keycap back to rest state after 120ms
+        if (keyPressTimeout) clearTimeout(keyPressTimeout);
+        keyPressTimeout = setTimeout(() => {
           leftKeyPressed = false;
           rightKeyPressed = false;
-        }, 150);
+        }, 120);
       });
     }
   };
