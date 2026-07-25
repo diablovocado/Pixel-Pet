@@ -127,6 +127,15 @@ window.addEventListener('mousemove', (e) => {
     const dragDistanceY = Math.max(0, dragStartY - e.clientY);
     scaleY = 1 + Math.min(dragDistanceY / 100, 0.7);
     scaleX = 1 / scaleY; // Area volume preservation
+  } else if (mouseY >= window.innerHeight - 80 && !isDragging) {
+    // Move cursor down near dock -> Cat sleeps near dock and stops following cursor
+    if (currentState !== 'SLEEPING') {
+      currentState = 'SLEEPING';
+      catY = window.innerHeight - catHeight - 12;
+    }
+  } else if (mouseY < window.innerHeight - 140 && currentState === 'SLEEPING') {
+    // Wake up when cursor moves back up
+    currentState = 'IDLE';
   }
 });
 
@@ -243,6 +252,16 @@ window.addEventListener('mouseup', () => {
 
 // --- PARTICLES ---
 function updateAndDrawParticles() {
+  if (currentState === 'SLEEPING' && Math.random() < 0.04) {
+    particles.push({
+      x: catX + catWidth / 2 + (Math.random() * 12 - 6),
+      y: catY - 5,
+      opacity: 1,
+      size: 11,
+      type: 'zzz'
+    });
+  }
+
   if (kps >= 5 && Math.random() < 0.25) {
     particles.push({
       x: catX + catWidth / 2 + (Math.random() * 20 - 10),
@@ -255,7 +274,13 @@ function updateAndDrawParticles() {
 
   for (let i = particles.length - 1; i >= 0; i--) {
     const p = particles[i];
-    if (p.type === 'steam') {
+    if (p.type === 'zzz') {
+      ctx.fillStyle = `rgba(180, 200, 255, ${p.opacity})`;
+      ctx.font = 'bold 11px monospace';
+      ctx.fillText('z Z', p.x, p.y);
+      p.y -= 0.6;
+      p.x += Math.sin(Date.now() * 0.005) * 0.4;
+    } else if (p.type === 'steam') {
       ctx.fillStyle = `rgba(255, 90, 110, ${p.opacity})`;
       ctx.fillRect(p.x, p.y, p.size, p.size);
       p.y -= 1.2;
@@ -264,7 +289,7 @@ function updateAndDrawParticles() {
       ctx.fillRect(p.x, p.y, p.size, p.size);
       p.y -= 0.8;
     }
-    p.opacity -= 0.025;
+    p.opacity -= 0.02;
     if (p.opacity <= 0) particles.splice(i, 1);
   }
 }
@@ -302,7 +327,7 @@ let faceDir = 1; // 1 = facing right, -1 = facing left
 
 // --- CURSOR PURSUIT / RUNNING MATH ---
 function updateCursorPursuit() {
-  if (isDragging || currentState === 'DRAGGING' || currentState === 'PETTED') return 0;
+  if (isDragging || currentState === 'DRAGGING' || currentState === 'PETTED' || currentState === 'SLEEPING') return 0;
 
   const targetX = mouseX - catWidth / 2;
   const targetY = mouseY - catHeight / 2;
