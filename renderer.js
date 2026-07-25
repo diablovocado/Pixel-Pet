@@ -17,7 +17,7 @@ const SH = window.innerHeight;
 // state.js already ran: window.CAT_STATE exists
 const cat = window.CAT_STATE;
 cat.x = SW * 0.45;
-cat.y = SH - window.CAT_H - 12;  // CAT_H set by sprite.js
+cat.y = SH - window.CAT_H - 120;
 
 // Init sprite (sets window._catCanvas, window._ctx, window._fxCtx)
 window.sprite.init(catCanvas, fxCanvas, _pepImgEl);
