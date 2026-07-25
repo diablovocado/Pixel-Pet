@@ -183,7 +183,11 @@ let isTyping = false;
 let activeKey = 'left';
 let keyTimeout = null;
 
-function handleKeystroke() {
+function handleKeystroke(e) {
+  // Ignore clicks, touch taps, and touchpad drag events
+  if (e && (e.type === 'mousedown' || e.type === 'touchstart' || e.type === 'pointerdown')) return;
+  if (window.CAT_STATE && (window.CAT_STATE.action === 'drag' || window.CAT_STATE.isDragging)) return;
+
   isTyping = true;
   if (window.CAT_STATE) {
     window.CAT_STATE.isTypingMode = true;
@@ -408,9 +412,16 @@ function drawCat(cat, lastCursor) {
     }
 
     // ── Pixel keyboard animation from tyoe.mov (TYPING state) ──
-    const isTypingState = cat.isTypingMode || cat.typingTimer > 0 || a === 'typing' || leftKeyPressed || rightKeyPressed;
+    const isTypingState = isTyping || cat.isTypingMode || cat.typingTimer > 0 || a === 'typing' || leftKeyPressed || rightKeyPressed;
     if (isTypingState && a !== 'sleep' && a !== 'drag') {
       const activeFrame = (activeKey === 'left' || leftKeyPressed) ? tyoeLeftImg : tyoeRightImg;
+      
+      // 1. Render Keypad FIRST underneath paws
+      const catCenterX = CAT_W / 2;
+      const catPawBaseY = CAT_H / 2 + 30;
+      drawTypingKeypad(ctx, catCenterX, catPawBaseY);
+
+      // 2. Render Cat SECOND on top of keycaps
       if (activeFrame && activeFrame.complete && activeFrame.naturalWidth > 0) {
         ctx.save();
         const tW = 130, tH = 120;
@@ -418,7 +429,7 @@ function drawCat(cat, lastCursor) {
         const tY = (CAT_H - tH) / 2 + 8;
         ctx.drawImage(activeFrame, tX, tY, tW, tH);
         ctx.restore();
-        ctx.restore(); // Balance the main outer ctx.save() from start of drawCat
+        ctx.restore();
         return;
       }
     }
