@@ -7,6 +7,7 @@
 
 /* global SW, SH, CAT_W, CAT_H */
 
+(function() {
 const cat = {
   // Position (screen px)
   x: 0,
@@ -109,3 +110,5 @@ function resetPosition() {
 // Export
 window.CAT_STATE = cat;
 window.catResetPosition = resetPosition;
+})();
+
