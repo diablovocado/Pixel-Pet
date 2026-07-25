@@ -4,9 +4,13 @@
  * Thin orchestrator: creates window, delegates to src/main/ modules.
  */
 
-// Polyfill for node-global-key-listener (uses deprecated Node.util.isObject)
+// Polyfill for node-global-key-listener (uses removed Node.util legacy methods)
 const _util = require('util');
-if (!_util.isObject) _util.isObject = (v) => v !== null && typeof v === 'object';
+if (!_util.isObject)   _util.isObject   = (v) => v !== null && typeof v === 'object';
+if (!_util.isFunction) _util.isFunction = (v) => typeof v === 'function';
+if (!_util.isString)   _util.isString   = (v) => typeof v === 'string';
+if (!_util.isNumber)   _util.isNumber   = (v) => typeof v === 'number';
+if (!_util.isBoolean)  _util.isBoolean  = (v) => typeof v === 'boolean';
 
 const { app, BrowserWindow, screen, ipcMain } = require('electron');
 const path = require('path');
