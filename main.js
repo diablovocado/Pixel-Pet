@@ -54,11 +54,19 @@ function createWindow() {
   win.loadFile('index.html');
 
 
+function getMetrics() {
+  const primary = screen.getPrimaryDisplay();
+  const bounds = primary.bounds;
+  const workArea = primary.workArea;
+  const bottomInset = Math.max(0, bounds.height - (workArea.y + workArea.height));
+  return { bounds, workArea, bottomInset };
+}
+
   win.webContents.on('did-finish-load', () => {
     const cfg = settings.load();
 
-    // Send initial settings to renderer
     win.webContents.send('init-settings', cfg);
+    win.webContents.send('display-metrics', getMetrics());
 
     // Start activity polling
     polling.start(win, (data) => {
@@ -90,9 +98,9 @@ function createWindow() {
 
   screen.on('display-metrics-changed', () => {
     if (!win || win.isDestroyed()) return;
-    const { x, y, width: w, height: h } = screen.getPrimaryDisplay().bounds;
-
-    win.setBounds({ x, y, width: w, height: h });
+    const m = getMetrics();
+    win.setBounds(m.bounds);
+    win.webContents.send('display-metrics', m);
   });
 }
 

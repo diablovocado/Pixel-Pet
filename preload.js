@@ -13,6 +13,9 @@ contextBridge.exposeInMainWorld('deskpet', {
   onInitSettings: (cb) =>
     ipcRenderer.on('init-settings',     (_e, d) => cb(d)),
 
+  onDisplayMetrics: (cb) =>
+    ipcRenderer.on('display-metrics',   (_e, d) => cb(d)),
+
   onSettingsUpdate: (cb) =>
     ipcRenderer.on('settings-update',   (_e, d) => cb(d)),
 

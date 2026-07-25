@@ -49,6 +49,11 @@ window.deskpet.onInitSettings((cfg) => {
   window.reminders.initReminders(cfg);
 });
 
+window.deskpet.onDisplayMetrics(({ bottomInset }) => {
+  cat.bottomInset = bottomInset || 0;
+  cat.y = window.innerHeight - window.CAT_H - 12 - cat.bottomInset;
+});
+
 window.deskpet.onSettingsUpdate((cfg) => {
   cat.settings = cfg;
   if (cfg.variant)    window.setVariant(cfg.variant);
@@ -123,8 +128,8 @@ window.deskpet.onAgentStatus((data) => {
 window.deskpet.onFullscreenChange((isFullscreen) => {
   cat.isPeekMode = isFullscreen;
   if (!isFullscreen) {
-    // Return to ground position
-    cat.y = SH - window.CAT_H - 12;
+    // Return to ground position above Dock
+    cat.y = SH - window.CAT_H - 12 - (cat.bottomInset || 0);
   }
 });
 

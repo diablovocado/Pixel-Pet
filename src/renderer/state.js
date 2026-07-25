@@ -82,6 +82,9 @@ const cat = {
   agentStatus: 'idle',  // 'thinking' | 'done' | 'idle'
   agentTool:   '',
 
+  // Screen insets (Dock height)
+  bottomInset: 0,
+
   // Full-screen / peek mode
   isPeekMode:  false,
   peekX:       null,   // target X in peek mode

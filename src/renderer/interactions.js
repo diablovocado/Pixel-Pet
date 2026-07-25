@@ -177,7 +177,7 @@ function initInteractions(cat, deskpet) {
       cat.timer = 400 + Math.random() * 800;
     }
     // Snap cat Y back to ground after drag
-    const groundY = window.innerHeight - CAT_H - 12;
+    const groundY = window.innerHeight - CAT_H - 12 - (cat.bottomInset || 0);
     if (cat.y < groundY - 30) {
       // Cat was dragged up — animate fall
       const startY = cat.y;
