@@ -48,7 +48,6 @@ window.deskpet.onInitSettings((cfg) => {
 
 window.deskpet.onDisplayMetrics(({ bottomInset }) => {
   cat.bottomInset = bottomInset || 0;
-  cat.y = window.innerHeight - window.CAT_H - 12 - cat.bottomInset;
 });
 
 window.deskpet.onSettingsUpdate((cfg) => {
@@ -139,17 +138,29 @@ function loop(t) {
 
   const h = window.innerHeight || 900;
   const w = window.innerWidth || 1440;
-  if (!cat.y || isNaN(cat.y) || cat.y > h - 40 || cat.y < 0) {
-    cat.y = h - (window.CAT_H || 140) - 20 - (cat.bottomInset || 0);
+  const catH = window.CAT_H || 140;
+  const catW = window.CAT_W || 168;
+
+  if (cat.y === undefined || cat.y === null || isNaN(cat.y)) {
+    cat.y = h - catH - 20 - (cat.bottomInset || 0);
+  } else if (cat.y > h - catH) {
+    cat.y = h - catH;
+  } else if (cat.y < 0) {
+    cat.y = 0;
   }
-  if (!cat.x || isNaN(cat.x) || cat.x > w - 40 || cat.x < 0) {
+
+  if (cat.x === undefined || cat.x === null || isNaN(cat.x)) {
     cat.x = w * 0.45;
+  } else if (cat.x > w - catW) {
+    cat.x = w - catW;
+  } else if (cat.x < 0) {
+    cat.x = 0;
   }
 
   const lastCursor = window.interactions.lastCursor;
 
-  // Behavior state machine
-  window.behavior.updateBehavior(cat, lastCursor, dt, SW);
+  // Behavior state machine across 100% full screen
+  window.behavior.updateBehavior(cat, lastCursor, dt, w, h);
 
   // Per-frame interaction updates (hover purr, drag physics)
   window.interactions.updateInteractions(cat, dt);

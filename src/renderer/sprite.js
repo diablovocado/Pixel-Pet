@@ -192,13 +192,13 @@ function drawCat(cat, lastCursor) {
     ctx.translate(-CAT_W / 2, -CAT_H);
   }
 
-  // Mochi drag squash/stretch
+  // Mochi drag squash/stretch via canvas scaleX/scaleY transforms
   const sx = cat.dragStretchX || 1;
   const sy = cat.dragStretchY || 1;
-  if ((sx !== 1 || sy !== 1) && cat.action === 'drag') {
-    ctx.translate(CAT_W / 2, CAT_H / 2);
+  if (sx !== 1 || sy !== 1) {
+    ctx.translate(CAT_W / 2, CAT_H);
     ctx.scale(sx, sy);
-    ctx.translate(-CAT_W / 2, -CAT_H / 2);
+    ctx.translate(-CAT_W / 2, -CAT_H);
   }
 
   // Flip for left-facing
@@ -276,20 +276,59 @@ function drawCat(cat, lastCursor) {
       ctx.fillRect(pX + 44, pY + 42,  2,  2); ctx.fillRect(pX + 74, pY + 42,  2,  2);
     }
 
-    // ── Kneading paw overlay (during typing) ──
-    if (cat.isTypingMode && (a !== 'sleep' && a !== 'drag')) {
+    // ── Pixel keyboard graphic + alternating paw Y-positions (TYPING state) ──
+    const isTypingState = cat.isTypingMode || cat.typingTimer > 0 || a === 'typing';
+    if (isTypingState && a !== 'sleep' && a !== 'drag') {
+      const P = window.P || { F: '#ffb0c0', N: '#e08090' };
+      cat.typingTick = (cat.typingTick || 0) + 1;
+
       ctx.save();
-      drawKneadingPaws(pX, pY);
-      // Keyboard prop
-      ctx.fillStyle = '#141414';
-      ctx.fillRect(pX + 30, pY + 80, 66, 14);
-      ctx.fillStyle = '#d8d8d8';
-      ctx.fillRect(pX + 34, pY + 82, 58,  7);
-      // Heat glow on keyboard
-      if (cat.heatLevel > 0.3) {
-        ctx.fillStyle = `rgba(255,${Math.round(80*(1-cat.heatLevel))},0,${cat.heatLevel * 0.6})`;
-        ctx.fillRect(pX + 30, pY + 80, 66, 14);
+
+      // Keyboard graphic under front paws
+      const kx = pX + 26;
+      const ky = pY + 84;
+      const kw = 74;
+      const kh = 18;
+
+      ctx.fillStyle = '#1c1c24';
+      ctx.fillRect(kx, ky, kw, kh);
+      ctx.fillStyle = '#2d2d3c';
+      ctx.fillRect(kx + 2, ky + 2, kw - 4, kh - 4);
+
+      // Keys (row 1 & 2)
+      ctx.fillStyle = '#e6e6f2';
+      for (let ix = kx + 4; ix <= kx + kw - 8; ix += 6) {
+        ctx.fillRect(ix, ky + 4, 4, 3);
       }
+      for (let ix = kx + 5; ix <= kx + kw - 9; ix += 6) {
+        ctx.fillRect(ix, ky + 8, 4, 3);
+      }
+      // Spacebar
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(kx + 22, ky + 12, 30, 3);
+
+      if (cat.heatLevel > 0.1) {
+        ctx.fillStyle = `rgba(255, ${Math.round(100 * (1 - cat.heatLevel))}, 30, ${Math.min(cat.heatLevel * 0.7, 0.7)})`;
+        ctx.fillRect(kx, ky, kw, kh);
+      }
+
+      // Alternating paw Y-positions on each tick
+      const isEven = (cat.typingTick % 2) === 0;
+      const liftL = isEven ? 5 : 0;
+      const liftR = isEven ? 0 : 5;
+
+      // Left paw
+      ctx.fillStyle = P.F;
+      ctx.fillRect(pX + 28, pY + 82 - liftL, 14, 10);
+      ctx.fillStyle = P.N;
+      ctx.fillRect(pX + 30, pY + 85 - liftL, 4, 4);
+
+      // Right paw
+      ctx.fillStyle = P.F;
+      ctx.fillRect(pX + 80, pY + 82 - liftR, 14, 10);
+      ctx.fillStyle = P.N;
+      ctx.fillRect(pX + 82, pY + 85 - liftR, 4, 4);
+
       ctx.restore();
     }
 

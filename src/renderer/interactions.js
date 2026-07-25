@@ -56,20 +56,16 @@ function updateDragPhysics(cat, e) {
   _dragVelX = _dragVelX * 0.7 + dx * 0.3;
   _dragVelY = _dragVelY * 0.7 + dy * 0.3;
 
-  // Stretch in direction of drag
+  // Vertical drag stretch based on mouse displacement from initial click point
+  const totalDy = e.clientY - (cat.dragStartY || e.clientY);
   const speed = Math.hypot(_dragVelX, _dragVelY);
-  const stretch = Math.min(1 + speed * 0.012, 1.5);
+  
+  // Primary vertical stretch factor
+  const stretchY = clamp(1 + Math.abs(totalDy) * 0.012 + Math.abs(_dragVelY) * 0.008, 1.0, 2.4);
+  const stretchX = clamp(1 / Math.sqrt(stretchY), 0.45, 1.2);
 
-  // Horizontal drag: stretch X, squash Y
-  // Vertical drag: stretch Y, squash X
-  const absX = Math.abs(_dragVelX), absY = Math.abs(_dragVelY);
-  if (absX > absY) {
-    cat.dragStretchX = stretch;
-    cat.dragStretchY = clamp(1 / stretch, 0.65, 1);
-  } else {
-    cat.dragStretchY = stretch;
-    cat.dragStretchX = clamp(1 / stretch, 0.65, 1);
-  }
+  cat.dragStretchY = stretchY;
+  cat.dragStretchX = stretchX;
 
   // Shake detection: track sign changes in dx
   _dragDxHistory.push(dx > 2 ? 1 : dx < -2 ? -1 : 0);
@@ -84,21 +80,32 @@ function updateDragPhysics(cat, e) {
 }
 
 function landingBounce(cat) {
-  // Quick squash then snap back
-  cat.dragStretchX = 1.35;
-  cat.dragStretchY = 0.70;
+  const startStretchX = cat.dragStretchX || 1;
+  const startStretchY = cat.dragStretchY || 1;
+
   window.particles?.spawnBounce?.();
 
-  let t = 0;
-  const tick = () => {
-    t += 16;
-    const progress = Math.min(t / 350, 1);
-    // Ease back to 1
-    const ease = 1 - Math.pow(1 - progress, 3);
-    cat.dragStretchX = 1.35 - ease * 0.35;
-    cat.dragStretchY = 0.70 + ease * 0.30;
-    if (progress < 1) requestAnimationFrame(tick);
-    else { cat.dragStretchX = 1; cat.dragStretchY = 1; }
+  const startT = performance.now();
+  const duration = 500;
+
+  const tick = (now) => {
+    const elapsed = now - startT;
+    const progress = Math.min(elapsed / duration, 1);
+
+    // Damped harmonic oscillation curve for bounce snap-back
+    const decay = Math.exp(-5.5 * progress);
+    const oscillation = Math.cos(progress * Math.PI * 4.5);
+    const factor = decay * oscillation;
+
+    cat.dragStretchX = 1 + (startStretchX - 1) * factor;
+    cat.dragStretchY = 1 + (startStretchY - 1) * factor;
+
+    if (progress < 1) {
+      requestAnimationFrame(tick);
+    } else {
+      cat.dragStretchX = 1;
+      cat.dragStretchY = 1;
+    }
   };
   requestAnimationFrame(tick);
 }
@@ -152,6 +159,7 @@ function initInteractions(cat, deskpet) {
     dragging    = true;
     dragMoved   = false;
     mouseDownAt = { x: e.clientX, y: e.clientY };
+    cat.dragStartY = e.clientY;
     dragOffX    = e.clientX - cat.x;
     dragOffY    = e.clientY - cat.y;
     _lastDragX  = e.clientX;
@@ -171,27 +179,10 @@ function initInteractions(cat, deskpet) {
       // Tap → pet reaction
       window.behavior?.enterAction(cat, 'pet');
     } else {
-      // Drop → bounce landing
+      // Drop → bounce snap-back landing
       landingBounce(cat);
       window.behavior?.enterAction(cat, 'idle');
       cat.timer = 400 + Math.random() * 800;
-    }
-    // Snap cat Y back to ground after drag
-    const groundY = window.innerHeight - CAT_H - 12 - (cat.bottomInset || 0);
-    if (cat.y < groundY - 30) {
-      // Cat was dragged up — animate fall
-      const startY = cat.y;
-      const dist   = groundY - startY;
-      let t = 0;
-      const fall = () => {
-        t += 16;
-        const progress = Math.min(t / 500, 1);
-        const ease = progress * progress;  // quadratic ease-in (gravity)
-        cat.y = startY + dist * ease;
-        if (progress < 1) requestAnimationFrame(fall);
-        else { cat.y = groundY; landingBounce(cat); }
-      };
-      requestAnimationFrame(fall);
     }
     setTimeout(() => {
       if (!window.sprite?.isOnCat(lastCursor.x, lastCursor.y)) {

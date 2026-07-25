@@ -48,6 +48,7 @@ const cat = {
   typingCPS:    0,
   typingIsFast: false,
   heatLevel:    0,      // 0..1 — drives palette tint + steam particles
+  typingTick:   0,
 
   // Mouse hover tracking for purr
   hoverSlowTimer: 0,    // ms cursor has been slowly on head
@@ -56,6 +57,7 @@ const cat = {
   // Mochi drag physics
   dragStretchX: 1,
   dragStretchY: 1,
+  dragStartY: 0,
   dragShakeHistory: [],
   dragWobble: 0,
 

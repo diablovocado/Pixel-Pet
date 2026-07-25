@@ -53,7 +53,8 @@ function enterAction(cat, action) {
       break;
 
     case 'walk':
-      cat.targetX = rand(30, window.innerWidth - CAT_W - 30);
+      cat.targetX = rand(30, (window.innerWidth || 1440) - CAT_W - 30);
+      cat.targetY = rand(30, (window.innerHeight || 900) - CAT_H - 30);
       break;
 
     case 'sit':
@@ -142,7 +143,10 @@ function nextAutoAction() {
 }
 
 // ─── Main update ─────────────────────────────────────────────
-function updateBehavior(cat, lastCursor, dt, SW) {
+function updateBehavior(cat, lastCursor, dt, SW, SH) {
+  SW = SW || window.innerWidth || 1440;
+  SH = SH || window.innerHeight || 900;
+
   // Timers
   if (cat.typingTimer > 0) cat.typingTimer -= dt;
   if (cat.petTimer    > 0) {
@@ -247,13 +251,23 @@ function updateBehavior(cat, lastCursor, dt, SW) {
       break;
 
     case 'walk': {
-      if (!cat.targetX) { enterAction(cat, 'idle'); break; }
-      const dir  = cat.targetX > cat.x ? 1 : -1;
-      cat.facing = dir;
-      cat.x     += dir * 0.082 * dt;
-      cat.x      = clamp(cat.x, 0, SW - CAT_W);
-      if (Math.abs(cat.x - cat.targetX) < 5)
+      if (cat.targetX === null || cat.targetY === null || cat.targetX === undefined) {
+        cat.targetX = rand(30, SW - CAT_W - 30);
+        cat.targetY = rand(30, SH - CAT_H - 30);
+      }
+      const dx = cat.targetX - cat.x;
+      const dy = cat.targetY - cat.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist > 5) {
+        cat.facing = dx >= 0 ? 1 : -1;
+        const step = 0.082 * dt;
+        cat.x += (dx / dist) * Math.min(step, Math.abs(dx));
+        cat.y += (dy / dist) * Math.min(step, Math.abs(dy));
+      } else {
+        cat.targetX = null;
+        cat.targetY = null;
         enterAction(cat, Math.random() < 0.35 ? 'sit' : 'idle');
+      }
       break;
     }
 
@@ -263,24 +277,36 @@ function updateBehavior(cat, lastCursor, dt, SW) {
       break;
 
     case 'run': {
-      const tx   = lastCursor.x - CAT_W * 0.5;
-      const dir  = tx > cat.x ? 1 : -1;
-      cat.facing = dir;
-      cat.x     += dir * Math.min(0.26 * dt, Math.abs(tx - cat.x));
-      cat.x      = clamp(cat.x, 0, SW - CAT_W);
+      const tx = lastCursor.x - CAT_W * 0.5;
+      const ty = lastCursor.y - CAT_H * 0.5;
+      const dx = tx - cat.x;
+      const dy = ty - cat.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist > 5) {
+        cat.facing = dx >= 0 ? 1 : -1;
+        const step = 0.26 * dt;
+        cat.x += (dx / dist) * Math.min(step, Math.abs(dx));
+        cat.y += (dy / dist) * Math.min(step, Math.abs(dy));
+      }
       cat.timer -= dt;
       if (cat.mouseSpeed < RUN_THRESH * 0.42 && cat.timer <= 0) enterAction(cat, 'idle');
       break;
     }
 
     case 'hunt': {
-      // Chase cursor quickly
+      // Chase cursor quickly across 2D screen
       cat.huntTimer -= dt;
-      const tx   = lastCursor.x - CAT_W * 0.5;
-      const dir  = tx > cat.x ? 1 : -1;
-      cat.facing = dir;
-      cat.x     += dir * Math.min(0.18 * dt, Math.abs(tx - cat.x));
-      cat.x      = clamp(cat.x, 0, SW - CAT_W);
+      const tx = lastCursor.x - CAT_W * 0.5;
+      const ty = lastCursor.y - CAT_H * 0.5;
+      const dx = tx - cat.x;
+      const dy = ty - cat.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist > 5) {
+        cat.facing = dx >= 0 ? 1 : -1;
+        const step = 0.22 * dt;
+        cat.x += (dx / dist) * Math.min(step, Math.abs(dx));
+        cat.y += (dy / dist) * Math.min(step, Math.abs(dy));
+      }
       if (cat.huntTimer <= 0) enterAction(cat, 'sit');
       break;
     }
@@ -329,6 +355,7 @@ function updateBehavior(cat, lastCursor, dt, SW) {
   window.sprite?.updateBlink(cat, dt);
   window.sprite?.updateEars(cat, dt);
   cat.x = clamp(cat.x, 0, SW - CAT_W);
+  cat.y = clamp(cat.y, 0, SH - CAT_H);
 }
 
 window.behavior = { enterAction, updateBehavior, pick, QUIPS, CONTEXT_QUIPS };

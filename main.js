@@ -28,8 +28,8 @@ let win;
 
 // ─── Window ──────────────────────────────────────────────────
 function createWindow() {
-  const { x: wx, y: wy, width, height } = screen.getPrimaryDisplay().bounds;
-
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { x: wx, y: wy, width, height } = primaryDisplay.bounds;
 
   win = new BrowserWindow({
     x: wx, y: wy,
@@ -48,22 +48,21 @@ function createWindow() {
     },
   });
 
+  win.setBounds({ x: wx, y: wy, width, height });
   win.setAlwaysOnTop(true, 'floating');
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   win.setIgnoreMouseEvents(true, { forward: true });
   win.loadFile('index.html');
-  win.webContents.openDevTools({ mode: 'detach' });
   win.show();
   win.showInactive();
 
-
-function getMetrics() {
-  const primary = screen.getPrimaryDisplay();
-  const bounds = primary.bounds;
-  const workArea = primary.workArea;
-  const bottomInset = Math.max(0, bounds.height - (workArea.y + workArea.height));
-  return { bounds, workArea, bottomInset };
-}
+  function getMetrics() {
+    const primary = screen.getPrimaryDisplay();
+    const bounds = primary.bounds;
+    const workArea = primary.workArea;
+    const bottomInset = Math.max(0, bounds.height - (workArea.y + workArea.height));
+    return { bounds, workArea, bottomInset };
+  }
 
   win.webContents.on('did-finish-load', () => {
     const cfg = settings.load();
