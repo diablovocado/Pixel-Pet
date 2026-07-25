@@ -36,9 +36,25 @@ let kps = 0;
 let heatLevel = 0;
 let particles = [];
 
-// Load Cat Image Asset
-const catImg = new Image();
-catImg.src = './assets/cat.png';
+// Load Cat Image & Video Assets
+const catImgNormal = new Image();
+catImgNormal.src = './assets/cat.png';
+
+const tyoeLeftImg = new Image();
+tyoeLeftImg.src = './assets/tyoe_left.png';
+const tyoeRightImg = new Image();
+tyoeRightImg.src = './assets/tyoe_right.png';
+
+const typingVideo = document.createElement('video');
+typingVideo.src = './assets/1784991166910_tyoe.webm';
+typingVideo.loop = true;
+typingVideo.muted = true;
+typingVideo.playsInline = true;
+typingVideo.style.display = 'none';
+
+if (ctx) ctx.imageSmoothingEnabled = false;
+
+let wasTyping = false;
 
 // Check hit bounding box
 function isOverCat(mx, my) {
@@ -367,24 +383,43 @@ function render() {
     // Layer 0: Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Layer 1: Prop Keypad (ONLY during TYPING)
-    if (currentState === 'TYPING') {
-      drawKeypad(ctx, catX, catY);
-    }
-
-    // Layer 2: Character Cat PNG with Safe Transforms & Direction Flip
     const sX = safeScale(scaleX * faceDir, 1);
     const sY = safeScale(scaleY, 1);
+    const drawX = Math.round(catX);
+    const drawY = Math.round(catY + bounceY);
+    const isTypingNow = currentState === 'TYPING';
+
+    if (isTypingNow && !wasTyping) {
+      typingVideo.currentTime = 0;
+      typingVideo.play().catch(() => {});
+    }
+    if (!isTypingNow && wasTyping) {
+      typingVideo.pause();
+    }
+    wasTyping = isTypingNow;
 
     ctx.save();
-    ctx.translate(catX + catWidth / 2, catY + catHeight / 2 + bounceY);
+    ctx.translate(drawX + catWidth / 2, drawY + catHeight / 2);
     ctx.scale(sX, sY);
 
-    if (catImg.complete && catImg.naturalWidth !== 0) {
-      ctx.drawImage(catImg, -catWidth / 2, -catHeight / 2, catWidth, catHeight);
+    if (isTypingNow && typingVideo.readyState >= 2) {
+      ctx.drawImage(typingVideo, -catWidth / 2, -catHeight / 2, catWidth, catHeight);
+    } else if (isTypingNow) {
+      const activeFrame = (activeKey === 'left') ? tyoeLeftImg : tyoeRightImg;
+      if (activeFrame.complete && activeFrame.naturalWidth > 0) {
+        ctx.drawImage(activeFrame, -catWidth / 2, -catHeight / 2, catWidth, catHeight);
+      } else if (catImgNormal.complete && catImgNormal.naturalWidth !== 0) {
+        ctx.drawImage(catImgNormal, -catWidth / 2, -catHeight / 2, catWidth, catHeight);
+      }
+    } else if (catImgNormal.complete && catImgNormal.naturalWidth !== 0) {
+      ctx.drawImage(catImgNormal, -catWidth / 2, -catHeight / 2, catWidth, catHeight);
     }
-
     ctx.restore();
+
+    // Layer 1: Prop Keypad (ONLY during TYPING)
+    if (isTypingNow) {
+      drawKeypad(ctx, drawX, drawY);
+    }
 
     // Layer 3: Speech Bubble / Mood Reactions ("hi maith!", "meow~", etc.)
     drawSpeechBubble();
