@@ -109,20 +109,23 @@ if (window.catAPI && window.catAPI.onKpsUpdate) {
 }
 
 // --- 2. MOUSE / TOUCHPAD LISTENERS ---
+let isMouseDownOnCat = false;
+
 window.addEventListener('mousemove', (e) => {
   mouseX = e.clientX;
   mouseY = e.clientY;
 
   updateMousePassthrough(e.clientX, e.clientY);
 
-  if (isDragging) {
+  if (isMouseDownOnCat) {
+    isDragging = true;
     currentState = 'DRAGGING';
     catX = Math.max(0, Math.min(window.innerWidth - catWidth, e.clientX - catWidth / 2));
     catY = Math.max(0, Math.min(window.innerHeight - catHeight, e.clientY - catHeight / 2));
 
-    // Vertical Mochi stretch physics
-    const stretch = Math.max(0, dragStartY - e.clientY);
-    scaleY = 1 + Math.min(stretch / 100, 0.7);
+    // Vertical Mochi stretch physics (dragDistanceY when moved upwards)
+    const dragDistanceY = Math.max(0, dragStartY - e.clientY);
+    scaleY = 1 + Math.min(dragDistanceY / 100, 0.7);
     scaleX = 1 / scaleY; // Area volume preservation
   }
 });
@@ -131,35 +134,27 @@ window.addEventListener('mousedown', (e) => {
   if (isOverCat(e.clientX, e.clientY)) {
     e.stopPropagation();
 
-    isDragging = true;
+    isMouseDownOnCat = true;
     dragStartY = e.clientY;
-    currentState = 'PETTED';
 
-    // Spawn heart particle
+    // Quick click/pet: spawn small heart particle floating up from above head
     particles.push({
-      x: catX + catWidth / 2 + (Math.random() * 20 - 10),
+      x: catX + catWidth / 2 + (Math.random() * 16 - 8),
       y: catY - 10,
       opacity: 1,
-      size: Math.random() * 6 + 4,
+      size: Math.random() * 5 + 4,
       type: 'heart'
     });
-
-    if (petTimeout) clearTimeout(petTimeout);
-    petTimeout = setTimeout(() => {
-      if (currentState === 'PETTED' && !isDragging) {
-        currentState = 'IDLE';
-      }
-    }, 600);
   }
 });
 
 window.addEventListener('mouseup', () => {
-  if (isDragging) {
-    isDragging = false;
-    scaleX = 1;
-    scaleY = 1;
-    currentState = 'IDLE';
-  }
+  isMouseDownOnCat = false;
+  isDragging = false;
+  // Instant snap back to normal proportions
+  scaleX = 1;
+  scaleY = 1;
+  currentState = 'IDLE';
 });
 
 // --- PARTICLES ---
