@@ -587,7 +587,10 @@ function enterAction(a) {
     case 'walk':    cat.targetX = rand(30, SW - CAT_W - 30); break;
     case 'sit':
       cat.timer = rand(3500, 9000);
-      showBubble(pick(QUIPS.sit), 1400);
+      const catQuips = (cat.appCategory && CONTEXT_QUIPS[cat.appCategory] && Math.random() < 0.6)
+        ? CONTEXT_QUIPS[cat.appCategory]
+        : QUIPS.sit;
+      showBubble(pick(catQuips), 1500);
       break;
     case 'run':     cat.timer = 2200; break;
     case 'excited':
@@ -757,6 +760,18 @@ window.deskpet.onActivityTick(({ cursorX, cursorY, mouseSpeed, idleSeconds, like
 
 window.deskpet.onSetVariant?.((variant) => {
   setVariant(variant);
+});
+
+const CONTEXT_QUIPS = {
+  coding:  ['coding time!', 'clean syntax!', 'ship it!', 'npm run dev', 'git push~', 'debugging...'],
+  browser: ['browsing~', 'so many tabs!', 'finding tuna?', 'web surfing~'],
+  design:  ['pixel perfect!', 'nice colors!', 'design time!'],
+  chat:    ['meow back?', 'who typed?', 'new message!'],
+};
+
+window.deskpet.onAppContextUpdate?.(({ appName, category }) => {
+  cat.currentApp  = appName;
+  cat.appCategory = category;
 });
 
 window.deskpet.onTypingUpdate?.(({ isTyping, cps, isFast }) => {

@@ -12,4 +12,7 @@ contextBridge.exposeInMainWorld('deskpet', {
 
   onTypingUpdate: (cb) =>
     ipcRenderer.on('typing-update', (_e, data) => cb(data)),
+
+  onAppContextUpdate: (cb) =>
+    ipcRenderer.on('app-context-update', (_e, data) => cb(data)),
 });

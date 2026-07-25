@@ -34,6 +34,7 @@ function createWindow() {
   win.webContents.on('did-finish-load', () => {
     startPolling();
     initKeyboardListener();
+    startAppPolling();
   });
   screen.on('display-metrics-changed', reposition);
 }
@@ -42,6 +43,60 @@ function reposition() {
   if (!win || win.isDestroyed()) return;
   const { x, y, width, height } = screen.getPrimaryDisplay().workArea;
   win.setBounds({ x, y, width, height });
+}
+
+// ─── Task / App Awareness Engine (Modular Category Mapping) ───
+const { exec } = require('child_process');
+
+const APP_CATEGORIES = {
+  coding: [
+    'code', 'vscode', 'visual studio code', 'cursor', 'xcode', 'terminal',
+    'iterm', 'iterm2', 'antigravity', 'webstorm', 'pycharm', 'sublime text',
+    'intellij idea', 'ghostty', 'warp', 'neovim', 'vim', 'electron'
+  ],
+  browser: [
+    'safari', 'google chrome', 'chrome', 'firefox', 'arc', 'brave browser',
+    'orion', 'opera', 'edge', 'microsoft edge'
+  ],
+  design: [
+    'figma', 'adobe photoshop', 'photoshop', 'illustrator', 'sketch', 'canva', 'blender'
+  ],
+  chat: [
+    'slack', 'discord', 'telegram', 'whatsapp', 'messages', 'signal'
+  ]
+};
+
+function getCategoryForApp(appName) {
+  if (!appName) return 'default';
+  const name = appName.toLowerCase();
+  for (const [cat, list] of Object.entries(APP_CATEGORIES)) {
+    if (list.some(keyword => name.includes(keyword))) {
+      return cat;
+    }
+  }
+  return 'default';
+}
+
+let appPollInterval = null;
+let lastAppName = '';
+let lastCategory = '';
+
+function startAppPolling() {
+  if (appPollInterval) clearInterval(appPollInterval);
+  appPollInterval = setInterval(() => {
+    if (!win || win.isDestroyed()) return;
+    exec(`osascript -e 'tell application "System Events" to get name of first process whose frontmost is true'`, (err, stdout) => {
+      if (!err && stdout) {
+        const appName = stdout.trim();
+        const category = getCategoryForApp(appName);
+        if (appName !== lastAppName || category !== lastCategory) {
+          lastAppName = appName;
+          lastCategory = category;
+          win.webContents.send('app-context-update', { appName, category });
+        }
+      }
+    });
+  }, 2500);
 }
 
 // ─── Global Keyboard Listener (Privacy-First: Counts frequency only) ───
