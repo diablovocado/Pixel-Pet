@@ -25,8 +25,11 @@ function start(onKey, onStop) {
     keyListener.addListener((e, down) => {
       console.log('[deskpet] raw event:', e.name, e.state); // TEMPORARY
 
-      // Defensive: only proceed for actual keyboard DOWN events
-      if (e.state !== 'DOWN' || (typeof e.name === 'undefined' && typeof e.rawKey === 'undefined')) return;
+      // Ignore mouse events (e.g. MOUSE LEFT, MOUSE RIGHT, MOUSE WHEEL)
+      if (e.name && e.name.startsWith('MOUSE')) return;
+
+      // Only proceed for actual keyboard DOWN events
+      if (e.state !== 'DOWN') return;
 
       const now = Date.now();
       keyTimestamps.push(now);
