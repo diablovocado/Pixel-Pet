@@ -24,12 +24,13 @@ function start(onKey, onStop) {
 
     keyListener.addListener((e, down) => {
       // Diagnostic log
-      console.log('[deskpet] raw event:', JSON.stringify({ name: e.name, state: e.state, vKey: e.vKey, rawKey: e.rawKey }));
+      // console.log('[deskpet] raw event:', JSON.stringify({ name: e.name, state: e.state, vKey: e.vKey, rawKey: e.rawKey }));
 
-      // Whitelist-style guard: Only proceed for real keyboard DOWN events
+      // Hardware-accurate Whitelist Guard: Only proceed for real keyboard DOWN events (kVK_ANSI_...)
       if (e.state !== 'DOWN') return;
-      if (!e.name || e.name.startsWith('MOUSE')) return;
-      if (typeof e.vKey === 'undefined' && typeof e.rawKey === 'undefined') return;
+      if (!e.name || e.name.includes('MOUSE')) return;
+      if (e.rawKey && e.rawKey._nameRaw && e.rawKey._nameRaw.includes('CGMouseButton')) return;
+      if (!e.rawKey || !e.rawKey._nameRaw || !e.rawKey._nameRaw.startsWith('kVK_')) return;
 
       const now = Date.now();
       keyTimestamps.push(now);
