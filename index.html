@@ -4,46 +4,86 @@
   <meta charset="UTF-8" />
   <title>Pixel Deskpet</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; }
+
     html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
       background: transparent;
       overflow: hidden;
       user-select: none;
+      -webkit-user-select: none;
     }
+
     #stage {
       position: relative;
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
     }
+
+    /* Cat sprite canvas — repositioned each frame via JS */
     #catCanvas {
       position: absolute;
-      bottom: 0;
+      top: 0; left: 0;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
       cursor: default;
     }
+
+    /* Full-screen fx canvas for particles (hearts, zzz) */
+    #fxCanvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      image-rendering: pixelated;
+    }
+
+    /* Speech bubble */
     #bubble {
       position: absolute;
-      transform: translateX(-50%);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      line-height: 1.4;
       background: #fdf6ec;
-      color: #1a1a1a;
-      font: 12px monospace;
-      padding: 3px 7px;
-      border: 2px solid #1a1a1a;
-      border-radius: 3px;
+      color: #1a0e09;
+      padding: 5px 9px;
+      border: 2px solid #1a0e09;
+      border-radius: 4px;
       white-space: nowrap;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.15s ease;
+      transform: translateX(-50%);
+      transition: opacity 0.18s ease;
+      box-shadow: 2px 2px 0 #1a0e09;
+      z-index: 10;
+    }
+
+    /* Bubble tail */
+    #bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -8px; left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #1a0e09;
+    }
+    #bubble::before {
+      content: '';
+      position: absolute;
+      bottom: -5px; left: 50%;
+      transform: translateX(-50%);
+      border: 4px solid transparent;
+      border-top-color: #fdf6ec;
+      z-index: 1;
     }
   </style>
 </head>
 <body>
   <div id="stage">
     <canvas id="catCanvas"></canvas>
+    <canvas id="fxCanvas"></canvas>
     <div id="bubble"></div>
   </div>
   <script src="renderer.js"></script>
