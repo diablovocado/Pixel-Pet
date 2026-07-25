@@ -130,12 +130,96 @@ window.addEventListener('mousemove', (e) => {
   }
 });
 
+// --- MOOD NOTES & SPEECH BUBBLES ---
+const moodNotes = [
+  "hi maith! 👋",
+  "meow~ 💕",
+  "let's code! 💻",
+  "purrrrr... 🐱",
+  "hard at work! ✨",
+  "stay hydrated! 💧",
+  "stretch time! 🧘",
+  "you're doing great! 🌟",
+  "need a tea break? ☕",
+  "good job today! 🎉"
+];
+
+let currentBubble = {
+  text: '',
+  timer: 0,
+  opacity: 1
+};
+
+function triggerRandomMoodNote() {
+  const text = moodNotes[Math.floor(Math.random() * moodNotes.length)];
+  currentBubble = {
+    text: text,
+    timer: 180, // 3 seconds
+    opacity: 1
+  };
+}
+
+function drawSpeechBubble() {
+  if (!currentBubble.text || currentBubble.timer <= 0) return;
+
+  currentBubble.timer--;
+  if (currentBubble.timer < 30) {
+    currentBubble.opacity = currentBubble.timer / 30;
+  } else {
+    currentBubble.opacity = 1;
+  }
+
+  ctx.save();
+  ctx.font = 'bold 12px "Courier New", monospace';
+  const textWidth = ctx.measureText(currentBubble.text).width;
+  const padding = 10;
+  const bw = textWidth + padding * 2;
+  const bh = 24;
+
+  const bx = catX + catWidth / 2 - bw / 2;
+  const by = catY - bh - 16;
+
+  ctx.globalAlpha = currentBubble.opacity;
+
+  // Dark pixelated bubble background with pink accent border
+  ctx.fillStyle = '#1e1e24';
+  ctx.strokeStyle = '#ff79c6';
+  ctx.lineWidth = 2;
+
+  ctx.beginPath();
+  if (ctx.roundRect) {
+    ctx.roundRect(bx, by, bw, bh, 6);
+  } else {
+    ctx.rect(bx, by, bw, bh);
+  }
+  ctx.fill();
+  ctx.stroke();
+
+  // Tail arrow
+  ctx.fillStyle = '#ff79c6';
+  ctx.beginPath();
+  ctx.moveTo(catX + catWidth / 2 - 4, by + bh);
+  ctx.lineTo(catX + catWidth / 2 + 4, by + bh);
+  ctx.lineTo(catX + catWidth / 2, by + bh + 5);
+  ctx.closePath();
+  ctx.fill();
+
+  // Bubble Text
+  ctx.fillStyle = '#f8f8f2';
+  ctx.fillText(currentBubble.text, bx + padding, by + 16);
+
+  ctx.restore();
+}
+
 window.addEventListener('mousedown', (e) => {
   if (isOverCat(e.clientX, e.clientY)) {
     e.stopPropagation();
 
     isMouseDownOnCat = true;
     dragStartY = e.clientY;
+
+    // Trigger mood reaction speech bubble ("hi maith!", "meow~", etc.)
+    triggerRandomMoodNote();
 
     // Quick click/pet: spawn small heart particle floating up from above head
     particles.push({
@@ -276,6 +360,9 @@ function render() {
     }
 
     ctx.restore();
+
+    // Layer 3: Speech Bubble / Mood Reactions ("hi maith!", "meow~", etc.)
+    drawSpeechBubble();
 
     // Layer 4: Particles
     updateAndDrawParticles();
