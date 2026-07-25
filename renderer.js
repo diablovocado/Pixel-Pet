@@ -18,10 +18,10 @@ let activeKey = 'left';
 let keyTimeout = null;
 let petTimeout = null;
 
-let catX = window.innerWidth / 2 - 40;
-let catY = window.innerHeight / 2 - 40;
-const catWidth = 80;
-const catHeight = 80;
+let catX = window.innerWidth / 2 - 55;
+let catY = window.innerHeight / 2 - 55;
+const catWidth = 110;
+const catHeight = 110;
 
 let scaleX = 1;
 let scaleY = 1;
@@ -415,11 +415,6 @@ function render() {
       ctx.drawImage(catImgNormal, -catWidth / 2, -catHeight / 2, catWidth, catHeight);
     }
     ctx.restore();
-
-    // Layer 1: Prop Keypad (ONLY during TYPING)
-    if (isTypingNow) {
-      drawKeypad(ctx, drawX, drawY);
-    }
 
     // Layer 3: Speech Bubble / Mood Reactions ("hi maith!", "meow~", etc.)
     drawSpeechBubble();
