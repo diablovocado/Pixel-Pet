@@ -34,8 +34,7 @@ function createWindow() {
   win = new BrowserWindow({
     x: wx, y: wy,
     width, height,
-    transparent:     false,
-    backgroundColor: '#00FF00',
+    transparent:     true,
     frame:           false,
     resizable:       false,
     movable:         false,
