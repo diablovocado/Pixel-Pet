@@ -23,8 +23,6 @@ function start(onKey, onStop) {
     keyListener = new GlobalKeyboardListener();
 
     keyListener.addListener((e, down) => {
-      console.log('[deskpet] raw event:', e.name, e.state); // TEMPORARY
-
       // Ignore mouse events (e.g. MOUSE LEFT, MOUSE RIGHT, MOUSE WHEEL)
       if (e.name && e.name.startsWith('MOUSE')) return;
 
