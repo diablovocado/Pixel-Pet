@@ -534,23 +534,14 @@ function initSprite(canvasEl, fxCanvasEl, imgEl) {
   window._fxCtx     = fxCanvasEl.getContext('2d');
   window._ctx       = canvasEl.getContext('2d');
 
-  pepImg = imgEl || new Image();
-  if (!pepImg.complete || pepImg.naturalWidth === 0) {
-    pepImg = new Image();
-    pepImg.src = 'assets/pepperino_cropped.png';
-  }
+  pepImg = new Image();
+  pepImg.src = 'assets/pepperino_cropped.png';
 
-  tyoeLeftImg = document.getElementById('tyoeLeftImg') || new Image();
-  if (!tyoeLeftImg.complete || tyoeLeftImg.naturalWidth === 0) {
-    tyoeLeftImg = new Image();
-    tyoeLeftImg.src = 'assets/tyoe_left.png';
-  }
+  tyoeLeftImg = new Image();
+  tyoeLeftImg.src = 'assets/tyoe_left.png';
 
-  tyoeRightImg = document.getElementById('tyoeRightImg') || new Image();
-  if (!tyoeRightImg.complete || tyoeRightImg.naturalWidth === 0) {
-    tyoeRightImg = new Image();
-    tyoeRightImg.src = 'assets/tyoe_right.png';
-  }
+  tyoeRightImg = new Image();
+  tyoeRightImg.src = 'assets/tyoe_right.png';
 
   canvasEl.width  = CAT_W;
   canvasEl.height = CAT_H;

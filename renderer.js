@@ -5,10 +5,9 @@
  * This file only: initializes modules, wires IPC, runs the rAF loop.
  */
 
-// ─── Canvas & image refs ──────────────────────────────────────
+// ─── Canvas refs ──────────────────────────────────────────────
 const catCanvas  = document.getElementById('catCanvas');
 const fxCanvas   = document.getElementById('fxCanvas');
-const _pepImgEl  = document.getElementById('pepImg');
 
 const SW = window.innerWidth;
 const SH = window.innerHeight;
@@ -20,7 +19,7 @@ cat.x = SW * 0.42;
 cat.y = SH * 0.45;
 
 // Init sprite (sets window._catCanvas, window._ctx, window._fxCtx)
-window.sprite.init(catCanvas, fxCanvas, _pepImgEl);
+window.sprite.init(catCanvas, fxCanvas);
 
 // Init bubbles
 window.bubbles.init({
