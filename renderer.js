@@ -46,7 +46,7 @@ const tyoeRightImg = new Image();
 tyoeRightImg.src = './assets/tyoe_right.png';
 
 const typingVideo = document.createElement('video');
-typingVideo.src = './assets/1784991166910_tyoe.webm';
+typingVideo.src = './assets/tyoe.webm';
 typingVideo.loop = true;
 typingVideo.muted = true;
 typingVideo.playsInline = true;
