@@ -28,6 +28,7 @@ window.CAT_H = CAT_H;
 // Canvas references (set during init)
 let ctx;
 let pepImg;
+let tyoeLeftImg, tyoeRightImg;
 
 // Walk / kneading paw phase
 let _pawPhase = 0;
@@ -398,20 +399,20 @@ function drawCat(cat, lastCursor) {
       ctx.fillRect(pX + 44, pY + 42,  2,  2); ctx.fillRect(pX + 74, pY + 42,  2,  2);
     }
 
-    // ── Pixel keyboard graphic + alternating paw Y-positions (TYPING state) ──
+    // ── Pixel keyboard animation from tyoe.mov (TYPING state) ──
     const isTypingState = cat.isTypingMode || cat.typingTimer > 0 || a === 'typing' || leftKeyPressed || rightKeyPressed;
     if (isTypingState && a !== 'sleep' && a !== 'drag') {
-      cat.typingTick = (cat.typingTick || 0) + 1;
-
-      ctx.save();
-
-      // Render keycaps via drawTypingKeypad and paws via renderCatPaws
-      const catCenterX = pX + 63;
-      const catPawBaseY = pY + 54;
-      drawTypingKeypad(ctx, catCenterX, catPawBaseY);
-      renderCatPaws(ctx, catCenterX, catPawBaseY, 'TYPING');
-
-      ctx.restore();
+      const activeFrame = (activeKey === 'left' || leftKeyPressed) ? tyoeLeftImg : tyoeRightImg;
+      if (activeFrame && activeFrame.complete && activeFrame.naturalWidth > 0) {
+        ctx.save();
+        const tW = 130, tH = 120;
+        const tX = (CAT_W - tW) / 2;
+        const tY = (CAT_H - tH) / 2 + 8;
+        ctx.drawImage(activeFrame, tX, tY, tW, tH);
+        ctx.restore();
+        ctx.restore();
+        return;
+      }
     }
 
     // ── Scroll paper (during scroll reaction) ──
@@ -529,6 +530,18 @@ function initSprite(canvasEl, fxCanvasEl, imgEl) {
   if (!pepImg.complete || pepImg.naturalWidth === 0) {
     pepImg = new Image();
     pepImg.src = 'assets/pepperino_cropped.png';
+  }
+
+  tyoeLeftImg = document.getElementById('tyoeLeftImg') || new Image();
+  if (!tyoeLeftImg.complete || tyoeLeftImg.naturalWidth === 0) {
+    tyoeLeftImg = new Image();
+    tyoeLeftImg.src = 'assets/tyoe_left.png';
+  }
+
+  tyoeRightImg = document.getElementById('tyoeRightImg') || new Image();
+  if (!tyoeRightImg.complete || tyoeRightImg.naturalWidth === 0) {
+    tyoeRightImg = new Image();
+    tyoeRightImg.src = 'assets/tyoe_right.png';
   }
 
   canvasEl.width  = CAT_W;
