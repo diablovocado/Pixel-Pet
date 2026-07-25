@@ -153,6 +153,11 @@ function initInteractions(cat, deskpet) {
 
   document.addEventListener('mousedown', e => {
     if (!window.sprite?.isOnCat(e.clientX, e.clientY)) return;
+    e.stopPropagation();
+
+    // Trigger explicit PETTED state, stop typing animations, draw happy eyes & spawn hearts for 600ms
+    window.triggerPettingState?.();
+
     dragging    = true;
     dragMoved   = false;
     mouseDownAt = { x: e.clientX, y: e.clientY };
@@ -164,7 +169,7 @@ function initInteractions(cat, deskpet) {
     _dragVelX   = 0;
     _dragVelY   = 0;
     _dragDxHistory = [];
-    window.behavior?.enterAction(cat, 'drag');
+    window.behavior?.enterAction(cat, 'pet');
     ignoring = false;
     deskpet.setIgnoreMouseEvents(false, { forward: true });
   });

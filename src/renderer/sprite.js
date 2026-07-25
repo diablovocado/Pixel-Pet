@@ -185,6 +185,28 @@ let activeKey = 'left';
 let keyTimeout = null;
 let petTimeout = null;
 
+function triggerPettingState() {
+  currentState = 'PETTED';
+  leftKeyPressed = false;
+  rightKeyPressed = false;
+  if (window.CAT_STATE) {
+    window.CAT_STATE.isTypingMode = false;
+    window.CAT_STATE.typingTimer = 0;
+  }
+
+  // Spawn heart particles over cat head
+  window.particles?.spawnHearts?.(4);
+
+  // Return to IDLE after 600ms of petting
+  if (petTimeout) clearTimeout(petTimeout);
+  petTimeout = setTimeout(() => {
+    if (currentState === 'PETTED') {
+      currentState = 'IDLE';
+    }
+  }, 600);
+}
+window.triggerPettingState = triggerPettingState;
+
 function handleKeystroke(e) {
   // DO NOT trigger typing if the user is currently clicking or dragging the cat
   if (currentState === 'PETTED' || currentState === 'DRAGGING') return;
