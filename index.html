@@ -4,147 +4,32 @@
   <meta charset="UTF-8" />
   <title>Pixel Deskpet</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
-    *, *::before, *::after { box-sizing: border-box; }
-
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     html, body {
-      margin: 0; padding: 0;
-      width: 100%; height: 100%;
-      background: transparent;
+      width: 100vw;
+      height: 100vh;
       overflow: hidden;
+      background: transparent;
       user-select: none;
       -webkit-user-select: none;
     }
-
-    #stage {
-      position: relative;
-      width: 100%; height: 100%;
-    }
-
-    /* ── Cat sprite canvas ── */
     #catCanvas {
-      position: absolute;
-      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
-      cursor: default;
-      z-index: 5;
-    }
-
-    /* ── Full-screen fx canvas (particles) ── */
-    #fxCanvas {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      image-rendering: pixelated;
-      z-index: 6;
-    }
-
-    /* ── Shared bubble base ── */
-    .bubble {
-      position: absolute;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 7px;
-      line-height: 1.4;
-      padding: 5px 9px;
-      border-radius: 4px;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transform: translateX(-50%);
-      transition: opacity 0.18s ease;
-      z-index: 10;
-    }
-
-    /* ── Speech bubble ── */
-    #bubble {
-      background: #fdf6ec;
-      color: #1a0e09;
-      border: 2px solid #1a0e09;
-      box-shadow: 2px 2px 0 #1a0e09;
-    }
-    #bubble::after {
-      content: '';
-      position: absolute;
-      bottom: -8px; left: 50%;
-      transform: translateX(-50%);
-      border: 5px solid transparent;
-      border-top-color: #1a0e09;
-    }
-    #bubble::before {
-      content: '';
-      position: absolute;
-      bottom: -5px; left: 50%;
-      transform: translateX(-50%);
-      border: 4px solid transparent;
-      border-top-color: #fdf6ec;
-      z-index: 1;
-    }
-
-    /* ── Pinned note bubble ── */
-    #pinnedBubble {
-      background: #eef7ff;
-      color: #0c2040;
-      border: 2px solid #0c2040;
-      box-shadow: 2px 2px 0 #0c2040;
-      font-size: 6px;
-    }
-
-    /* ── Pomodoro timer bubble ── */
-    #timerBubble {
-      background: #fff8e8;
-      color: #402800;
-      border: 2px solid #a06800;
-      box-shadow: 2px 2px 0 #a06800;
-    }
-
-    /* ── AI agent thought bubble ── */
-    #agentBubble {
-      background: #f0e8ff;
-      color: #2a0860;
-      border: 2px dashed #6040c0;
-      box-shadow: 2px 2px 0 #6040c0;
-      font-size: 6px;
-      border-radius: 8px;
-    }
-
-    /* ── Reminder bubble ── */
-    #reminderBubble {
-      background: #fff0f0;
-      color: #601010;
-      border: 2px solid #c04040;
-      box-shadow: 2px 2px 0 #c04040;
-      font-size: 6px;
-      animation: reminderPulse 1.5s ease-in-out infinite;
-    }
-
-    @keyframes reminderPulse {
-      0%, 100% { box-shadow: 2px 2px 0 #c04040; }
-      50%       { box-shadow: 2px 2px 6px #e06060; }
     }
   </style>
 </head>
 <body>
-  <div id="stage">
-    <canvas id="catCanvas"></canvas>
-    <canvas id="fxCanvas"></canvas>
+  <canvas id="catCanvas"></canvas>
 
-    <!-- Transient speech bubble -->
-    <div id="bubble"        class="bubble"></div>
-    <!-- Persistent pinned note -->
-    <div id="pinnedBubble"  class="bubble"></div>
-    <!-- Pomodoro / focus timer -->
-    <div id="timerBubble"   class="bubble"></div>
-    <!-- AI agent status (thinking...) -->
-    <div id="agentBubble"   class="bubble"></div>
-    <!-- Reminder notification -->
-    <div id="reminderBubble" class="bubble"></div>
-
-  </div>
-
-  <!-- ── Renderer modules (order matters: state first, then dependents) ── -->
+  <!-- ── Renderer modules ── -->
   <script src="src/renderer/state.js"></script>
   <script src="src/renderer/variants.js"></script>
   <script src="src/renderer/particles.js"></script>
