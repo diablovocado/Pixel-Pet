@@ -3,17 +3,17 @@ import React, { useState, useEffect, useRef } from 'react';
 // Hand-drawn & SVG Scrapbook Decorative Icons
 const Icons = {
   Apple: () => (
-    <svg className="w-5 h-5 fill-[#2D231E]" viewBox="0 0 24 24">
+    <svg className="w-5 h-5 fill-[#2D231E] dark:fill-[#F5EFEB]" viewBox="0 0 24 24">
       <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.03c.67-.81 1.13-1.94.99-3.03-.97.04-2.16.65-2.85 1.46-.61.71-1.14 1.86-.99 2.97 1.09.08 2.2-.59 2.85-1.4" />
     </svg>
   ),
   Github: () => (
-    <svg className="w-5 h-5 fill-[#2D231E]" viewBox="0 0 24 24">
+    <svg className="w-5 h-5 fill-[#2D231E] dark:fill-[#F5EFEB]" viewBox="0 0 24 24">
       <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
     </svg>
   ),
   DownArrow: () => (
-    <svg className="w-4 h-4 text-[#2D231E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+    <svg className="w-4 h-4 text-[#2D231E] dark:text-[#F5EFEB]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
     </svg>
   ),
@@ -33,12 +33,12 @@ const Icons = {
     </svg>
   ),
   Copy: () => (
-    <svg className="w-4 h-4 text-[#2D231E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <svg className="w-4 h-4 text-[#2D231E] dark:text-[#F5EFEB]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
     </svg>
   ),
   Download: () => (
-    <svg className="w-5 h-5 text-[#2D231E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <svg className="w-5 h-5 text-[#2D231E] dark:text-[#F5EFEB]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
     </svg>
   ),
@@ -48,7 +48,7 @@ const Icons = {
     </svg>
   ),
   Terminal: () => (
-    <svg className="w-5 h-5 text-[#2D231E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <svg className="w-5 h-5 text-[#2D231E] dark:text-[#F5EFEB]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
     </svg>
   )
@@ -57,10 +57,10 @@ const Icons = {
 // Hand-drawn Decorative Art Illustrations
 const ScrapbookArt = {
   Typewriter: () => (
-    <div className="relative w-68 h-60 p-4 bg-[#EAE0D5] border-2 border-[#2D231E] rounded-3xl shadow-[5px_6px_0px_#2D231E] flex flex-col items-center justify-between">
-      <div className="w-48 h-20 bg-[#F5EFEB] border-2 border-[#2D231E] rounded-t-lg p-2 flex flex-col items-center justify-center text-center shadow-inner">
-        <span className="font-vt323 text-lg font-bold text-[#2D231E]">Keyboard Instructions</span>
-        <span className="font-mono text-[10px] text-[#8C5A3C] font-semibold mt-0.5">Press any key to test Pluto!</span>
+    <div className="relative w-68 h-60 p-4 bg-[#EAE0D5] dark:bg-[#2A211C] border-2 border-[#2D231E] dark:border-[#E5B25D] rounded-3xl shadow-[5px_6px_0px_#2D231E] flex flex-col items-center justify-between">
+      <div className="w-48 h-20 bg-[#F5EFEB] dark:bg-[#1C1613] border-2 border-[#2D231E] dark:border-[#E5B25D] rounded-t-lg p-2 flex flex-col items-center justify-center text-center shadow-inner">
+        <span className="font-vt323 text-lg font-bold text-[#2D231E] dark:text-[#F5EFEB]">Keyboard Instructions</span>
+        <span className="font-mono text-[10px] text-[#8C5A3C] dark:text-[#E5B25D] font-semibold mt-0.5">Press any key to test Pluto!</span>
       </div>
 
       <div className="w-56 h-5 bg-[#2D231E] rounded-full my-1 flex items-center justify-between px-3">
@@ -68,27 +68,27 @@ const ScrapbookArt = {
         <div className="w-3 h-3 bg-[#E5B25D] rounded-full border border-white" />
       </div>
 
-      <div className="w-60 h-28 bg-[#C87A5B]/30 border-2 border-[#2D231E] rounded-2xl p-2.5 flex flex-col justify-between shadow-sm">
-        <div className="text-center font-vt323 font-bold text-xs text-[#2D231E] tracking-wider uppercase">
+      <div className="w-60 h-28 bg-[#C87A5B]/30 border-2 border-[#2D231E] dark:border-[#E5B25D] rounded-2xl p-2.5 flex flex-col justify-between shadow-sm">
+        <div className="text-center font-vt323 font-bold text-xs text-[#2D231E] dark:text-[#F5EFEB] tracking-wider uppercase">
           ★ PLUTO TYPEWRITER ★
         </div>
         <div className="grid grid-cols-7 gap-1 px-1">
           {['Q','W','E','R','T','Y','U','I','O','P','A','S','D','F'].map((char, i) => (
             <div 
               key={i} 
-              className="w-5 h-5 rounded-full bg-[#F5EFEB] border border-[#2D231E] flex items-center justify-center font-mono text-[8px] font-bold text-[#2D231E] shadow-[1px_1px_0px_#2D231E]"
+              className="w-5 h-5 rounded-full bg-[#F5EFEB] dark:bg-[#1C1613] border border-[#2D231E] dark:border-[#E5B25D] flex items-center justify-center font-mono text-[8px] font-bold text-[#2D231E] dark:text-[#F5EFEB] shadow-[1px_1px_0px_#2D231E]"
             >
               {char}
             </div>
           ))}
         </div>
-        <div className="w-36 h-3 mx-auto bg-[#F5EFEB] border border-[#2D231E] rounded-md shadow-[1px_1px_0px_#2D231E]" />
+        <div className="w-36 h-3 mx-auto bg-[#F5EFEB] dark:bg-[#1C1613] border border-[#2D231E] dark:border-[#E5B25D] rounded-md shadow-[1px_1px_0px_#2D231E]" />
       </div>
     </div>
   ),
 
   Keycap: ({ label }: { label: string }) => (
-    <div className="relative inline-flex items-center justify-center w-8 h-8 rounded-xl bg-[#F5EFEB] border-2 border-[#2D231E] shadow-[2px_2px_0px_#2D231E] font-mono font-bold text-sm text-[#2D231E] transform hover:-translate-y-0.5 transition-transform">
+    <div className="relative inline-flex items-center justify-center w-8 h-8 rounded-xl bg-[#F5EFEB] dark:bg-[#1C1613] border-2 border-[#2D231E] dark:border-[#E5B25D] shadow-[2px_2px_0px_#2D231E] font-mono font-bold text-sm text-[#2D231E] dark:text-[#F5EFEB] transform hover:-translate-y-0.5 transition-transform">
       {label || 'N'}
     </div>
   )
@@ -98,6 +98,11 @@ const ScrapbookArt = {
 const BONGO_FRAMES = Array.from({ length: 12 }, (_, i) => `/assets/bongo_cat_frames/tyoe_frame_${i}.png`);
 
 export default function App() {
+  // Theme state: light or dark mode
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    return (localStorage.getItem('pluto-theme') as 'light' | 'dark') || 'light';
+  });
+
   const [activeTab, setActiveTab] = useState<'walk' | 'sleep' | 'bongo' | 'excited' | 'petting'>('bongo');
   const [happiness, setHappiness] = useState(98);
   const [treatsCount, setTreatsCount] = useState(5);
@@ -129,6 +134,22 @@ export default function App() {
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const catPosRef = useRef({ x: 80, y: 80, dir: 1 });
+
+  // Toggle Theme mode
+  const toggleTheme = () => {
+    const nextTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(nextTheme);
+    localStorage.setItem('pluto-theme', nextTheme);
+  };
+
+  // Sync dark class on html/body element
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
 
   // Load all Pluto PNG assets
   useEffect(() => {
@@ -219,7 +240,7 @@ export default function App() {
     const render = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      ctx.strokeStyle = '#2D231E';
+      ctx.strokeStyle = theme === 'dark' ? '#E5B25D' : '#2D231E';
       ctx.lineWidth = 2.5;
       ctx.beginPath();
       ctx.moveTo(15, 175);
@@ -305,7 +326,7 @@ export default function App() {
     render();
 
     return () => cancelAnimationFrame(animId);
-  }, [activeTab, bongoFrameIdx, kps, lastKeyTyped]);
+  }, [activeTab, bongoFrameIdx, kps, lastKeyTyped, theme]);
 
   const copyInstallCommand = () => {
     navigator.clipboard.writeText('git clone https://github.com/diablovocado/Pixel-Pet.git && cd Pixel-Pet && npm install && npm start');
@@ -332,40 +353,50 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-paper-grain text-[#2D231E] font-pixel relative selection:bg-[#E5B25D] selection:text-[#2D231E]">
+    <div className={`min-h-screen ${theme === 'dark' ? 'dark bg-[#1C1613] text-[#F5EFEB]' : 'bg-[#F5EFEB] text-[#2D231E]'} font-pixel relative selection:bg-[#E5B25D] selection:text-[#2D231E] transition-colors duration-300`}>
       
       {/* 1. TOP NAVBAR (Clean Translucent Paper Style) */}
-      <header className="sticky top-0 z-50 bg-[#F5EFEB]/95 backdrop-blur-md border-b-2 border-[#2D231E]">
+      <header className="sticky top-0 z-50 bg-[#F5EFEB]/95 dark:bg-[#1C1613]/95 backdrop-blur-md border-b-2 border-[#2D231E] dark:border-[#E5B25D] transition-colors">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           
           {/* Logo Left */}
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full bg-[#EAE0D5] border-2 border-[#2D231E] flex items-center justify-center shadow-[2px_3px_0px_#2D231E] overflow-hidden">
+            <div className="w-11 h-11 rounded-full bg-[#EAE0D5] dark:bg-[#2A211C] border-2 border-[#2D231E] dark:border-[#E5B25D] flex items-center justify-center shadow-[2px_3px_0px_#2D231E] overflow-hidden">
               <img src="/assets/pepperino.png" alt="Pluto Logo" className="w-8 h-8 rendering-pixelated object-contain" />
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-pixel font-bold text-xl text-[#2D231E]">PLUTO</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#E5B25D]/50 text-[#2D231E] font-mono font-bold border border-[#2D231E] shadow-[1px_1px_0px_#2D231E]">
+              <span className="font-pixel font-bold text-xl text-[#2D231E] dark:text-[#F5EFEB]">PLUTO</span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#E5B25D]/50 text-[#2D231E] dark:text-[#F5EFEB] font-mono font-bold border border-[#2D231E] dark:border-[#E5B25D] shadow-[1px_1px_0px_#2D231E]">
                 v1.0
               </span>
             </div>
           </div>
 
           {/* Center Links */}
-          <nav className="hidden md:flex items-center gap-8 text-xs font-pixel font-bold text-[#2D231E]">
-            <a href="#overview" className="hover:text-[#C87A5B] transition-colors">Features</a>
-            <a href="#playground" className="hover:text-[#C87A5B] transition-colors">Setup</a>
-            <a href="#gallery" className="hover:text-[#C87A5B] transition-colors">Assets</a>
-            <a href="https://github.com/diablovocado/Pixel-Pet" target="_blank" rel="noreferrer" className="hover:text-[#C87A5B] transition-colors flex items-center gap-1.5">
+          <nav className="hidden md:flex items-center gap-8 text-xs font-pixel font-bold text-[#2D231E] dark:text-[#F5EFEB]">
+            <a href="#overview" className="hover:text-[#C87A5B] dark:hover:text-[#E5B25D] transition-colors">Features</a>
+            <a href="#playground" className="hover:text-[#C87A5B] dark:hover:text-[#E5B25D] transition-colors">Setup</a>
+            <a href="#gallery" className="hover:text-[#C87A5B] dark:hover:text-[#E5B25D] transition-colors">Assets</a>
+            <a href="https://github.com/diablovocado/Pixel-Pet" target="_blank" rel="noreferrer" className="hover:text-[#C87A5B] dark:hover:text-[#E5B25D] transition-colors flex items-center gap-1.5">
               <Icons.Github /> GitHub
             </a>
           </nav>
 
-          {/* Right Action CTA Button */}
+          {/* Right Actions: Theme Toggle + Get Pluto App CTA Button */}
           <div className="flex items-center gap-3">
+            
+            {/* LIGHT / DARK MODE TOGGLE BUTTON */}
+            <button
+              onClick={toggleTheme}
+              className="px-3.5 py-2 rounded-full bg-[#EAE0D5] dark:bg-[#2A211C] border-2 border-[#2D231E] dark:border-[#E5B25D] text-[#2D231E] dark:text-[#E5B25D] font-pixel text-[10px] font-bold shadow-[2px_2px_0px_#2D231E] hover:bg-[#E5B25D]/30 transition-all flex items-center gap-1.5 cursor-pointer"
+              title="Toggle Light / Dark Mode"
+            >
+              <span>{theme === 'light' ? '☀️ Light' : '🌙 Dark'}</span>
+            </button>
+
             <a 
               href="#download"
-              className="px-5 py-2.5 bg-[#EAE0D5] border-2 border-[#2D231E] shadow-[3px_3px_0px_#2D231E] hover:bg-[#E5B25D]/40 text-[#2D231E] font-pixel text-xs font-bold rounded-full transition-all transform hover:-translate-y-0.5 flex items-center gap-2"
+              className="px-5 py-2.5 bg-[#EAE0D5] dark:bg-[#2A211C] border-2 border-[#2D231E] dark:border-[#E5B25D] shadow-[3px_3px_0px_#2D231E] hover:bg-[#E5B25D]/40 text-[#2D231E] dark:text-[#F5EFEB] font-pixel text-xs font-bold rounded-full transition-all transform hover:-translate-y-0.5 flex items-center gap-2"
             >
               <Icons.Apple />
               <span>Get Pluto App</span>
@@ -380,19 +411,19 @@ export default function App() {
         {/* Full-Screen Cozy Pixel Room Background Image */}
         <div className="absolute inset-0 bg-[url('/assets/hero_cozy_room.jpg')] bg-cover bg-center bg-no-repeat" />
         
-        {/* Soft Darkening Vignette Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#2D231E]/20 via-transparent to-[#F5EFEB]/80" />
+        {/* Soft Darkening Vignette Overlay (Darker in Dark Mode) */}
+        <div className={`absolute inset-0 transition-colors duration-300 ${theme === 'dark' ? 'bg-black/50' : 'bg-gradient-to-b from-[#2D231E]/20 via-transparent to-[#F5EFEB]/80'}`} />
 
         {/* Top Spacer */}
         <div className="relative z-10" />
 
-        {/* PLUTO PIXEL CAT MASCOT POSITIONED HIGHER DIRECTLY ON THE STUDY TABLE (Next to laptop under window) */}
+        {/* PLUTO PIXEL CAT MASCOT POSITIONED HIGHER DIRECTLY ON THE STUDY TABLE */}
         <div 
           onClick={handlePet}
           className="absolute top-[42%] sm:top-[43%] left-[54%] sm:left-[60%] md:left-[62%] lg:left-[64%] transform -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer group"
         >
           {/* Speech Bubble above Pluto on Study Table */}
-          <div className="absolute -top-14 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-[#F5EFEB] border-2 border-[#2D231E] px-3.5 py-1.5 rounded-xl shadow-[3px_3px_0px_#2D231E] font-vt323 text-xl font-bold text-[#2D231E] opacity-90 group-hover:opacity-100 transition-opacity pointer-events-none flex items-center gap-2">
+          <div className="absolute -top-14 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-[#F5EFEB] dark:bg-[#2A211C] border-2 border-[#2D231E] dark:border-[#E5B25D] px-3.5 py-1.5 rounded-xl shadow-[3px_3px_0px_#2D231E] font-vt323 text-xl font-bold text-[#2D231E] dark:text-[#F5EFEB] opacity-90 group-hover:opacity-100 transition-opacity pointer-events-none flex items-center gap-2">
             <span>{speechBubble}</span>
           </div>
 
@@ -411,7 +442,7 @@ export default function App() {
         <div className="relative z-10 pb-4">
           <a 
             href="#overview" 
-            className="px-6 py-3 rounded-full bg-[#F5EFEB]/95 backdrop-blur-md border-2 border-[#2D231E] shadow-[4px_4px_0px_#2D231E] text-xs font-pixel font-bold text-[#2D231E] hover:bg-[#E5B25D]/40 transition-all inline-flex items-center gap-2.5 group"
+            className="px-6 py-3 rounded-full bg-[#F5EFEB]/95 dark:bg-[#1C1613]/95 backdrop-blur-md border-2 border-[#2D231E] dark:border-[#E5B25D] shadow-[4px_4px_0px_#2D231E] text-xs font-pixel font-bold text-[#2D231E] dark:text-[#F5EFEB] hover:bg-[#E5B25D]/40 transition-all inline-flex items-center gap-2.5 group"
           >
             <span className="group-hover:translate-y-0.5 transition-transform">Scroll to Explore ↓</span>
             <Icons.DownArrow />
@@ -422,48 +453,48 @@ export default function App() {
       {/* PAGE 2: SCROLL DOWN CONTENT & FEATURES */}
       
       {/* SECTION 2: INTRO & FEATURE CHIPS */}
-      <section id="overview" className="py-24 px-6 max-w-6xl mx-auto border-t-2 border-[#2D231E]">
-        <div className="bg-[#EAE0D5] border-2.5 border-[#2D231E] shadow-[6px_8px_0px_#2D231E] rounded-3xl p-8 sm:p-12 text-center space-y-8 relative">
+      <section id="overview" className="py-24 px-6 max-w-6xl mx-auto border-t-2 border-[#2D231E] dark:border-[#E5B25D]">
+        <div className="bg-[#EAE0D5] dark:bg-[#2A211C] border-2.5 border-[#2D231E] dark:border-[#E5B25D] shadow-[6px_8px_0px_#2D231E] rounded-3xl p-8 sm:p-12 text-center space-y-8 relative transition-colors">
           
-          <h2 className="text-2xl sm:text-4xl font-pixel font-bold text-[#2D231E] leading-relaxed">
+          <h2 className="text-2xl sm:text-4xl font-pixel font-bold text-[#2D231E] dark:text-[#F5EFEB] leading-relaxed">
             A Living Pixel Cat for Your Mac Desktop
           </h2>
 
-          <p className="text-xl sm:text-2xl font-vt323 font-bold text-[#2D231E]/85 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl sm:text-2xl font-vt323 font-bold text-[#2D231E]/85 dark:text-[#F5EFEB]/85 max-w-3xl mx-auto leading-relaxed">
             Pluto sits on your dock, sleeps when you step away, reacts to typing speed, and plays Bongo drums right on your screen.
           </p>
 
           {/* 4 Feature Chips */}
           <div className="pt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 text-left font-vt323 font-bold">
-            <div className="p-5 bg-[#F5EFEB] border-2 border-[#2D231E] shadow-[4px_4px_0px_#2D231E] rounded-2xl flex items-center gap-3">
+            <div className="p-5 bg-[#F5EFEB] dark:bg-[#1C1613] border-2 border-[#2D231E] dark:border-[#E5B25D] shadow-[4px_4px_0px_#2D231E] rounded-2xl flex items-center gap-3">
               <span className="text-3xl">💾</span>
               <div>
-                <div className="font-pixel text-xs text-[#2D231E]">0.1% CPU Usage</div>
-                <div className="text-sm text-[#8C5A3C] font-vt323 mt-1">Ultra Lightweight</div>
+                <div className="font-pixel text-xs text-[#2D231E] dark:text-[#F5EFEB]">0.1% CPU Usage</div>
+                <div className="text-sm text-[#8C5A3C] dark:text-[#E5B25D] font-vt323 mt-1">Ultra Lightweight</div>
               </div>
             </div>
 
-            <div className="p-5 bg-[#F5EFEB] border-2 border-[#2D231E] shadow-[4px_4px_0px_#2D231E] rounded-2xl flex items-center gap-3">
+            <div className="p-5 bg-[#F5EFEB] dark:bg-[#1C1613] border-2 border-[#2D231E] dark:border-[#E5B25D] shadow-[4px_4px_0px_#2D231E] rounded-2xl flex items-center gap-3">
               <span className="text-3xl">💼</span>
               <div>
-                <div className="font-pixel text-xs text-[#2D231E]">~15MB RAM</div>
-                <div className="text-sm text-[#8C5A3C] font-vt323 mt-1">Minimal Memory</div>
+                <div className="font-pixel text-xs text-[#2D231E] dark:text-[#F5EFEB]">~15MB RAM</div>
+                <div className="text-sm text-[#8C5A3C] dark:text-[#E5B25D] font-vt323 mt-1">Minimal Memory</div>
               </div>
             </div>
 
-            <div className="p-5 bg-[#F5EFEB] border-2 border-[#2D231E] shadow-[4px_4px_0px_#2D231E] rounded-2xl flex items-center gap-3">
+            <div className="p-5 bg-[#F5EFEB] dark:bg-[#1C1613] border-2 border-[#2D231E] dark:border-[#E5B25D] shadow-[4px_4px_0px_#2D231E] rounded-2xl flex items-center gap-3">
               <span className="text-3xl">🌐</span>
               <div>
-                <div className="font-pixel text-xs text-[#2D231E]">100% Offline</div>
-                <div className="text-sm text-[#8C5A3C] font-vt323 mt-1">Zero Analytics</div>
+                <div className="font-pixel text-xs text-[#2D231E] dark:text-[#F5EFEB]">100% Offline</div>
+                <div className="text-sm text-[#8C5A3C] dark:text-[#E5B25D] font-vt323 mt-1">Zero Analytics</div>
               </div>
             </div>
 
-            <div className="p-5 bg-[#F5EFEB] border-2 border-[#2D231E] shadow-[4px_4px_0px_#2D231E] rounded-2xl flex items-center gap-3">
+            <div className="p-5 bg-[#F5EFEB] dark:bg-[#1C1613] border-2 border-[#2D231E] dark:border-[#E5B25D] shadow-[4px_4px_0px_#2D231E] rounded-2xl flex items-center gap-3">
               <span className="text-3xl">🖥</span>
               <div>
-                <div className="font-pixel text-xs text-[#2D231E]">macOS Universal</div>
-                <div className="text-sm text-[#8C5A3C] font-vt323 mt-1">Silicon & Intel</div>
+                <div className="font-pixel text-xs text-[#2D231E] dark:text-[#F5EFEB]">macOS Universal</div>
+                <div className="text-sm text-[#8C5A3C] dark:text-[#E5B25D] font-vt323 mt-1">Silicon & Intel</div>
               </div>
             </div>
           </div>
@@ -471,11 +502,11 @@ export default function App() {
       </section>
 
       {/* SECTION 3: INTERACTIVE TYPING CANVAS DEMO */}
-      <section id="playground" className="py-20 px-6 max-w-6xl mx-auto border-t-2 border-[#2D231E]">
+      <section id="playground" className="py-20 px-6 max-w-6xl mx-auto border-t-2 border-[#2D231E] dark:border-[#E5B25D]">
         
         <div className="text-center max-w-2xl mx-auto mb-14 space-y-3">
-          <h2 className="text-xs font-pixel text-[#C87A5B] uppercase tracking-widest font-bold">Interactive Sandbox</h2>
-          <p className="text-2xl sm:text-4xl font-pixel font-bold text-[#2D231E]">Test Pluto Live</p>
+          <h2 className="text-xs font-pixel text-[#C87A5B] dark:text-[#E5B25D] uppercase tracking-widest font-bold">Interactive Sandbox</h2>
+          <p className="text-2xl sm:text-4xl font-pixel font-bold text-[#2D231E] dark:text-[#F5EFEB]">Test Pluto Live</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -486,19 +517,19 @@ export default function App() {
           </div>
 
           {/* Right Side: Mechanical Framing Box Canvas */}
-          <div className="lg:col-span-8 bg-[#EAE0D5] border-2.5 border-[#2D231E] shadow-[6px_7px_0px_#2D231E] rounded-3xl p-6 sm:p-8 relative overflow-hidden">
+          <div className="lg:col-span-8 bg-[#EAE0D5] dark:bg-[#2A211C] border-2.5 border-[#2D231E] dark:border-[#E5B25D] shadow-[6px_7px_0px_#2D231E] rounded-3xl p-6 sm:p-8 relative overflow-hidden transition-colors">
             
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b-2 border-[#2D231E]">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b-2 border-[#2D231E] dark:border-[#E5B25D]">
               <div className="flex items-center gap-3">
                 <span className="w-3.5 h-3.5 rounded-full bg-[#C87A5B] border border-[#2D231E] inline-block" />
-                <span className="font-pixel text-xs text-[#2D231E] tracking-wide">
+                <span className="font-pixel text-xs text-[#2D231E] dark:text-[#F5EFEB] tracking-wide">
                   LIVE PLUTO TYPING CANVAS
                 </span>
               </div>
 
-              <div className="flex items-center gap-2 font-mono text-xs font-bold text-[#2D231E]">
+              <div className="flex items-center gap-2 font-mono text-xs font-bold text-[#2D231E] dark:text-[#F5EFEB]">
                 <span>Typing Speed:</span>
-                <span className="px-3 py-1 rounded-full bg-[#E5B25D]/50 border-2 border-[#2D231E]">
+                <span className="px-3 py-1 rounded-full bg-[#E5B25D]/50 border-2 border-[#2D231E] dark:border-[#E5B25D]">
                   + {kps} KPS
                 </span>
               </div>
@@ -510,11 +541,11 @@ export default function App() {
                 value={testInputText}
                 onChange={(e) => setTestInputText(e.target.value)}
                 placeholder="Type anything here to see Pluto react in real time..."
-                className="w-full bg-[#F5EFEB] border-2 border-[#2D231E] rounded-2xl px-5 py-4 text-xl text-[#2D231E] placeholder-[#2D231E]/50 font-vt323 font-bold focus:outline-none focus:bg-white transition-colors shadow-inner"
+                className="w-full bg-[#F5EFEB] dark:bg-[#1C1613] border-2 border-[#2D231E] dark:border-[#E5B25D] rounded-2xl px-5 py-4 text-xl text-[#2D231E] dark:text-[#F5EFEB] placeholder-[#2D231E]/50 dark:placeholder-[#F5EFEB]/50 font-vt323 font-bold focus:outline-none focus:bg-white dark:focus:bg-[#2A211C] transition-colors shadow-inner"
               />
             </div>
 
-            <div className="mb-4 bg-[#8A9A65]/25 border-2 border-[#2D231E] p-4 rounded-2xl text-[#2D231E] text-xl font-vt323 font-bold flex items-center justify-between gap-3">
+            <div className="mb-4 bg-[#8A9A65]/25 border-2 border-[#2D231E] dark:border-[#E5B25D] p-4 rounded-2xl text-[#2D231E] dark:text-[#F5EFEB] text-xl font-vt323 font-bold flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <span>💬 Keystroke detected! Key '{lastKeyTyped}' • Pluto is reacting!</span>
               </div>
@@ -523,11 +554,11 @@ export default function App() {
 
             <div 
               onClick={handlePet}
-              className="relative bg-[#F5EFEB] rounded-2xl border-2 border-[#2D231E] h-64 flex items-center justify-center cursor-pointer overflow-hidden group shadow-inner"
+              className="relative bg-[#F5EFEB] dark:bg-[#1C1613] rounded-2xl border-2 border-[#2D231E] dark:border-[#E5B25D] h-64 flex items-center justify-center cursor-pointer overflow-hidden group shadow-inner"
             >
               <canvas ref={canvasRef} width={640} height={210} className="w-full h-full rendering-pixelated" />
               
-              <div className="absolute top-4 right-4 text-xs font-pixel font-bold text-[#2D231E] bg-[#EAE0D5] px-3.5 py-1.5 rounded-full border-2 border-[#2D231E] shadow-[2px_2px_0px_#2D231E] pointer-events-none flex items-center gap-2">
+              <div className="absolute top-4 right-4 text-xs font-pixel font-bold text-[#2D231E] dark:text-[#F5EFEB] bg-[#EAE0D5] dark:bg-[#2A211C] px-3.5 py-1.5 rounded-full border-2 border-[#2D231E] dark:border-[#E5B25D] shadow-[2px_2px_0px_#2D231E] pointer-events-none flex items-center gap-2">
                 <img src="/assets/pepperino.png" alt="Pluto" className="w-4 h-4 rendering-pixelated" />
                 <span>🐾 Click Canvas to Pet Pluto!</span>
               </div>
@@ -536,7 +567,7 @@ export default function App() {
             <div className="mt-6 grid grid-cols-2 sm:grid-cols-5 gap-2.5 font-pixel text-[10px]">
               <button
                 onClick={() => { setActiveTab('walk'); setSpeechBubble("Pluto is walking along the dock... 🐾"); }}
-                className={`px-3 py-3 rounded-xl border-2 border-[#2D231E] transition-all flex items-center justify-center gap-2 ${activeTab === 'walk' ? 'bg-[#C87A5B] text-[#F5EFEB] shadow-[3px_3px_0px_#2D231E]' : 'bg-[#F5EFEB] text-[#2D231E] hover:bg-[#E5B25D]/30 shadow-[2px_2px_0px_#2D231E]'}`}
+                className={`px-3 py-3 rounded-xl border-2 border-[#2D231E] dark:border-[#E5B25D] transition-all flex items-center justify-center gap-2 ${activeTab === 'walk' ? 'bg-[#C87A5B] text-[#F5EFEB] shadow-[3px_3px_0px_#2D231E]' : 'bg-[#F5EFEB] dark:bg-[#1C1613] text-[#2D231E] dark:text-[#F5EFEB] hover:bg-[#E5B25D]/30 shadow-[2px_2px_0px_#2D231E]'}`}
               >
                 <img src="/assets/pepperino.png" alt="Walk" className="w-4 h-4 rendering-pixelated" />
                 <span>Walk</span>
@@ -544,7 +575,7 @@ export default function App() {
               
               <button
                 onClick={() => { setActiveTab('sleep'); setSpeechBubble("Shhh... Pluto is sleeping! Zzz... 💤"); }}
-                className={`px-3 py-3 rounded-xl border-2 border-[#2D231E] transition-all flex items-center justify-center gap-2 ${activeTab === 'sleep' ? 'bg-[#C87A5B] text-[#F5EFEB] shadow-[3px_3px_0px_#2D231E]' : 'bg-[#F5EFEB] text-[#2D231E] hover:bg-[#E5B25D]/30 shadow-[2px_2px_0px_#2D231E]'}`}
+                className={`px-3 py-3 rounded-xl border-2 border-[#2D231E] dark:border-[#E5B25D] transition-all flex items-center justify-center gap-2 ${activeTab === 'sleep' ? 'bg-[#C87A5B] text-[#F5EFEB] shadow-[3px_3px_0px_#2D231E]' : 'bg-[#F5EFEB] dark:bg-[#1C1613] text-[#2D231E] dark:text-[#F5EFEB] hover:bg-[#E5B25D]/30 shadow-[2px_2px_0px_#2D231E]'}`}
               >
                 <img src="/assets/sleep.png" alt="Sleep" className="w-4 h-4 rendering-pixelated" />
                 <span>Sleep</span>
@@ -552,7 +583,7 @@ export default function App() {
 
               <button
                 onClick={() => { setActiveTab('bongo'); setSpeechBubble("Pluto Bongo mode! Slamming paws on keyboard! 🎹⚡"); }}
-                className={`px-3 py-3 rounded-xl border-2 border-[#2D231E] transition-all flex items-center justify-center gap-2 ${activeTab === 'bongo' ? 'bg-[#C87A5B] text-[#F5EFEB] shadow-[3px_3px_0px_#2D231E]' : 'bg-[#F5EFEB] text-[#2D231E] hover:bg-[#E5B25D]/30 shadow-[2px_2px_0px_#2D231E]'}`}
+                className={`px-3 py-3 rounded-xl border-2 border-[#2D231E] dark:border-[#E5B25D] transition-all flex items-center justify-center gap-2 ${activeTab === 'bongo' ? 'bg-[#C87A5B] text-[#F5EFEB] shadow-[3px_3px_0px_#2D231E]' : 'bg-[#F5EFEB] dark:bg-[#1C1613] text-[#2D231E] dark:text-[#F5EFEB] hover:bg-[#E5B25D]/30 shadow-[2px_2px_0px_#2D231E]'}`}
               >
                 <img src="/assets/tyoe_left.png" alt="Bongo" className="w-4 h-4 rendering-pixelated" />
                 <span>Bongo</span>
@@ -560,36 +591,36 @@ export default function App() {
 
               <button
                 onClick={handlePet}
-                className="px-3 py-3 rounded-xl border-2 border-[#2D231E] bg-[#F5EFEB] hover:bg-[#C87A5B]/20 text-[#2D231E] shadow-[2px_2px_0px_#2D231E] flex items-center justify-center gap-1.5"
+                className="px-3 py-3 rounded-xl border-2 border-[#2D231E] dark:border-[#E5B25D] bg-[#F5EFEB] dark:bg-[#1C1613] hover:bg-[#C87A5B]/20 text-[#2D231E] dark:text-[#F5EFEB] shadow-[2px_2px_0px_#2D231E] flex items-center justify-center gap-1.5"
               >
                 <Icons.Heart /> Pet
               </button>
 
               <button
                 onClick={handleFeed}
-                className="px-3 py-3 rounded-xl border-2 border-[#2D231E] bg-[#F5EFEB] hover:bg-[#8A9A65]/30 text-[#2D231E] shadow-[2px_2px_0px_#2D231E] flex items-center justify-center gap-1.5"
+                className="px-3 py-3 rounded-xl border-2 border-[#2D231E] dark:border-[#E5B25D] bg-[#F5EFEB] dark:bg-[#1C1613] hover:bg-[#8A9A65]/30 text-[#2D231E] dark:text-[#F5EFEB] shadow-[2px_2px_0px_#2D231E] flex items-center justify-center gap-1.5"
               >
                 <Icons.Fish /> Feed ({treatsCount})
               </button>
             </div>
 
-            <div className="mt-6 pt-4 border-t-2 border-[#2D231E] flex flex-col sm:flex-row items-center justify-between text-xl text-[#2D231E] font-vt323 font-bold gap-4">
+            <div className="mt-6 pt-4 border-t-2 border-[#2D231E] dark:border-[#E5B25D] flex flex-col sm:flex-row items-center justify-between text-xl text-[#2D231E] dark:text-[#F5EFEB] font-vt323 font-bold gap-4">
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2">
                   <span>Pluto's Happiness:</span>
-                  <div className="w-28 h-3.5 bg-[#F5EFEB] border-2 border-[#2D231E] rounded-full overflow-hidden">
+                  <div className="w-28 h-3.5 bg-[#F5EFEB] dark:bg-[#1C1613] border-2 border-[#2D231E] dark:border-[#E5B25D] rounded-full overflow-hidden">
                     <div className="h-full bg-[#C87A5B] transition-all duration-300" style={{ width: `${happiness}%` }} />
                   </div>
                   <span className="font-bold">{happiness}%</span>
                 </div>
-                <div>Keys Typed: <span className="text-[#C87A5B] font-bold">{keystrokesCount}</span></div>
-                <div>Treats Left: <span className="text-[#8A9A65] font-bold">{treatsCount}</span></div>
+                <div>Keys Typed: <span className="text-[#C87A5B] dark:text-[#E5B25D] font-bold">{keystrokesCount}</span></div>
+                <div>Treats Left: <span className="text-[#8A9A65] dark:text-[#E5B25D] font-bold">{treatsCount}</span></div>
               </div>
 
               {treatsCount === 0 && (
                 <button 
                   onClick={() => { setTreatsCount(5); setSpeechBubble("Treat box refilled for Pluto! 🐟🐟"); }}
-                  className="text-lg text-[#C87A5B] hover:underline font-bold"
+                  className="text-lg text-[#C87A5B] dark:text-[#E5B25D] hover:underline font-bold"
                 >
                   + Restock Treats
                 </button>
@@ -600,68 +631,68 @@ export default function App() {
       </section>
 
       {/* SECTION 4: SPRITE GALLERY */}
-      <section id="gallery" className="py-20 px-6 max-w-7xl mx-auto border-t-2 border-[#2D231E]">
+      <section id="gallery" className="py-20 px-6 max-w-7xl mx-auto border-t-2 border-[#2D231E] dark:border-[#E5B25D]">
         <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-          <h2 className="text-xs font-pixel text-[#C87A5B] uppercase tracking-widest font-bold">Sprite Library</h2>
-          <p className="text-2xl sm:text-4xl font-pixel font-bold text-[#2D231E]">Transparent Pixel Assets</p>
+          <h2 className="text-xs font-pixel text-[#C87A5B] dark:text-[#E5B25D] uppercase tracking-widest font-bold">Sprite Library</h2>
+          <p className="text-2xl sm:text-4xl font-pixel font-bold text-[#2D231E] dark:text-[#F5EFEB]">Transparent Pixel Assets</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="p-6 bg-[#EAE0D5] border-2 border-[#2D231E] shadow-[4px_4px_0px_#2D231E] rounded-2xl flex flex-col items-center text-center">
-            <div className="w-24 h-24 mb-4 bg-[#F5EFEB] border-2 border-[#2D231E] rounded-xl p-2 flex items-center justify-center">
+          <div className="p-6 bg-[#EAE0D5] dark:bg-[#2A211C] border-2 border-[#2D231E] dark:border-[#E5B25D] shadow-[4px_4px_0px_#2D231E] rounded-2xl flex flex-col items-center text-center">
+            <div className="w-24 h-24 mb-4 bg-[#F5EFEB] dark:bg-[#1C1613] border-2 border-[#2D231E] dark:border-[#E5B25D] rounded-xl p-2 flex items-center justify-center">
               <img src="/assets/pepperino.png" alt="Pluto Sprite" className="w-16 h-16 rendering-pixelated object-contain" />
             </div>
-            <h4 className="font-pixel text-xs text-[#2D231E] mb-1">Cat Sprite</h4>
-            <p className="text-[#8C5A3C] text-[10px] font-mono">assets/pepperino.png</p>
-            <p className="text-[#2D231E]/80 text-lg font-vt323 font-bold mt-2">Main Pluto pixel cat mascot that walks along screen dock.</p>
+            <h4 className="font-pixel text-xs text-[#2D231E] dark:text-[#F5EFEB] mb-1">Cat Sprite</h4>
+            <p className="text-[#8C5A3C] dark:text-[#E5B25D] text-[10px] font-mono">assets/pepperino.png</p>
+            <p className="text-[#2D231E]/80 dark:text-[#F5EFEB]/80 text-lg font-vt323 font-bold mt-2">Main Pluto pixel cat mascot that walks along screen dock.</p>
           </div>
 
-          <div className="p-6 bg-[#EAE0D5] border-2 border-[#2D231E] shadow-[4px_4px_0px_#2D231E] rounded-2xl flex flex-col items-center text-center">
-            <div className="w-24 h-24 mb-4 bg-[#F5EFEB] border-2 border-[#2D231E] rounded-xl p-2 flex items-center justify-center">
+          <div className="p-6 bg-[#EAE0D5] dark:bg-[#2A211C] border-2 border-[#2D231E] dark:border-[#E5B25D] shadow-[4px_4px_0px_#2D231E] rounded-2xl flex flex-col items-center text-center">
+            <div className="w-24 h-24 mb-4 bg-[#F5EFEB] dark:bg-[#1C1613] border-2 border-[#2D231E] dark:border-[#E5B25D] rounded-xl p-2 flex items-center justify-center">
               <img src="/assets/sleep.png" alt="Pluto Sleeping" className="w-20 h-20 rendering-pixelated object-contain" />
             </div>
-            <h4 className="font-pixel text-xs text-[#2D231E] mb-1">Sleeping Asset</h4>
-            <p className="text-[#8C5A3C] text-[10px] font-mono">assets/sleep.png</p>
-            <p className="text-[#2D231E]/80 text-lg font-vt323 font-bold mt-2">Triggered automatically when system is idle.</p>
+            <h4 className="font-pixel text-xs text-[#2D231E] dark:text-[#F5EFEB] mb-1">Sleeping Asset</h4>
+            <p className="text-[#8C5A3C] dark:text-[#E5B25D] text-[10px] font-mono">assets/sleep.png</p>
+            <p className="text-[#2D231E]/80 dark:text-[#F5EFEB]/80 text-lg font-vt323 font-bold mt-2">Triggered automatically when system is idle.</p>
           </div>
 
-          <div className="p-6 bg-[#EAE0D5] border-2 border-[#2D231E] shadow-[4px_4px_0px_#2D231E] rounded-2xl flex flex-col items-center text-center">
-            <div className="w-24 h-24 mb-4 bg-[#F5EFEB] border-2 border-[#2D231E] rounded-xl p-2 flex items-center justify-center">
+          <div className="p-6 bg-[#EAE0D5] dark:bg-[#2A211C] border-2 border-[#2D231E] dark:border-[#E5B25D] shadow-[4px_4px_0px_#2D231E] rounded-2xl flex flex-col items-center text-center">
+            <div className="w-24 h-24 mb-4 bg-[#F5EFEB] dark:bg-[#1C1613] border-2 border-[#2D231E] dark:border-[#E5B25D] rounded-xl p-2 flex items-center justify-center">
               <img src="/assets/tyoe_left.png" alt="Pluto Bongo Left" className="w-16 h-16 rendering-pixelated object-contain" />
             </div>
-            <h4 className="font-pixel text-xs text-[#2D231E] mb-1">Bongo Paws</h4>
-            <p className="text-[#8C5A3C] text-[10px] font-mono">assets/tyoe_left.png</p>
-            <p className="text-[#2D231E]/80 text-lg font-vt323 font-bold mt-2">Pluto slams paws in sync with typing speed.</p>
+            <h4 className="font-pixel text-xs text-[#2D231E] dark:text-[#F5EFEB] mb-1">Bongo Paws</h4>
+            <p className="text-[#8C5A3C] dark:text-[#E5B25D] text-[10px] font-mono">assets/tyoe_left.png</p>
+            <p className="text-[#2D231E]/80 dark:text-[#F5EFEB]/80 text-lg font-vt323 font-bold mt-2">Pluto slams paws in sync with typing speed.</p>
           </div>
 
-          <div className="p-6 bg-[#EAE0D5] border-2 border-[#2D231E] shadow-[4px_4px_0px_#2D231E] rounded-2xl flex flex-col items-center text-center">
-            <div className="w-24 h-24 mb-4 bg-[#F5EFEB] border-2 border-[#2D231E] rounded-xl p-2 flex items-center justify-center">
+          <div className="p-6 bg-[#EAE0D5] dark:bg-[#2A211C] border-2 border-[#2D231E] dark:border-[#E5B25D] shadow-[4px_4px_0px_#2D231E] rounded-2xl flex flex-col items-center text-center">
+            <div className="w-24 h-24 mb-4 bg-[#F5EFEB] dark:bg-[#1C1613] border-2 border-[#2D231E] dark:border-[#E5B25D] rounded-xl p-2 flex items-center justify-center">
               <img src="/assets/bongo_cat_frames/tyoe_frame_2.png" alt="Frame" className="w-16 h-16 rendering-pixelated object-contain" />
             </div>
-            <h4 className="font-pixel text-xs text-[#2D231E] mb-1">12-Frame Anim</h4>
-            <p className="text-[#8C5A3C] text-[10px] font-mono">assets/bongo_cat_frames/*</p>
-            <p className="text-[#2D231E]/80 text-lg font-vt323 font-bold mt-2">Clean transparent PNG frame sequence for Pluto's typing.</p>
+            <h4 className="font-pixel text-xs text-[#2D231E] dark:text-[#F5EFEB] mb-1">12-Frame Anim</h4>
+            <p className="text-[#8C5A3C] dark:text-[#E5B25D] text-[10px] font-mono">assets/bongo_cat_frames/*</p>
+            <p className="text-[#2D231E]/80 dark:text-[#F5EFEB]/80 text-lg font-vt323 font-bold mt-2">Clean transparent PNG frame sequence for Pluto's typing.</p>
           </div>
         </div>
       </section>
 
       {/* SECTION 5: QUICK SETUP & DOWNLOAD */}
-      <section id="download" className="py-20 px-6 max-w-5xl mx-auto border-t-2 border-[#2D231E]">
-        <div className="bg-[#EAE0D5] border-2.5 border-[#2D231E] shadow-[6px_8px_0px_#2D231E] rounded-3xl p-8 md:p-12 relative overflow-hidden">
+      <section id="download" className="py-20 px-6 max-w-5xl mx-auto border-t-2 border-[#2D231E] dark:border-[#E5B25D]">
+        <div className="bg-[#EAE0D5] dark:bg-[#2A211C] border-2.5 border-[#2D231E] dark:border-[#E5B25D] shadow-[6px_8px_0px_#2D231E] rounded-3xl p-8 md:p-12 relative overflow-hidden transition-colors">
           <div className="max-w-2xl space-y-6">
-            <h2 className="text-2xl sm:text-4xl font-pixel font-bold text-[#2D231E]">Get Started In 30s</h2>
-            <p className="text-[#2D231E]/80 text-2xl font-vt323 font-bold leading-relaxed">
+            <h2 className="text-2xl sm:text-4xl font-pixel font-bold text-[#2D231E] dark:text-[#F5EFEB]">Get Started In 30s</h2>
+            <p className="text-[#2D231E]/80 dark:text-[#F5EFEB]/80 text-2xl font-vt323 font-bold leading-relaxed">
               Clone the repository and launch Pluto instantly on macOS, Linux, or Windows.
             </p>
 
-            <div className="bg-[#F5EFEB] rounded-2xl p-4 border-2 border-[#2D231E] font-mono text-xs text-[#2D231E] flex items-center justify-between gap-4 overflow-x-auto shadow-inner">
+            <div className="bg-[#F5EFEB] dark:bg-[#1C1613] rounded-2xl p-4 border-2 border-[#2D231E] dark:border-[#E5B25D] font-mono text-xs text-[#2D231E] dark:text-[#F5EFEB] flex items-center justify-between gap-4 overflow-x-auto shadow-inner">
               <div className="flex items-center gap-2">
-                <span className="text-[#C87A5B] font-bold">$</span>
+                <span className="text-[#C87A5B] dark:text-[#E5B25D] font-bold">$</span>
                 <span>git clone https://github.com/diablovocado/Pixel-Pet.git && cd Pixel-Pet && npm install && npm start</span>
               </div>
               <button 
                 onClick={copyInstallCommand}
-                className="px-3.5 py-2 rounded-xl bg-[#EAE0D5] border border-[#2D231E] hover:bg-[#E5B25D]/40 text-[#2D231E] flex items-center gap-1.5 transition-colors shrink-0 font-pixel text-[10px] font-bold"
+                className="px-3.5 py-2 rounded-xl bg-[#EAE0D5] dark:bg-[#2A211C] border border-[#2D231E] dark:border-[#E5B25D] hover:bg-[#E5B25D]/40 text-[#2D231E] dark:text-[#F5EFEB] flex items-center gap-1.5 transition-colors shrink-0 font-pixel text-[10px] font-bold"
               >
                 {copied ? <Icons.Check /> : <Icons.Copy />}
                 <span>{copied ? 'Copied!' : 'Copy'}</span>
@@ -673,7 +704,7 @@ export default function App() {
                 href="https://github.com/diablovocado/Pixel-Pet/releases"
                 target="_blank"
                 rel="noreferrer"
-                className="px-7 py-3.5 bg-[#C87A5B] hover:bg-[#B5684A] text-[#F5EFEB] border-2.5 border-[#2D231E] shadow-[4px_5px_0px_#2D231E] font-pixel font-bold text-xs rounded-full flex items-center gap-2.5"
+                className="px-7 py-3.5 bg-[#C87A5B] hover:bg-[#B5684A] text-[#F5EFEB] border-2.5 border-[#2D231E] dark:border-[#E5B25D] shadow-[4px_5px_0px_#2D231E] font-pixel font-bold text-xs rounded-full flex items-center gap-2.5"
               >
                 <Icons.Download />
                 <span>Download Pluto App Package</span>
@@ -684,15 +715,15 @@ export default function App() {
       </section>
 
       {/* FOOTER */}
-      <footer className="py-12 border-t-2 border-[#2D231E] text-center text-lg font-vt323 font-bold text-[#2D231E]">
+      <footer className="py-12 border-t-2 border-[#2D231E] dark:border-[#E5B25D] text-center text-lg font-vt323 font-bold text-[#2D231E] dark:text-[#F5EFEB]">
         <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <img src="/assets/pepperino.png" alt="Pluto" className="w-5 h-5 rendering-pixelated" />
             <span>© {new Date().getFullYear()} Pluto (Pixel-Pet). Open source under MIT License.</span>
           </div>
           <div className="flex items-center gap-6">
-            <a href="https://github.com/diablovocado/Pixel-Pet" target="_blank" rel="noreferrer" className="hover:text-[#C87A5B] transition-colors">GitHub Repository</a>
-            <a href="#playground" className="hover:text-[#C87A5B] transition-colors">Live Pluto Demo</a>
+            <a href="https://github.com/diablovocado/Pixel-Pet" target="_blank" rel="noreferrer" className="hover:text-[#C87A5B] dark:hover:text-[#E5B25D] transition-colors">GitHub Repository</a>
+            <a href="#playground" className="hover:text-[#C87A5B] dark:hover:text-[#E5B25D] transition-colors">Live Pluto Demo</a>
           </div>
         </div>
       </footer>
