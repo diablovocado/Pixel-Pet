@@ -66,24 +66,12 @@ html, body, * {
   background-position: 0 0;
 }
 
-.dark .bg-dot-grid {
-  background-color: #1C1613;
-  background-image: radial-gradient(rgba(229, 178, 93, 0.15) 1.2px, transparent 1.2px);
-  background-size: 24px 24px;
-}
-
 /* Paper grain texture fallback */
 .bg-paper-grain {
   background-color: #F5EFEB;
   background-image: radial-gradient(#2D231E 0.4px, transparent 0.4px), radial-gradient(#2D231E 0.4px, #F5EFEB 0.4px);
   background-size: 24px 24px;
   background-position: 0 0, 12px 12px;
-}
-
-.dark .bg-paper-grain {
-  background-color: #1C1613;
-  background-image: radial-gradient(#E5B25D 0.4px, transparent 0.4px), radial-gradient(#E5B25D 0.4px, #1C1613 0.4px);
-  background-size: 24px 24px;
 }
 
 /* Hand-drawn sketchy border boxes */
@@ -149,9 +137,6 @@ html, body, * {
 }
 ::-webkit-scrollbar-track {
   background: #F5EFEB;
-}
-.dark ::-webkit-scrollbar-track {
-  background: #1C1613;
 }
 ::-webkit-scrollbar-thumb {
   background: #C87A5B;
