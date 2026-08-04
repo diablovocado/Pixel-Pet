@@ -1,15 +1,33 @@
 {
-  "name": "pixel-deskpet",
+  "name": "pixel-pet",
+  "private": true,
   "version": "1.0.0",
-  "description": "A tiny pixel cat that lives on your desktop",
-  "main": "main.js",
+  "type": "module",
+  "description": "A tiny pixel cat that lives on your desktop + web landing page",
+  "main": "desktop/main.js",
   "scripts": {
-    "start": "electron ."
-  },
-  "devDependencies": {
-    "electron": "^43.2.0"
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "electron desktop/main.js",
+    "format": "oxfmt"
   },
   "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "lucide-react": "^0.475.0",
     "node-global-key-listener": "^0.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.0.0",
+    "tailwindcss": "^4.0.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "electron": "^43.2.0",
+    "oxfmt": "^0.2.0",
+    "typescript": "^5.7.0",
+    "vite": "^8.0.0"
   }
 }

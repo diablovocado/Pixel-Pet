@@ -65,7 +65,7 @@ function createWindow() {
   win.setAlwaysOnTop(true, 'floating');
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   win.setIgnoreMouseEvents(true, { forward: true });
-  win.loadFile('index.html');
+  win.loadFile(path.join(__dirname, 'index.html'));
   win.show();
   win.showInactive();
 
