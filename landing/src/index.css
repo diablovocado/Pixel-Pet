@@ -1,13 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  --font-heading: 'Fredoka', 'Sniglet', cursive, sans-serif;
-  --font-hand: 'Caveat', 'Gaegu', cursive, sans-serif;
+  --font-heading: 'Press Start 2P', 'Silkscreen', 'Fredoka', sans-serif;
+  --font-hand: 'VT323', 'Press Start 2P', monospace;
   --font-pixel: 'Press Start 2P', monospace;
-  --font-sans: 'Fredoka', system-ui, sans-serif;
+  --font-sans: 'Press Start 2P', 'VT323', monospace;
 }
 
-html {
+html, body, * {
+  font-style: normal !important;
   scroll-behavior: smooth;
 }
 
@@ -18,26 +19,34 @@ html {
   }
 
   .font-hand {
-    font-family: 'Caveat', 'Gaegu', cursive, sans-serif;
+    font-family: 'VT323', 'Press Start 2P', monospace;
+    font-style: normal !important;
   }
 
   .font-heading {
-    font-family: 'Fredoka', 'Sniglet', cursive, sans-serif;
+    font-family: 'Press Start 2P', 'Silkscreen', sans-serif;
+    font-style: normal !important;
   }
 
   .font-pixel {
     font-family: 'Press Start 2P', monospace;
+    font-style: normal !important;
+  }
+
+  .font-vt323 {
+    font-family: 'VT323', monospace;
+    font-style: normal !important;
   }
 }
 
-/* Bold Doodly Text Stroke for text directly over background images */
+/* Bold Doodly & Pixel Text Stroke for text directly over background images */
 .doodly-text-stroke {
   text-shadow: 
     2px 2px 0px #2D231E,
     -2px -2px 0px #2D231E,
     2px -2px 0px #2D231E,
     -2px 2px 0px #2D231E,
-    0px 3px 8px rgba(0, 0, 0, 0.8);
+    0px 3px 8px rgba(0, 0, 0, 0.85);
 }
 
 .doodly-title-stroke {
@@ -46,7 +55,7 @@ html {
     -4px -4px 0px #2D231E,
     4px -4px 0px #2D231E,
     -4px 4px 0px #2D231E,
-    0px 6px 12px rgba(0, 0, 0, 0.9);
+    0px 6px 12px rgba(0, 0, 0, 0.95);
 }
 
 /* Soft grey dot-grid canvas background */
