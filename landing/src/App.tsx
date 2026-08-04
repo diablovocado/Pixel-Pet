@@ -46,6 +46,11 @@ const Icons = {
     <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
       <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.03c.67-.81 1.13-1.94.99-3.03-.97.04-2.16.65-2.85 1.46-.61.71-1.14 1.86-.99 2.97 1.09.08 2.2-.59 2.85-1.4" />
     </svg>
+  ),
+  Keyboard: () => (
+    <svg className="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+    </svg>
   )
 };
 
@@ -57,8 +62,15 @@ export default function App() {
   const [happiness, setHappiness] = useState(98);
   const [treatsCount, setTreatsCount] = useState(5);
   const [copied, setCopied] = useState(false);
-  const [speechBubble, setSpeechBubble] = useState("Meow! I'm Pixel-Pet! Click to pet me or drop a treat! 🐾");
+  const [speechBubble, setSpeechBubble] = useState("Type on your keyboard anywhere or use the input box to see Bongo Cat react! 🎹⚡");
   const [bongoFrameIdx, setBongoFrameIdx] = useState(0);
+
+  // Real-time typing states
+  const [kps, setKps] = useState(0);
+  const [keystrokesCount, setKeystrokesCount] = useState(0);
+  const [testInputText, setTestInputText] = useState("");
+  const keystrokeTimestampsRef = useRef<number[]>([]);
+  const lastKeyTypedRef = useRef<string>("");
 
   // Preloaded image references for HTML5 Canvas rendering
   const imagesRef = useRef<{
@@ -104,16 +116,62 @@ export default function App() {
     });
   }, []);
 
-  // Bongo frame ticker
+  // Global Keyboard Typing Detector & KPS Calculator
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (['Control', 'Shift', 'Alt', 'Meta'].includes(e.key)) return;
+
+      const now = Date.now();
+      keystrokeTimestampsRef.current.push(now);
+      lastKeyTypedRef.current = e.key.length === 1 ? e.key.toUpperCase() : e.key;
+
+      // Filter timestamps older than 1000ms
+      keystrokeTimestampsRef.current = keystrokeTimestampsRef.current.filter(t => now - t <= 1000);
+      const currentKps = keystrokeTimestampsRef.current.length;
+      setKps(currentKps);
+      setKeystrokesCount(prev => prev + 1);
+
+      // Automatically switch to Bongo Cat mode when user types
+      setActiveTab('bongo');
+
+      // Advance Bongo Cat frame sequence immediately on keystroke
+      setBongoFrameIdx(prev => (prev + 1) % BONGO_FRAMES.length);
+
+      // Dynamic speech bubble updates
+      if (currentKps > 7) {
+        setSpeechBubble(`🔥 HIGH SPEED TYPING! ${currentKps} KPS! BONGO CAT IS SLAMMING PAWS FAST! 🎹⚡`);
+      } else if (currentKps > 2) {
+        setSpeechBubble(`⚡ Typing at ${currentKps} KPS! Key '${lastKeyTypedRef.current}' pressed! 🎵`);
+      } else {
+        setSpeechBubble(`Keystroke detected! Key '${lastKeyTypedRef.current}' • Bongo Cat reacting! 🐾`);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // KPS Decay Ticker (resets KPS to 0 when user stops typing)
+  useEffect(() => {
+    const ticker = setInterval(() => {
+      const now = Date.now();
+      keystrokeTimestampsRef.current = keystrokeTimestampsRef.current.filter(t => now - t <= 1000);
+      setKps(keystrokeTimestampsRef.current.length);
+    }, 200);
+    return () => clearInterval(ticker);
+  }, []);
+
+  // Automatic Idle Bongo frame ticker when not typing fast
   useEffect(() => {
     if (activeTab !== 'bongo') return;
+    const speed = kps > 5 ? 50 : kps > 0 ? 80 : 120;
     const interval = setInterval(() => {
       setBongoFrameIdx(prev => (prev + 1) % BONGO_FRAMES.length);
-    }, 90);
+    }, speed);
     return () => clearInterval(interval);
-  }, [activeTab]);
+  }, [activeTab, kps]);
 
-  // Main Canvas Render Loop with true 1:1 aspect ratio
+  // Main Canvas Render Loop with true 1:1 aspect ratio & Typing Particles
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -146,7 +204,7 @@ export default function App() {
       ctx.save();
 
       if (activeTab === 'sleep') {
-        // Draw Sleeping Cat asset with true aspect ratio (95x95)
+        // Draw Sleeping Cat asset (95x95)
         const sleepImg = imagesRef.current.sleep;
         if (sleepImg) {
           ctx.drawImage(sleepImg, 270, 80, 95, 95);
@@ -164,6 +222,20 @@ export default function App() {
           ctx.drawImage(currentFrameImg, 265, 62, 110, 110);
         } else if (imagesRef.current.bongoLeft) {
           ctx.drawImage(imagesRef.current.bongoLeft, 265, 62, 110, 110);
+        }
+
+        // Live Musical Notes & Key Burst Particles when typing
+        if (kps > 0) {
+          const noteY = Math.sin(Date.now() / 100) * 8;
+          ctx.font = '16px sans-serif';
+          ctx.fillText('🎵', 240, 65 + noteY);
+          ctx.fillText('🎶', 380, 55 - noteY);
+
+          if (lastKeyTypedRef.current) {
+            ctx.font = '12px "Press Start 2P", monospace';
+            ctx.fillStyle = '#ec4899';
+            ctx.fillText(`[${lastKeyTypedRef.current}]`, 310, 48 + noteY);
+          }
         }
       } else if (activeTab === 'excited') {
         // Bounce Pepperino Cat asset (90x90)
@@ -208,7 +280,7 @@ export default function App() {
     render();
 
     return () => cancelAnimationFrame(animId);
-  }, [activeTab, bongoFrameIdx]);
+  }, [activeTab, bongoFrameIdx, kps]);
 
   const copyInstallCommand = () => {
     navigator.clipboard.writeText('git clone https://github.com/diablovocado/Pixel-Pet.git && cd Pixel-Pet && npm install && npm start');
@@ -334,17 +406,30 @@ export default function App() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
               </span>
-              <span className="font-mono text-xs uppercase tracking-wider text-slate-300 font-semibold">Live Asset Canvas Playground</span>
+              <span className="font-mono text-xs uppercase tracking-wider text-slate-300 font-semibold">Live Interactive Typing Canvas</span>
             </div>
 
-            <div className="flex items-center gap-2 font-mono text-xs text-slate-400">
-              <span>Rendering Engine:</span>
-              <span className="px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-500/30">Transparent PNG Sprites</span>
+            <div className="flex items-center gap-2 font-mono text-xs text-slate-300">
+              <span className="text-slate-400">Typing Speed:</span>
+              <span className={`px-2.5 py-0.5 rounded font-bold border ${kps > 0 ? 'bg-purple-950 text-purple-300 border-purple-500/40 animate-pulse' : 'bg-slate-800 text-slate-400 border-slate-700'}`}>
+                ⚡ {kps} KPS
+              </span>
             </div>
           </div>
 
+          {/* Interactive Typing Input Box */}
+          <div className="mt-4 mb-3">
+            <input
+              type="text"
+              value={testInputText}
+              onChange={(e) => setTestInputText(e.target.value)}
+              placeholder="Type anything on your keyboard here to see Bongo Cat react in real time... 🎹"
+              className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500/80 rounded-xl px-4 py-3 text-sm text-purple-200 placeholder-slate-500 font-mono focus:outline-none transition-colors shadow-inner"
+            />
+          </div>
+
           {/* Speech Bubble Banner */}
-          <div className="mt-4 mb-3 bg-purple-950/70 border border-purple-500/30 p-3 rounded-xl text-purple-200 text-xs font-mono text-center shadow-inner flex items-center justify-center gap-2">
+          <div className="mb-3 bg-purple-950/70 border border-purple-500/30 p-3 rounded-xl text-purple-200 text-xs font-mono text-center shadow-inner flex items-center justify-center gap-2">
             <span>💬</span>
             <span>{speechBubble}</span>
           </div>
@@ -357,7 +442,7 @@ export default function App() {
             <canvas ref={canvasRef} width={640} height={210} className="w-full h-full rendering-pixelated" />
             <div className="absolute top-3 right-3 text-[10px] font-mono text-slate-400 bg-slate-900/90 px-3 py-1 rounded-full border border-slate-800 pointer-events-none flex items-center gap-1.5">
               <img src="/assets/pepperino.png" alt="Cat" className="w-3.5 h-3.5 rendering-pixelated" />
-              <span>Click Canvas to Pet Cat!</span>
+              <span>Click Canvas to Pet!</span>
             </div>
           </div>
 
@@ -380,7 +465,7 @@ export default function App() {
             </button>
 
             <button
-              onClick={() => { setActiveTab('bongo'); setSpeechBubble("Bongo Cat mode! Slamming paws fast! 🎹⚡"); }}
+              onClick={() => { setActiveTab('bongo'); setSpeechBubble("Bongo Cat mode! Slamming paws on keyboard! 🎹⚡"); }}
               className={`px-3 py-3 rounded-xl text-xs font-mono font-medium transition-all flex items-center justify-center gap-2 ${activeTab === 'bongo' ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20' : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800'}`}
             >
               <img src="/assets/tyoe_left.png" alt="Bongo" className="w-4 h-4 rendering-pixelated" />
@@ -404,15 +489,16 @@ export default function App() {
 
           {/* Stats Bar */}
           <div className="mt-6 pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 font-mono gap-4">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <span>Happiness:</span>
-                <div className="w-28 h-2 bg-slate-800 rounded-full overflow-hidden">
+                <div className="w-24 h-2 bg-slate-800 rounded-full overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-pink-500 to-purple-500 transition-all duration-300" style={{ width: `${happiness}%` }} />
                 </div>
                 <span className="text-white font-bold">{happiness}%</span>
               </div>
-              <div>Fish Treats: <span className="text-cyan-400 font-bold">{treatsCount}</span></div>
+              <div>Keys Typed: <span className="text-purple-400 font-bold">{keystrokesCount}</span></div>
+              <div>Treats: <span className="text-cyan-400 font-bold">{treatsCount}</span></div>
             </div>
 
             {treatsCount === 0 && (
