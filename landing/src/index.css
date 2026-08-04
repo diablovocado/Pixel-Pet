@@ -30,20 +30,13 @@ html {
   }
 }
 
-/* Soft grey dot-grid canvas background */
-.bg-dot-grid {
-  background-color: #F5EFEB;
-  background-image: radial-gradient(rgba(45, 35, 30, 0.12) 1.2px, transparent 1.2px);
-  background-size: 24px 24px;
-  background-position: 0 0;
-}
-
-/* Paper grain texture fallback */
+/* Paper grain texture */
 .bg-paper-grain {
   background-color: #F5EFEB;
   background-image: radial-gradient(#2D231E 0.4px, transparent 0.4px), radial-gradient(#2D231E 0.4px, #F5EFEB 0.4px);
   background-size: 24px 24px;
   background-position: 0 0, 12px 12px;
+  background-opacity: 0.03;
 }
 
 /* Hand-drawn sketchy border boxes */
@@ -100,6 +93,25 @@ html {
   opacity: 0.6;
   z-index: -1;
   transform: rotate(-1.5deg);
+  border-radius: 12px 24px 16px 8px;
+}
+
+.watercolor-brush-highlight-terracotta {
+  position: relative;
+  display: inline-block;
+}
+
+.watercolor-brush-highlight-terracotta::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  right: -8px;
+  bottom: 4px;
+  top: 35%;
+  background: #C87A5B;
+  opacity: 0.4;
+  z-index: -1;
+  transform: rotate(1deg);
   border-radius: 12px 24px 16px 8px;
 }
 
