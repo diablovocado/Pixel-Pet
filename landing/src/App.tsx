@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// Inline SVGs for crisp, zero-dependency rendering
+// Crisp SVG Icons
 const Icons = {
   Terminal: () => (
     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -49,155 +49,158 @@ const Icons = {
   )
 };
 
-export default function App() {
-  const [activeTab, setActiveTab] = useState<'walk' | 'sit' | 'sleep' | 'bongo' | 'pet' | 'excited'>('walk');
-  const [happiness, setHappiness] = useState(88);
-  const [treatsCount, setTreatsCount] = useState(3);
-  const [copied, setCopied] = useState(false);
-  const [speechBubble, setSpeechBubble] = useState("Meow! Click me or drop a treat! 🐾");
-  const [petVariant, setPetVariant] = useState<'pepperino' | 'calico' | 'tuxedo'>('pepperino');
-  
-  // Canvas simulation state
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const catPosRef = useRef({ x: 100, y: 140, dir: 1, frame: 0 });
+// Bongo Cat frame sequence paths
+const BONGO_FRAMES = Array.from({ length: 12 }, (_, i) => `/assets/bongo_cat_frames/tyoe_frame_${i}.png`);
 
-  // Canvas animation loop
+export default function App() {
+  const [activeTab, setActiveTab] = useState<'walk' | 'sleep' | 'bongo' | 'excited' | 'petting'>('walk');
+  const [happiness, setHappiness] = useState(92);
+  const [treatsCount, setTreatsCount] = useState(4);
+  const [copied, setCopied] = useState(false);
+  const [speechBubble, setSpeechBubble] = useState("Meow! I'm Pixel-Pet! Click to pet me or drop a treat! 🐾");
+  const [bongoFrameIdx, setBongoFrameIdx] = useState(0);
+
+  // Preloaded image references for HTML5 Canvas rendering
+  const imagesRef = useRef<{
+    pepperino: HTMLImageElement | null;
+    sleep: HTMLImageElement | null;
+    bongoLeft: HTMLImageElement | null;
+    bongoRight: HTMLImageElement | null;
+    bongoFrames: HTMLImageElement[];
+  }>({
+    pepperino: null,
+    sleep: null,
+    bongoLeft: null,
+    bongoRight: null,
+    bongoFrames: [],
+  });
+
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const catPosRef = useRef({ x: 80, y: 110, dir: 1 });
+
+  // Load all actual PNG assets
+  useEffect(() => {
+    const pep = new Image();
+    pep.src = '/assets/pepperino.png';
+    pep.onload = () => { imagesRef.current.pepperino = pep; };
+
+    const slp = new Image();
+    slp.src = '/assets/sleep.png';
+    slp.onload = () => { imagesRef.current.sleep = slp; };
+
+    const bLeft = new Image();
+    bLeft.src = '/assets/tyoe_left.png';
+    bLeft.onload = () => { imagesRef.current.bongoLeft = bLeft; };
+
+    const bRight = new Image();
+    bRight.src = '/assets/tyoe_right.png';
+    bRight.onload = () => { imagesRef.current.bongoRight = bRight; };
+
+    // Preload Bongo Cat frame sequence
+    BONGO_FRAMES.forEach(src => {
+      const img = new Image();
+      img.src = src;
+      imagesRef.current.bongoFrames.push(img);
+    });
+  }, []);
+
+  // Bongo frame ticker
+  useEffect(() => {
+    if (activeTab !== 'bongo') return;
+    const interval = setInterval(() => {
+      setBongoFrameIdx(prev => (prev + 1) % BONGO_FRAMES.length);
+    }, 90);
+    return () => clearInterval(interval);
+  }, [activeTab]);
+
+  // Main Canvas Render Loop using actual images
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    ctx.imageSmoothingEnabled = false;
 
     let animId: number;
 
     const render = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw Dock floor line
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      // Draw Desktop Dock line
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(20, 180);
-      ctx.lineTo(canvas.width - 20, 180);
+      ctx.moveTo(15, 175);
+      ctx.lineTo(canvas.width - 15, 175);
       ctx.stroke();
 
-      // Update cat pos if walking
+      // Move cat if walking
       if (activeTab === 'walk') {
-        catPosRef.current.x += 1.2 * catPosRef.current.dir;
-        if (catPosRef.current.x > canvas.width - 80) catPosRef.current.dir = -1;
+        catPosRef.current.x += 1.4 * catPosRef.current.dir;
+        if (catPosRef.current.x > canvas.width - 120) catPosRef.current.dir = -1;
         if (catPosRef.current.x < 30) catPosRef.current.dir = 1;
       }
-      catPosRef.current.frame = (catPosRef.current.frame + 0.15) % 4;
 
-      const { x, y, dir } = catPosRef.current;
+      const { x, dir } = catPosRef.current;
 
       ctx.save();
-      ctx.translate(x, y);
-
-      // Flip horizontal if moving left
-      if (dir === -1) {
-        ctx.scale(-1, 1);
-        ctx.translate(-48, 0);
-      }
-
-      // Draw Pixel Cat Mascot based on state
-      const bodyColor = petVariant === 'pepperino' ? '#8b5cf6' : petVariant === 'calico' ? '#f97316' : '#334155';
-      const accentColor = petVariant === 'pepperino' ? '#c084fc' : petVariant === 'calico' ? '#fbbf24' : '#94a3b8';
-      const earColor = '#f472b6';
 
       if (activeTab === 'sleep') {
-        // Sleeping cat
-        ctx.fillStyle = bodyColor;
-        ctx.fillRect(8, 20, 32, 20); // Body
-        ctx.fillStyle = accentColor;
-        ctx.fillRect(4, 16, 16, 16); // Head curled down
+        // Draw real Sleeping Cat asset
+        const sleepImg = imagesRef.current.sleep;
+        if (sleepImg) {
+          ctx.drawImage(sleepImg, 220, 85, 120, 90);
+        } else {
+          ctx.fillStyle = '#8b5cf6';
+          ctx.fillRect(240, 130, 80, 40);
+        }
 
-        // Ears
-        ctx.fillStyle = earColor;
-        ctx.fillRect(6, 12, 4, 4);
-
-        // Zzz floating text
-        ctx.font = '10px "Press Start 2P", monospace';
-        ctx.fillStyle = '#a855f7';
-        const zOffset = (Math.sin(Date.now() / 300) * 4);
-        ctx.fillText('Z z z...', 32, 8 + zOffset);
+        // Animated Zzz particles
+        const zOffset = Math.sin(Date.now() / 250) * 6;
+        ctx.font = '12px "Press Start 2P", monospace';
+        ctx.fillStyle = '#c084fc';
+        ctx.fillText('Z z z...', 330, 90 + zOffset);
       } else if (activeTab === 'bongo') {
-        // Bongo Cat typing on desk
-        ctx.fillStyle = '#1e293b';
-        ctx.fillRect(0, 32, 48, 8); // Desk keyboard
-
-        ctx.fillStyle = bodyColor;
-        ctx.fillRect(10, 10, 28, 22); // Body
-
-        // Paws slamming down
-        const pawLeftY = Math.floor(Math.sin(Date.now() / 80) * 4);
-        const pawRightY = Math.floor(Math.cos(Date.now() / 80) * 4);
-
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(6, 24 + pawLeftY, 8, 8);
-        ctx.fillRect(34, 24 + pawRightY, 8, 8);
-
-        // Eyes
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(16, 14, 4, 4);
-        ctx.fillRect(28, 14, 4, 4);
-
-        // Music notes
-        ctx.fillStyle = '#ec4899';
-        ctx.font = '12px sans-serif';
-        ctx.fillText('🎵', 36, 4);
+        // Draw real Bongo Cat Frame asset
+        const currentFrameImg = imagesRef.current.bongoFrames[bongoFrameIdx];
+        if (currentFrameImg && currentFrameImg.complete) {
+          ctx.drawImage(currentFrameImg, 200, 45, 220, 130);
+        } else if (imagesRef.current.bongoLeft) {
+          ctx.drawImage(imagesRef.current.bongoLeft, 220, 60, 180, 115);
+        }
       } else if (activeTab === 'excited') {
-        // Jump/Excited animation
-        const jumpY = Math.abs(Math.sin(Date.now() / 150)) * 14;
-        ctx.translate(0, -jumpY);
+        // Bounce real Pepperino Cat asset
+        const bounceY = Math.abs(Math.sin(Date.now() / 140)) * 20;
+        const pepImg = imagesRef.current.pepperino;
+        if (pepImg) {
+          ctx.drawImage(pepImg, 250, 85 - bounceY, 90, 90);
+        }
 
-        ctx.fillStyle = bodyColor;
-        ctx.fillRect(8, 8, 32, 28);
-        // Ears
-        ctx.fillStyle = earColor;
-        ctx.fillRect(10, 2, 6, 6);
-        ctx.fillRect(32, 2, 6, 6);
-        // Happy Eyes (><)
-        ctx.fillStyle = '#facc15';
-        ctx.fillRect(14, 12, 6, 4);
-        ctx.fillRect(28, 12, 6, 4);
-
-        // Sparkles
-        ctx.fillStyle = '#fbbf24';
-        ctx.fillText('✨', -4, 4);
-        ctx.fillText('💖', 40, 4);
+        // Sparkle effects
+        ctx.font = '16px sans-serif';
+        ctx.fillText('✨', 220, 80 - bounceY);
+        ctx.fillText('💖', 350, 70 - bounceY);
+      } else if (activeTab === 'petting') {
+        // Petting cat purr wobble
+        const wobbleX = Math.sin(Date.now() / 80) * 3;
+        const pepImg = imagesRef.current.pepperino;
+        if (pepImg) {
+          ctx.drawImage(pepImg, 250 + wobbleX, 85, 90, 90);
+        }
+        ctx.font = '14px sans-serif';
+        ctx.fillText('🥰', 330, 80);
       } else {
-        // Walking or Sitting
-        const legWalk = activeTab === 'walk' ? Math.floor(Math.sin(Date.now() / 100) * 4) : 0;
+        // Walk mode with real Pepperino asset
+        const pepImg = imagesRef.current.pepperino;
+        ctx.translate(x, 85);
+        if (dir === -1) {
+          ctx.scale(-1, 1);
+          ctx.translate(-90, 0);
+        }
 
-        // Body
-        ctx.fillStyle = bodyColor;
-        ctx.fillRect(8, 12, 32, 22);
-
-        // Head
-        ctx.fillRect(28, 6, 16, 16);
-
-        // Ears
-        ctx.fillStyle = earColor;
-        ctx.fillRect(30, 0, 4, 6);
-        ctx.fillRect(38, 0, 4, 6);
-
-        // Eyes
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(36, 10, 4, 4);
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(38, 10, 2, 2);
-
-        // Tail wiggle
-        const tailAngle = Math.sin(Date.now() / 200) * 6;
-        ctx.fillStyle = accentColor;
-        ctx.fillRect(4, 8 + tailAngle, 6, 14);
-
-        // Legs
-        ctx.fillStyle = '#475569';
-        ctx.fillRect(12 + legWalk, 34, 4, 8);
-        ctx.fillRect(22 - legWalk, 34, 4, 8);
-        ctx.fillRect(32 + legWalk, 34, 4, 8);
+        if (pepImg) {
+          ctx.drawImage(pepImg, 0, 0, 90, 90);
+        }
       }
 
       ctx.restore();
@@ -208,7 +211,7 @@ export default function App() {
     render();
 
     return () => cancelAnimationFrame(animId);
-  }, [activeTab, petVariant]);
+  }, [activeTab, bongoFrameIdx]);
 
   const copyInstallCommand = () => {
     navigator.clipboard.writeText('git clone https://github.com/diablovocado/Pixel-Pet.git && cd Pixel-Pet && npm install && npm start');
@@ -219,46 +222,46 @@ export default function App() {
   const handleFeed = () => {
     if (treatsCount > 0) {
       setTreatsCount(prev => prev - 1);
-      setHappiness(prev => Math.min(100, prev + 12));
+      setHappiness(prev => Math.min(100, prev + 10));
       setActiveTab('excited');
-      setSpeechBubble("YUM! Tasty pixel fish! 🐟✨");
-      setTimeout(() => setSpeechBubble("Purrrrr... That was delicious! ❤️"), 2500);
+      setSpeechBubble("YUMMY! Fish treat devoured! 🐟✨");
+      setTimeout(() => setSpeechBubble("Purrrrr! Pixel Cat is super happy! 🥰"), 2500);
     } else {
-      setSpeechBubble("Out of treats! Click 'Refill Treats' to restock! 📦");
+      setSpeechBubble("Treat box empty! Click '+ Restock Treats' to get more! 📦");
     }
   };
 
   const handlePet = () => {
-    setActiveTab('pet');
+    setActiveTab('petting');
     setHappiness(prev => Math.min(100, prev + 5));
-    setSpeechBubble("Purrrrrrr! You petted Pixel Cat! 🥰");
+    setSpeechBubble("Purrrrrrr! You petted Pixel Cat! ❤️");
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0c10] text-slate-100 font-sans bg-grid-pattern relative selection:bg-purple-600 selection:text-white">
-      {/* Background ambient glows */}
-      <div className="fixed top-0 left-1/4 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="fixed bottom-0 right-1/4 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none" />
+    <div className="min-h-screen bg-[#090a0f] text-slate-100 font-sans bg-grid-pattern relative selection:bg-purple-600 selection:text-white">
+      {/* Glow Backdrops */}
+      <div className="fixed top-0 left-1/4 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[160px] pointer-events-none" />
+      <div className="fixed bottom-0 right-1/4 w-[500px] h-[500px] bg-pink-600/10 rounded-full blur-[160px] pointer-events-none" />
 
       {/* Navigation Header */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#0b0c10]/80 border-b border-slate-800/80">
+      <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#090a0f]/85 border-b border-slate-800/80">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center font-pixel text-xs text-white shadow-lg shadow-purple-500/20 rendering-pixelated">
-              🐱
+            <div className="w-10 h-10 rounded-xl bg-purple-950/80 border border-purple-500/30 flex items-center justify-center shadow-lg shadow-purple-500/20 overflow-hidden">
+              <img src="/assets/pepperino.png" alt="Pixel Pet Logo" className="w-8 h-8 rendering-pixelated object-contain" />
             </div>
             <div>
               <div className="font-bold text-lg tracking-tight font-mono text-white flex items-center gap-2">
                 Pixel-Pet <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-sans font-medium border border-purple-500/30">v1.0</span>
               </div>
-              <p className="text-xs text-slate-400 font-sans">Retro Desktop Mascot</p>
+              <p className="text-xs text-slate-400 font-sans">Retro Desktop Companion</p>
             </div>
           </div>
 
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-            <a href="#playground" className="hover:text-purple-400 transition-colors">Live Demo</a>
+            <a href="#playground" className="hover:text-purple-400 transition-colors">Live Canvas Demo</a>
+            <a href="#gallery" className="hover:text-purple-400 transition-colors">Cat Assets Showcase</a>
             <a href="#features" className="hover:text-purple-400 transition-colors">Features</a>
-            <a href="#states" className="hover:text-purple-400 transition-colors">Pet States</a>
             <a href="#download" className="hover:text-purple-400 transition-colors">Download</a>
             <a href="https://github.com/diablovocado/Pixel-Pet" target="_blank" rel="noreferrer" className="hover:text-purple-400 transition-colors flex items-center gap-1.5">
               <Icons.Github /> GitHub
@@ -268,7 +271,7 @@ export default function App() {
           <div className="flex items-center gap-3">
             <a 
               href="#download"
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-sm font-semibold shadow-lg shadow-purple-500/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-2"
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-sm font-semibold shadow-lg shadow-purple-500/25 transition-all transform hover:-translate-y-0.5 flex items-center gap-2"
             >
               <Icons.Download />
               <span>Get Pixel-Pet</span>
@@ -278,10 +281,10 @@ export default function App() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative pt-16 pb-20 px-6 max-w-7xl mx-auto">
+      <section className="relative pt-16 pb-16 px-6 max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-950/60 border border-purple-500/30 text-purple-300 text-xs font-mono backdrop-blur-md shadow-inner">
-            <Icons.Sparkles />
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-950/70 border border-purple-500/30 text-purple-300 text-xs font-mono shadow-inner">
+            <img src="/assets/pepperino.png" alt="Icon" className="w-4 h-4 rendering-pixelated" />
             <span>100% Free & Open Source Desktop Companion</span>
           </div>
 
@@ -293,10 +296,10 @@ export default function App() {
           </h1>
 
           <p className="text-lg md:text-xl text-slate-300 font-sans leading-relaxed">
-            A tiny pixel cat that lives right on your dock. It walks, sleeps when you step away, reacts to your typing speed, and brings wholesome energy to your workflow.
+            A tiny pixel cat that walks along your dock, sleeps when you step away, reacts to typing speed, and plays Bongo drums right on your screen.
           </p>
 
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               href="#download"
               className="w-full sm:w-auto px-8 py-4 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold shadow-xl shadow-purple-600/30 transition-all transform hover:-translate-y-0.5 text-base flex items-center justify-center gap-3"
@@ -316,129 +319,159 @@ export default function App() {
             </a>
           </div>
 
-          {/* Quick Specs Badges */}
-          <div className="pt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono text-slate-400">
-            <div className="p-3 rounded-lg bg-slate-900/50 border border-slate-800">⚡ &lt; 0.1% CPU Usage</div>
-            <div className="p-3 rounded-lg bg-slate-900/50 border border-slate-800">💾 ~15MB RAM Footprint</div>
-            <div className="p-3 rounded-lg bg-slate-900/50 border border-slate-800">🔒 100% Offline & Private</div>
-            <div className="p-3 rounded-lg bg-slate-900/50 border border-slate-800">🖥️ macOS & Cross-Platform</div>
+          {/* Quick Specs */}
+          <div className="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono text-slate-400">
+            <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800">⚡ &lt; 0.1% CPU Usage</div>
+            <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800">💾 ~15MB RAM Footprint</div>
+            <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800">🔒 100% Offline & Private</div>
+            <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800">🖥️ Cross-Platform</div>
           </div>
         </div>
 
-        {/* Live Interactive Playground Card */}
-        <div id="playground" className="mt-16 max-w-4xl mx-auto bg-slate-900/80 border border-slate-800 rounded-2xl p-6 backdrop-blur-xl shadow-2xl pixel-glow relative overflow-hidden">
-          {/* Header Controls Bar */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+        {/* Live Interactive Pet Canvas Playground */}
+        <div id="playground" className="mt-14 max-w-4xl mx-auto bg-slate-900/80 border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+          {/* Controls Bar Header */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
             <div className="flex items-center gap-3">
               <span className="flex h-3 w-3 relative">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
               </span>
-              <span className="font-mono text-xs uppercase tracking-wider text-slate-300 font-semibold">Live Interactive Pet Canvas</span>
+              <span className="font-mono text-xs uppercase tracking-wider text-slate-300 font-semibold">Live Asset Canvas Playground</span>
             </div>
 
-            {/* Pet Variant Switcher */}
-            <div className="flex items-center gap-2 bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs">
-              <span className="text-slate-500 px-2 font-mono">Skin:</span>
-              <button 
-                onClick={() => setPetVariant('pepperino')}
-                className={`px-3 py-1 rounded-md font-mono transition-colors ${petVariant === 'pepperino' ? 'bg-purple-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'}`}
-              >
-                Purple (Pepperino)
-              </button>
-              <button 
-                onClick={() => setPetVariant('calico')}
-                className={`px-3 py-1 rounded-md font-mono transition-colors ${petVariant === 'calico' ? 'bg-amber-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'}`}
-              >
-                Orange Calico
-              </button>
-              <button 
-                onClick={() => setPetVariant('tuxedo')}
-                className={`px-3 py-1 rounded-md font-mono transition-colors ${petVariant === 'tuxedo' ? 'bg-slate-700 text-white font-bold' : 'text-slate-400 hover:text-slate-200'}`}
-              >
-                Tuxedo
-              </button>
+            <div className="flex items-center gap-2 font-mono text-xs text-slate-400">
+              <span>Rendering Engine:</span>
+              <span className="px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-500/30">PNG Frame Sprites</span>
             </div>
           </div>
 
-          {/* Speech Bubble */}
-          <div className="mt-4 mb-2 bg-purple-950/80 border border-purple-500/30 p-3 rounded-xl text-purple-200 text-xs font-mono text-center shadow-inner flex items-center justify-center gap-2">
+          {/* Speech Bubble Banner */}
+          <div className="mt-4 mb-3 bg-purple-950/70 border border-purple-500/30 p-3 rounded-xl text-purple-200 text-xs font-mono text-center shadow-inner flex items-center justify-center gap-2">
             <span>💬</span>
             <span>{speechBubble}</span>
           </div>
 
-          {/* Interactive Canvas Area */}
+          {/* Canvas Box */}
           <div 
             onClick={handlePet}
-            className="relative bg-slate-950 rounded-xl border border-slate-800/80 h-56 flex items-center justify-center cursor-pointer overflow-hidden group"
+            className="relative bg-slate-950 rounded-2xl border border-slate-800 h-60 flex items-center justify-center cursor-pointer overflow-hidden group shadow-inner"
           >
-            <canvas ref={canvasRef} width={640} height={200} className="w-full h-full rendering-pixelated" />
-            <div className="absolute top-3 right-3 text-[10px] font-mono text-slate-500 bg-slate-900/80 px-2 py-1 rounded border border-slate-800 pointer-events-none">
-              Click Canvas to Pet! 🐾
+            <canvas ref={canvasRef} width={640} height={210} className="w-full h-full rendering-pixelated" />
+            <div className="absolute top-3 right-3 text-[10px] font-mono text-slate-400 bg-slate-900/90 px-3 py-1 rounded-full border border-slate-800 pointer-events-none flex items-center gap-1.5">
+              <img src="/assets/pepperino.png" alt="Cat" className="w-3.5 h-3.5 rendering-pixelated" />
+              <span>Click Canvas to Pet Cat!</span>
             </div>
           </div>
 
-          {/* Interactive Action Buttons Bar */}
-          <div className="mt-6 grid grid-cols-2 sm:grid-cols-6 gap-2">
+          {/* Action Tabs */}
+          <div className="mt-6 grid grid-cols-2 sm:grid-cols-5 gap-2">
             <button
-              onClick={() => { setActiveTab('walk'); setSpeechBubble("Walking along the screen dock... 🐾"); }}
-              className={`px-3 py-2.5 rounded-lg text-xs font-mono font-medium transition-all ${activeTab === 'walk' ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20' : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800'}`}
+              onClick={() => { setActiveTab('walk'); setSpeechBubble("Walking along the dock... 🐾"); }}
+              className={`px-3 py-3 rounded-xl text-xs font-mono font-medium transition-all flex items-center justify-center gap-2 ${activeTab === 'walk' ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20' : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800'}`}
             >
-              🐾 Walk
+              <img src="/assets/pepperino.png" alt="Walk" className="w-4 h-4 rendering-pixelated" />
+              <span>Walk Patrol</span>
             </button>
+            
             <button
               onClick={() => { setActiveTab('sleep'); setSpeechBubble("Shhh... Cat is sleeping! Zzz... 💤"); }}
-              className={`px-3 py-2.5 rounded-lg text-xs font-mono font-medium transition-all ${activeTab === 'sleep' ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20' : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800'}`}
+              className={`px-3 py-3 rounded-xl text-xs font-mono font-medium transition-all flex items-center justify-center gap-2 ${activeTab === 'sleep' ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20' : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800'}`}
             >
-              💤 Sleep (AFK)
+              <img src="/assets/sleep.png" alt="Sleep" className="w-4 h-4 rendering-pixelated" />
+              <span>Sleep (AFK)</span>
             </button>
+
             <button
-              onClick={() => { setActiveTab('bongo'); setSpeechBubble("Bongo Cat mode! Slamming keys fast! 🎹⚡"); }}
-              className={`px-3 py-2.5 rounded-lg text-xs font-mono font-medium transition-all ${activeTab === 'bongo' ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20' : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800'}`}
+              onClick={() => { setActiveTab('bongo'); setSpeechBubble("Bongo Cat mode! Slamming paws fast! 🎹⚡"); }}
+              className={`px-3 py-3 rounded-xl text-xs font-mono font-medium transition-all flex items-center justify-center gap-2 ${activeTab === 'bongo' ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20' : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800'}`}
             >
-              🎹 Bongo Mode
+              <img src="/assets/tyoe_left.png" alt="Bongo" className="w-4 h-4 rendering-pixelated" />
+              <span>Bongo Typing</span>
             </button>
-            <button
-              onClick={() => { setActiveTab('excited'); setSpeechBubble("Yay! Pixel Cat is super excited! ✨🎉"); }}
-              className={`px-3 py-2.5 rounded-lg text-xs font-mono font-medium transition-all ${activeTab === 'excited' ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20' : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800'}`}
-            >
-              ✨ Excited
-            </button>
+
             <button
               onClick={handlePet}
-              className={`px-3 py-2.5 rounded-lg text-xs font-mono font-medium transition-all bg-pink-900/40 text-pink-300 border border-pink-500/30 hover:bg-pink-900/60 flex items-center justify-center gap-1`}
+              className="px-3 py-3 rounded-xl text-xs font-mono font-medium transition-all bg-pink-950/50 text-pink-300 border border-pink-500/30 hover:bg-pink-900/60 flex items-center justify-center gap-1.5"
             >
               <Icons.Heart /> Pet Cat
             </button>
+
             <button
               onClick={handleFeed}
-              className={`px-3 py-2.5 rounded-lg text-xs font-mono font-medium transition-all bg-cyan-900/40 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-900/60 flex items-center justify-center gap-1`}
+              className="px-3 py-3 rounded-xl text-xs font-mono font-medium transition-all bg-cyan-950/50 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-900/60 flex items-center justify-center gap-1.5"
             >
-              <Icons.Fish /> Feed Fish ({treatsCount})
+              <Icons.Fish /> Feed ({treatsCount})
             </button>
           </div>
 
-          {/* Pet Stats HUD */}
+          {/* Stats Bar */}
           <div className="mt-6 pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 font-mono gap-4">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 <span>Happiness:</span>
-                <div className="w-24 h-2 bg-slate-800 rounded-full overflow-hidden">
+                <div className="w-28 h-2 bg-slate-800 rounded-full overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-pink-500 to-purple-500 transition-all duration-300" style={{ width: `${happiness}%` }} />
                 </div>
                 <span className="text-white font-bold">{happiness}%</span>
               </div>
-              <div>Treats Left: <span className="text-cyan-400 font-bold">{treatsCount}</span></div>
+              <div>Fish Treats: <span className="text-cyan-400 font-bold">{treatsCount}</span></div>
             </div>
 
             {treatsCount === 0 && (
               <button 
-                onClick={() => { setTreatsCount(5); setSpeechBubble("Treats refilled! 🐟🐟🐟"); }}
+                onClick={() => { setTreatsCount(5); setSpeechBubble("Treat box refilled! 🐟🐟"); }}
                 className="text-xs text-purple-400 hover:text-purple-300 underline font-mono"
               >
-                + Refill Treats Box
+                + Restock Treats
               </button>
             )}
+          </div>
+        </div>
+      </section>
+
+      {/* Cat Assets Showcase Section */}
+      <section id="gallery" className="py-20 px-6 max-w-7xl mx-auto border-t border-slate-800/60">
+        <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
+          <h2 className="text-xs font-mono text-purple-400 uppercase tracking-widest font-semibold">Authentic Sprite Library</h2>
+          <p className="text-3xl font-extrabold text-white">Built With Our Real Pixel Cat Assets</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-all flex flex-col items-center text-center">
+            <div className="w-24 h-24 mb-4 bg-slate-950 rounded-xl p-2 border border-slate-800/80 flex items-center justify-center overflow-hidden">
+              <img src="/assets/pepperino.png" alt="Pepperino" className="w-16 h-16 rendering-pixelated object-contain" />
+            </div>
+            <h4 className="font-bold text-white text-base mb-1">Pepperino Cat Sprite</h4>
+            <p className="text-slate-400 text-xs font-mono">assets/pepperino.png</p>
+            <p className="text-slate-500 text-xs mt-2">Main pixel cat mascot that walks along screen dock.</p>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-all flex flex-col items-center text-center">
+            <div className="w-24 h-24 mb-4 bg-slate-950 rounded-xl p-2 border border-slate-800/80 flex items-center justify-center overflow-hidden">
+              <img src="/assets/sleep.png" alt="Sleep" className="w-20 h-20 rendering-pixelated object-contain" />
+            </div>
+            <h4 className="font-bold text-white text-base mb-1">Sleeping Cat Asset</h4>
+            <p className="text-slate-400 text-xs font-mono">assets/sleep.png</p>
+            <p className="text-slate-500 text-xs mt-2">Triggered automatically when system is idle.</p>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-all flex flex-col items-center text-center">
+            <div className="w-24 h-24 mb-4 bg-slate-950 rounded-xl p-2 border border-slate-800/80 flex items-center justify-center overflow-hidden">
+              <img src="/assets/tyoe_left.png" alt="Bongo Left" className="w-20 h-20 rendering-pixelated object-contain" />
+            </div>
+            <h4 className="font-bold text-white text-base mb-1">Bongo Cat Paws</h4>
+            <p className="text-slate-400 text-xs font-mono">assets/tyoe_left.png</p>
+            <p className="text-slate-500 text-xs mt-2">Paws slam in sync with typing speed.</p>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-all flex flex-col items-center text-center">
+            <div className="w-24 h-24 mb-4 bg-slate-950 rounded-xl p-2 border border-slate-800/80 flex items-center justify-center overflow-hidden">
+              <img src="/assets/bongo_cat_frames/tyoe_frame_2.png" alt="Frame" className="w-20 h-20 rendering-pixelated object-contain" />
+            </div>
+            <h4 className="font-bold text-white text-base mb-1">12-Frame Animation</h4>
+            <p className="text-slate-400 text-xs font-mono">assets/bongo_cat_frames/*</p>
+            <p className="text-slate-500 text-xs mt-2">Full frame sequence for smooth typing reactions.</p>
           </div>
         </div>
       </section>
@@ -446,81 +479,65 @@ export default function App() {
       {/* Feature Highlights Grid */}
       <section id="features" className="py-20 px-6 max-w-7xl mx-auto border-t border-slate-800/60">
         <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-          <h2 className="text-xs font-mono text-purple-400 uppercase tracking-widest font-semibold">Engineered For Efficiency</h2>
-          <p className="text-3xl font-extrabold text-white">Why Developers & Pixel Lovers Enjoy Pixel-Pet</p>
+          <h2 className="text-xs font-mono text-purple-400 uppercase tracking-widest font-semibold">Desktop Integration</h2>
+          <p className="text-3xl font-extrabold text-white">Engineered For Zero Interruptions</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="p-8 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-all hover:-translate-y-1">
-            <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center text-xl mb-6">
-              💤
+          <div className="p-8 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-all">
+            <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center mb-6 overflow-hidden">
+              <img src="/assets/sleep.png" alt="Sleep" className="w-8 h-8 rendering-pixelated" />
             </div>
-            <h3 className="text-xl font-bold text-white mb-3">Power Monitor & AFK Watcher</h3>
+            <h3 className="text-xl font-bold text-white mb-3">Power & Idle Watcher</h3>
             <p className="text-slate-400 text-sm leading-relaxed">
-              When system idle or display sleep triggers, Pixel-Pet gracefully curls up and falls asleep on your dock. Wakes up instant when you return.
+              When system idle or display sleep triggers, Pixel-Pet curls up and falls asleep on your dock. Wakes up instantly when cursor moves.
             </p>
           </div>
 
-          <div className="p-8 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-all hover:-translate-y-1">
-            <div className="w-12 h-12 rounded-xl bg-pink-500/10 border border-pink-500/20 text-pink-400 flex items-center justify-center text-xl mb-6">
-              🎹
+          <div className="p-8 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-all">
+            <div className="w-12 h-12 rounded-xl bg-pink-500/10 border border-pink-500/20 text-pink-400 flex items-center justify-center mb-6 overflow-hidden">
+              <img src="/assets/tyoe_right.png" alt="Bongo" className="w-8 h-8 rendering-pixelated" />
             </div>
-            <h3 className="text-xl font-bold text-white mb-3">Keystroke & KPS Reactive</h3>
+            <h3 className="text-xl font-bold text-white mb-3">Keystroke Reactive</h3>
             <p className="text-slate-400 text-sm leading-relaxed">
-              Monitors global typing speed. When typing fast during coding sessions, Pixel-Pet enters high-speed Bongo Cat typing mode alongside you.
+              Monitors typing speed via global keystroke listener. Enters high-speed Bongo Cat typing mode when you type fast.
             </p>
           </div>
 
-          <div className="p-8 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-all hover:-translate-y-1">
-            <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl mb-6">
-              🪟
+          <div className="p-8 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-all">
+            <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mb-6 overflow-hidden">
+              <img src="/assets/pepperino.png" alt="Cat" className="w-8 h-8 rendering-pixelated" />
             </div>
-            <h3 className="text-xl font-bold text-white mb-3">Seamless Window Passthrough</h3>
+            <h3 className="text-xl font-bold text-white mb-3">Seamless Passthrough</h3>
             <p className="text-slate-400 text-sm leading-relaxed">
-              Uses transparent hardware overlay with click forwarding. Never steals focus or interferes with your IDE, browser, or terminal clicks.
+              Uses transparent overlay with click forwarding. Never steals focus or blocks IDE, browser, or terminal clicks.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Pet States Gallery */}
-      <section id="states" className="py-20 px-6 max-w-7xl mx-auto border-t border-slate-800/60">
-        <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-          <h2 className="text-xs font-mono text-purple-400 uppercase tracking-widest font-semibold">Rich Behavioral Engine</h2>
-          <p className="text-3xl font-extrabold text-white">9 Distinct Pixel Cat States</p>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {[
-            { title: "Idle Patrol", icon: "🐾", desc: "Walks calmly along screen dock" },
-            { title: "Sleep Mode", icon: "💤", desc: "Curled up Zzz when system is idle" },
-            { title: "Bongo Typing", icon: "🎹", desc: "Slams paws in sync with typing" },
-            { title: "Petting Reaction", icon: "🥰", desc: "Purrs and emits heart particles" },
-            { title: "Excited Jump", icon: "✨", desc: "Leaps with joy on high KPS" },
-            { title: "Wakeup Stretch", icon: "🌅", desc: "Stretches when cursor moves" },
-            { title: "Drag & Drop", icon: "🖐️", desc: "Pick up & place anywhere" },
-            { title: "Agent Speech", icon: "💬", desc: "Displays pixel speech bubbles" }
-          ].map((item, idx) => (
-            <div key={idx} className="p-5 rounded-xl bg-slate-900/40 border border-slate-800/80 hover:bg-slate-900/80 transition-colors">
-              <div className="text-2xl mb-2">{item.icon}</div>
-              <h4 className="font-bold text-white text-sm mb-1">{item.title}</h4>
-              <p className="text-slate-400 text-xs">{item.desc}</p>
-            </div>
-          ))}
+      {/* Social Card Preview Section */}
+      <section className="py-16 px-6 max-w-5xl mx-auto">
+        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-xl">
+          <h3 className="text-sm font-mono text-purple-400 mb-4 flex items-center gap-2">
+            <Icons.Sparkles /> Official Preview Card
+          </h3>
+          <div className="rounded-2xl overflow-hidden border border-slate-800 shadow-2xl">
+            <img src="/assets/social_card.png" alt="Pixel Pet Preview" className="w-full h-auto object-cover" />
+          </div>
         </div>
       </section>
 
-      {/* Quick Setup & Install Terminal Section */}
+      {/* Quick Setup & Install Section */}
       <section id="download" className="py-20 px-6 max-w-5xl mx-auto border-t border-slate-800/60">
         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
           <div className="max-w-2xl space-y-6">
             <h2 className="text-3xl font-extrabold text-white">Get Started in 30 Seconds</h2>
             <p className="text-slate-300 text-sm leading-relaxed">
-              Clone the GitHub repo and launch Pixel-Pet instantly on macOS, Linux, or Windows.
+              Clone the repository and launch Pixel-Pet instantly on macOS, Linux, or Windows.
             </p>
 
-            {/* Terminal snippet box */}
-            <div className="bg-slate-950 rounded-xl p-4 border border-slate-800/90 font-mono text-xs text-purple-300 flex items-center justify-between gap-4 overflow-x-auto shadow-inner">
+            <div className="bg-slate-950 rounded-xl p-4 border border-slate-800 font-mono text-xs text-purple-300 flex items-center justify-between gap-4 overflow-x-auto shadow-inner">
               <div className="flex items-center gap-2">
                 <span className="text-slate-600">$</span>
                 <span>git clone https://github.com/diablovocado/Pixel-Pet.git && cd Pixel-Pet && npm install && npm start</span>
@@ -534,7 +551,7 @@ export default function App() {
               </button>
             </div>
 
-            <div className="pt-4 flex flex-wrap items-center gap-4">
+            <div className="pt-2 flex flex-wrap items-center gap-4">
               <a
                 href="https://github.com/diablovocado/Pixel-Pet/releases"
                 target="_blank"
@@ -552,8 +569,9 @@ export default function App() {
       {/* Footer */}
       <footer className="py-12 border-t border-slate-800/60 text-center text-xs text-slate-500 font-mono">
         <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            © {new Date().getFullYear()} Pixel-Pet. Open source under MIT License.
+          <div className="flex items-center gap-2">
+            <img src="/assets/pepperino.png" alt="Cat" className="w-4 h-4 rendering-pixelated" />
+            <span>© {new Date().getFullYear()} Pixel-Pet. Open source under MIT License.</span>
           </div>
           <div className="flex items-center gap-6">
             <a href="https://github.com/diablovocado/Pixel-Pet" target="_blank" rel="noreferrer" className="hover:text-slate-300 transition-colors">GitHub Repository</a>
