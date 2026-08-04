@@ -7,6 +7,10 @@
   --font-sans: 'Fredoka', system-ui, sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 @layer utilities {
   .rendering-pixelated {
     image-rendering: pixelated;
@@ -43,20 +47,20 @@
 }
 
 .sketchy-card {
-  border: 2px solid #2D231E;
-  box-shadow: 4px 5px 0px #2D231E;
-  border-radius: 18px;
+  border: 2.5px solid #2D231E;
+  box-shadow: 5px 6px 0px #2D231E;
+  border-radius: 22px;
 }
 
 .sketchy-badge {
   border: 2px solid #2D231E;
   box-shadow: 2px 2px 0px #2D231E;
-  border-radius: 12px;
+  border-radius: 14px;
 }
 
 .sketchy-pill {
-  border: 2px solid #2D231E;
-  box-shadow: 3px 3px 0px #2D231E;
+  border: 2.5px solid #2D231E;
+  box-shadow: 3px 4px 0px #2D231E;
   border-radius: 9999px;
 }
 
@@ -81,15 +85,34 @@
 .watercolor-brush-highlight::before {
   content: "";
   position: absolute;
-  left: -4px;
-  right: -4px;
+  left: -8px;
+  right: -8px;
   bottom: 4px;
-  top: 40%;
+  top: 35%;
   background: #E5B25D;
-  opacity: 0.55;
+  opacity: 0.6;
   z-index: -1;
-  transform: rotate(-1deg);
-  border-radius: 8px 16px 12px 6px;
+  transform: rotate(-1.5deg);
+  border-radius: 12px 24px 16px 8px;
+}
+
+.watercolor-brush-highlight-terracotta {
+  position: relative;
+  display: inline-block;
+}
+
+.watercolor-brush-highlight-terracotta::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  right: -8px;
+  bottom: 4px;
+  top: 35%;
+  background: #C87A5B;
+  opacity: 0.4;
+  z-index: -1;
+  transform: rotate(1deg);
+  border-radius: 12px 24px 16px 8px;
 }
 
 /* Custom scrollbars for scrapbook theme */
