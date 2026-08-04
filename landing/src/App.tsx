@@ -56,29 +56,6 @@ const Icons = {
 
 // Hand-drawn Decorative Art Illustrations
 const ScrapbookArt = {
-  // Vintage Wooden Paintbrush
-  Paintbrush: () => (
-    <div className="relative w-40 h-12 transform -rotate-12 opacity-90 select-none pointer-events-none drop-shadow-md">
-      <svg viewBox="0 0 160 40" fill="none">
-        <path d="M10 20 C40 16, 110 17, 130 18" stroke="#8C5A3C" strokeWidth="10" strokeLinecap="round" />
-        <rect x="125" y="12" width="14" height="12" fill="#B0B0B0" stroke="#2D231E" strokeWidth="2" rx="2" />
-        <path d="M139 12 C148 10, 155 14, 158 18 C155 22, 148 26, 139 24 Z" fill="#C87A5B" stroke="#2D231E" strokeWidth="1.5" />
-      </svg>
-    </div>
-  ),
-
-  // Warm Watercolor Pencil
-  Pencil: () => (
-    <div className="relative w-44 h-10 transform rotate-45 opacity-85 select-none pointer-events-none drop-shadow-md">
-      <svg viewBox="0 0 160 30" fill="none">
-        <polygon points="10,10 135,10 135,20 10,20" fill="#E5B25D" stroke="#2D231E" strokeWidth="2" />
-        <rect x="135" y="10" width="18" height="10" fill="#E89B80" stroke="#2D231E" strokeWidth="2" rx="2" />
-        <polygon points="10,10 0,15 10,20" fill="#EAE0D5" stroke="#2D231E" strokeWidth="2" />
-        <polygon points="3,13.5 0,15 3,16.5" fill="#2D231E" />
-      </svg>
-    </div>
-  ),
-
   // Detailed Hand-Drawn Vintage Typewriter Illustration
   Typewriter: () => (
     <div className="relative w-68 h-60 p-4 bg-[#EAE0D5] border-2 border-[#2D231E] rounded-3xl shadow-[5px_6px_0px_#2D231E] flex flex-col items-center justify-between">
@@ -176,7 +153,6 @@ export default function App() {
     bRight.src = '/assets/tyoe_right.png';
     bRight.onload = () => { imagesRef.current.bongoRight = bRight; };
 
-    // Preload Pluto Bongo Cat frame sequence
     BONGO_FRAMES.forEach(src => {
       const img = new Image();
       img.src = src;
@@ -194,19 +170,14 @@ export default function App() {
       const keyChar = e.key.length === 1 ? e.key.toUpperCase() : e.key;
       setLastKeyTyped(keyChar);
 
-      // Filter timestamps older than 1000ms
       keystrokeTimestampsRef.current = keystrokeTimestampsRef.current.filter(t => now - t <= 1000);
       const currentKps = keystrokeTimestampsRef.current.length;
       setKps(currentKps);
       setKeystrokesCount(prev => prev + 1);
 
-      // Automatically switch to Pluto Bongo mode when user types
       setActiveTab('bongo');
-
-      // Advance Bongo Cat frame sequence immediately on keystroke
       setBongoFrameIdx(prev => (prev + 1) % BONGO_FRAMES.length);
 
-      // Dynamic Pluto speech bubble updates
       if (currentKps > 7) {
         setSpeechBubble(`🔥 HIGH SPEED TYPING! ${currentKps} KPS! PLUTO IS SLAMMING PAWS FAST! 🎹⚡`);
       } else if (currentKps > 2) {
@@ -253,7 +224,6 @@ export default function App() {
     const render = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw Desktop Dock line (Ink line style)
       ctx.strokeStyle = '#2D231E';
       ctx.lineWidth = 2.5;
       ctx.beginPath();
@@ -261,7 +231,6 @@ export default function App() {
       ctx.lineTo(canvas.width - 15, 175);
       ctx.stroke();
 
-      // Move Pluto if walking
       if (activeTab === 'walk') {
         catPosRef.current.x += 1.4 * catPosRef.current.dir;
         if (catPosRef.current.x > canvas.width - 120) catPosRef.current.dir = -1;
@@ -374,7 +343,7 @@ export default function App() {
       <header className="sticky top-0 z-50 bg-[#F5EFEB]/95 backdrop-blur-md border-b-2 border-[#2D231E]">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           
-          {/* Logo Left: Pluto Avatar + v1.0 badge */}
+          {/* Logo Left */}
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-full bg-[#EAE0D5] border-2 border-[#2D231E] flex items-center justify-center shadow-[2px_3px_0px_#2D231E] overflow-hidden">
               <img src="/assets/pepperino.png" alt="Pluto Logo" className="w-8 h-8 rendering-pixelated object-contain" />
@@ -410,78 +379,76 @@ export default function App() {
         </div>
       </header>
 
-      {/* 2. PAGE 1: HERO SECTION WITH COZY PIXEL ROOM BACKGROUND (100vh Full Screen) */}
+      {/* 2. PAGE 1: UNBOXED HERO SECTION DIRECTLY OVER COZY PIXEL ROOM (100vh Full Screen) */}
       <section className="h-[calc(100vh-80px)] min-h-[660px] relative flex flex-col justify-between items-center px-6 py-6 text-center overflow-hidden">
         
         {/* Full-Screen Cozy Pixel Room Background Image */}
         <div className="absolute inset-0 bg-[url('/assets/hero_cozy_room.jpg')] bg-cover bg-center bg-no-repeat" />
         
-        {/* Soft Warm Gradient Overlay for Readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#2D231E]/40 via-black/20 to-[#F5EFEB]" />
+        {/* Soft Darkening Vignette Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#2D231E]/30 via-black/25 to-[#F5EFEB]" />
 
-        {/* Top Spacer Badge */}
+        {/* Top Floating Badge */}
         <div className="relative z-10 pt-2">
-          <div className="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-[#F5EFEB]/90 backdrop-blur-md border-2 border-[#2D231E] shadow-[4px_4px_0px_#2D231E] text-[#2D231E] text-base font-hand font-bold">
+          <div className="inline-flex items-center gap-2.5 px-6 py-2 rounded-full bg-[#F5EFEB]/90 backdrop-blur-md border-2 border-[#2D231E] shadow-[3px_3px_0px_#2D231E] text-[#2D231E] text-base font-hand font-extrabold">
             <img src="/assets/pepperino.png" alt="Pluto" className="w-5 h-5 rendering-pixelated" />
             <span>✨ Meet Pluto — 100% Free & Open Source Desktop Companion</span>
           </div>
         </div>
 
-        {/* Central Display: Clean Neat Paper Card Overlay on Cozy Room Background */}
-        <div className="relative z-10 my-auto max-w-3xl w-full px-4">
-          <div className="bg-[#F5EFEB]/95 backdrop-blur-md border-2.5 border-[#2D231E] shadow-[8px_10px_0px_#2D231E] rounded-3xl p-8 sm:p-10 flex flex-col items-center justify-center space-y-6">
-            
-            {/* Pluto Mascot resting above desk */}
-            <div className="relative cursor-pointer group" onClick={handlePet}>
-              <div className="w-36 h-8 bg-[#C87A5B]/40 rounded-full blur-md absolute -bottom-2 left-1/2 transform -translate-x-1/2" />
-              <img 
-                src="/assets/pepperino.png" 
-                alt="Pluto Cat Mascot" 
-                className="w-36 h-36 sm:w-44 sm:h-44 rendering-pixelated relative z-10 transform hover:scale-110 transition-transform duration-300 drop-shadow-2xl" 
-              />
-            </div>
-
-            {/* Central Title */}
-            <div className="space-y-2">
-              <h1 className="text-5xl sm:text-6xl md:text-7xl font-heading font-extrabold tracking-tight text-[#2D231E]">
-                <span className="watercolor-brush-highlight">PLUTO</span>
-              </h1>
-              <p className="text-xl sm:text-2xl font-hand font-extrabold text-[#8C5A3C] tracking-wide">
-                Pixel-Pet v1.0 • Your Desktop Companion
-              </p>
-            </div>
-
-            {/* Subtext */}
-            <p className="text-lg sm:text-xl font-hand font-bold text-[#2D231E]/90 max-w-xl mx-auto leading-relaxed">
-              Transparent overlay, click-through everywhere except her body, zero rendering glitches or input conflicts. Pure native desk serotonin.
-            </p>
-
-            {/* Dual Primary Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2 w-full sm:w-auto">
-              <a
-                href="#download"
-                className="w-full sm:w-auto px-8 py-4 bg-[#C87A5B] hover:bg-[#B5684A] text-[#F5EFEB] border-2.5 border-[#2D231E] shadow-[4px_5px_0px_#2D231E] font-heading font-extrabold text-lg rounded-full transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-3"
-              >
-                <Icons.Apple />
-                <span>Download Pluto for macOS</span>
-              </a>
-
-              <a
-                href="https://github.com/diablovocado/Pixel-Pet"
-                target="_blank"
-                rel="noreferrer"
-                className="w-full sm:w-auto px-8 py-4 bg-[#EAE0D5] hover:bg-[#E5B25D]/40 text-[#2D231E] border-2.5 border-[#2D231E] shadow-[4px_5px_0px_#2D231E] font-heading font-extrabold text-lg rounded-full transition-all text-base flex items-center justify-center gap-3"
-              >
-                <Icons.Github />
-                <span>⭐ Star on GitHub</span>
-              </a>
-            </div>
-
+        {/* Central Display: UNBOXED BOLD DOODLY TYPOGRAPHY Directly Over Pixel Room */}
+        <div className="relative z-10 my-auto max-w-4xl w-full px-4 flex flex-col items-center justify-center space-y-5">
+          
+          {/* Pluto Cat Mascot sitting on the background desk */}
+          <div className="relative cursor-pointer group" onClick={handlePet}>
+            <div className="w-40 h-8 bg-[#C87A5B]/40 rounded-full blur-md absolute -bottom-2 left-1/2 transform -translate-x-1/2" />
+            <img 
+              src="/assets/pepperino.png" 
+              alt="Pluto Cat Mascot" 
+              className="w-40 h-40 sm:w-48 sm:h-48 rendering-pixelated relative z-10 transform hover:scale-110 transition-transform duration-300 drop-shadow-2xl" 
+            />
           </div>
+
+          {/* Large Bold Doodly Title */}
+          <div className="space-y-1">
+            <h1 className="text-7xl sm:text-8xl md:text-9xl font-hand font-extrabold tracking-tight text-[#F5EFEB] doodly-title-stroke leading-none">
+              <span className="watercolor-brush-highlight">PLUTO</span>
+            </h1>
+            <p className="text-3xl sm:text-4xl font-hand font-extrabold text-[#E5B25D] doodly-text-stroke tracking-wide pt-2">
+              Pixel-Pet v1.0 • Your Desktop Companion
+            </p>
+          </div>
+
+          {/* Large Bold Doodly Description */}
+          <p className="text-2xl sm:text-3xl font-hand font-extrabold text-[#F5EFEB] doodly-text-stroke max-w-3xl mx-auto leading-relaxed px-2">
+            Transparent overlay, click-through everywhere except her body, zero rendering glitches or input conflicts. Pure native desk serotonin.
+          </p>
+
+          {/* Dual Primary Action Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-3 w-full sm:w-auto">
+            <a
+              href="#download"
+              className="w-full sm:w-auto px-9 py-4 bg-[#C87A5B] hover:bg-[#B5684A] text-[#F5EFEB] border-2.5 border-[#2D231E] shadow-[5px_6px_0px_#2D231E] font-heading font-extrabold text-xl rounded-full transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-3"
+            >
+              <Icons.Apple />
+              <span>Download Pluto for macOS</span>
+            </a>
+
+            <a
+              href="https://github.com/diablovocado/Pixel-Pet"
+              target="_blank"
+              rel="noreferrer"
+              className="w-full sm:w-auto px-9 py-4 bg-[#F5EFEB] hover:bg-[#E5B25D]/40 text-[#2D231E] border-2.5 border-[#2D231E] shadow-[5px_6px_0px_#2D231E] font-heading font-extrabold text-xl rounded-full transition-all text-base flex items-center justify-center gap-3"
+            >
+              <Icons.Github />
+              <span>⭐ Star on GitHub</span>
+            </a>
+          </div>
+
         </div>
 
         {/* Bottom Scroll Indicator Pill */}
-        <div className="relative z-10 pb-4">
+        <div className="relative z-10 pb-3">
           <a 
             href="#overview" 
             className="px-6 py-2.5 rounded-full bg-[#F5EFEB]/95 backdrop-blur-md border-2 border-[#2D231E] shadow-[4px_4px_0px_#2D231E] text-base font-heading font-extrabold text-[#2D231E] hover:bg-[#E5B25D]/40 transition-all inline-flex items-center gap-2 group"
