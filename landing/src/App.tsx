@@ -53,9 +53,9 @@ const Icons = {
 const BONGO_FRAMES = Array.from({ length: 12 }, (_, i) => `/assets/bongo_cat_frames/tyoe_frame_${i}.png`);
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'walk' | 'sleep' | 'bongo' | 'excited' | 'petting'>('walk');
-  const [happiness, setHappiness] = useState(92);
-  const [treatsCount, setTreatsCount] = useState(4);
+  const [activeTab, setActiveTab] = useState<'walk' | 'sleep' | 'bongo' | 'excited' | 'petting'>('bongo');
+  const [happiness, setHappiness] = useState(98);
+  const [treatsCount, setTreatsCount] = useState(5);
   const [copied, setCopied] = useState(false);
   const [speechBubble, setSpeechBubble] = useState("Meow! I'm Pixel-Pet! Click to pet me or drop a treat! 🐾");
   const [bongoFrameIdx, setBongoFrameIdx] = useState(0);
@@ -76,9 +76,9 @@ export default function App() {
   });
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const catPosRef = useRef({ x: 80, y: 110, dir: 1 });
+  const catPosRef = useRef({ x: 80, y: 80, dir: 1 });
 
-  // Load all actual PNG assets
+  // Load all PNG assets
   useEffect(() => {
     const pep = new Image();
     pep.src = '/assets/pepperino.png';
@@ -113,7 +113,7 @@ export default function App() {
     return () => clearInterval(interval);
   }, [activeTab]);
 
-  // Main Canvas Render Loop using actual images
+  // Main Canvas Render Loop with true 1:1 aspect ratio
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -146,51 +146,48 @@ export default function App() {
       ctx.save();
 
       if (activeTab === 'sleep') {
-        // Draw real Sleeping Cat asset
+        // Draw Sleeping Cat asset with true aspect ratio (95x95)
         const sleepImg = imagesRef.current.sleep;
         if (sleepImg) {
-          ctx.drawImage(sleepImg, 220, 85, 120, 90);
-        } else {
-          ctx.fillStyle = '#8b5cf6';
-          ctx.fillRect(240, 130, 80, 40);
+          ctx.drawImage(sleepImg, 270, 80, 95, 95);
         }
 
         // Animated Zzz particles
         const zOffset = Math.sin(Date.now() / 250) * 6;
         ctx.font = '12px "Press Start 2P", monospace';
         ctx.fillStyle = '#c084fc';
-        ctx.fillText('Z z z...', 330, 90 + zOffset);
+        ctx.fillText('Z z z...', 365, 80 + zOffset);
       } else if (activeTab === 'bongo') {
-        // Draw real Bongo Cat Frame asset
+        // Draw Bongo Cat Frame with true square aspect ratio (110x110)
         const currentFrameImg = imagesRef.current.bongoFrames[bongoFrameIdx];
         if (currentFrameImg && currentFrameImg.complete) {
-          ctx.drawImage(currentFrameImg, 200, 45, 220, 130);
+          ctx.drawImage(currentFrameImg, 265, 62, 110, 110);
         } else if (imagesRef.current.bongoLeft) {
-          ctx.drawImage(imagesRef.current.bongoLeft, 220, 60, 180, 115);
+          ctx.drawImage(imagesRef.current.bongoLeft, 265, 62, 110, 110);
         }
       } else if (activeTab === 'excited') {
-        // Bounce real Pepperino Cat asset
+        // Bounce Pepperino Cat asset (90x90)
         const bounceY = Math.abs(Math.sin(Date.now() / 140)) * 20;
         const pepImg = imagesRef.current.pepperino;
         if (pepImg) {
-          ctx.drawImage(pepImg, 250, 85 - bounceY, 90, 90);
+          ctx.drawImage(pepImg, 275, 85 - bounceY, 90, 90);
         }
 
         // Sparkle effects
         ctx.font = '16px sans-serif';
-        ctx.fillText('✨', 220, 80 - bounceY);
-        ctx.fillText('💖', 350, 70 - bounceY);
+        ctx.fillText('✨', 245, 80 - bounceY);
+        ctx.fillText('💖', 375, 70 - bounceY);
       } else if (activeTab === 'petting') {
         // Petting cat purr wobble
         const wobbleX = Math.sin(Date.now() / 80) * 3;
         const pepImg = imagesRef.current.pepperino;
         if (pepImg) {
-          ctx.drawImage(pepImg, 250 + wobbleX, 85, 90, 90);
+          ctx.drawImage(pepImg, 275 + wobbleX, 85, 90, 90);
         }
         ctx.font = '14px sans-serif';
-        ctx.fillText('🥰', 330, 80);
+        ctx.fillText('🥰', 360, 80);
       } else {
-        // Walk mode with real Pepperino asset
+        // Walk mode with real Pepperino asset (90x90)
         const pepImg = imagesRef.current.pepperino;
         ctx.translate(x, 85);
         if (dir === -1) {
@@ -342,7 +339,7 @@ export default function App() {
 
             <div className="flex items-center gap-2 font-mono text-xs text-slate-400">
               <span>Rendering Engine:</span>
-              <span className="px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-500/30">PNG Frame Sprites</span>
+              <span className="px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-500/30">Transparent PNG Sprites</span>
             </div>
           </div>
 
@@ -434,7 +431,7 @@ export default function App() {
       <section id="gallery" className="py-20 px-6 max-w-7xl mx-auto border-t border-slate-800/60">
         <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
           <h2 className="text-xs font-mono text-purple-400 uppercase tracking-widest font-semibold">Authentic Sprite Library</h2>
-          <p className="text-3xl font-extrabold text-white">Built With Our Real Pixel Cat Assets</p>
+          <p className="text-3xl font-extrabold text-white">Built With Transparent Pixel Cat Assets</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -458,7 +455,7 @@ export default function App() {
 
           <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-all flex flex-col items-center text-center">
             <div className="w-24 h-24 mb-4 bg-slate-950 rounded-xl p-2 border border-slate-800/80 flex items-center justify-center overflow-hidden">
-              <img src="/assets/tyoe_left.png" alt="Bongo Left" className="w-20 h-20 rendering-pixelated object-contain" />
+              <img src="/assets/tyoe_left.png" alt="Bongo Left" className="w-16 h-16 rendering-pixelated object-contain" />
             </div>
             <h4 className="font-bold text-white text-base mb-1">Bongo Cat Paws</h4>
             <p className="text-slate-400 text-xs font-mono">assets/tyoe_left.png</p>
@@ -467,11 +464,11 @@ export default function App() {
 
           <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-all flex flex-col items-center text-center">
             <div className="w-24 h-24 mb-4 bg-slate-950 rounded-xl p-2 border border-slate-800/80 flex items-center justify-center overflow-hidden">
-              <img src="/assets/bongo_cat_frames/tyoe_frame_2.png" alt="Frame" className="w-20 h-20 rendering-pixelated object-contain" />
+              <img src="/assets/bongo_cat_frames/tyoe_frame_2.png" alt="Frame" className="w-16 h-16 rendering-pixelated object-contain" />
             </div>
             <h4 className="font-bold text-white text-base mb-1">12-Frame Animation</h4>
             <p className="text-slate-400 text-xs font-mono">assets/bongo_cat_frames/*</p>
-            <p className="text-slate-500 text-xs mt-2">Full frame sequence for smooth typing reactions.</p>
+            <p className="text-slate-500 text-xs mt-2">Clean transparent PNG frame sequence for typing.</p>
           </div>
         </div>
       </section>
