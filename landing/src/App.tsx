@@ -374,65 +374,22 @@ export default function App() {
         </div>
       </header>
 
-      {/* 2. PAGE 1: HERO SECTION WITH PLUTO CAT POSITIONED DIRECTLY ON THE STUDY TABLE (100vh Full Screen) */}
-      <section className="h-[calc(100vh-80px)] min-h-[660px] relative flex flex-col justify-between items-center px-6 py-6 text-center overflow-hidden">
+      {/* 2. PAGE 1: MINIMAL HERO SECTION WITH PLUTO CAT POSITIONED HIGHER DIRECTLY ON THE STUDY TABLE (100vh Full Screen) */}
+      <section className="h-[calc(100vh-80px)] min-h-[600px] relative flex flex-col justify-between items-center px-6 py-6 text-center overflow-hidden">
         
         {/* Full-Screen Cozy Pixel Room Background Image */}
         <div className="absolute inset-0 bg-[url('/assets/hero_cozy_room.jpg')] bg-cover bg-center bg-no-repeat" />
         
         {/* Soft Darkening Vignette Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#2D231E]/30 via-black/20 to-[#F5EFEB]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#2D231E]/20 via-transparent to-[#F5EFEB]/80" />
 
-        {/* Top Floating Badge */}
-        <div className="relative z-10 pt-2">
-          <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-[#F5EFEB]/90 backdrop-blur-md border-2 border-[#2D231E] shadow-[3px_3px_0px_#2D231E] text-[#2D231E] text-xs font-pixel font-bold">
-            <img src="/assets/pepperino.png" alt="Pluto" className="w-5 h-5 rendering-pixelated" />
-            <span>✨ Meet Pluto — 100% Free & Open Source Desktop Companion</span>
-          </div>
-        </div>
+        {/* Top Spacer */}
+        <div className="relative z-10" />
 
-        {/* Hero Title & Text Block (Positioned cleanly on Left/Center) */}
-        <div className="relative z-10 my-auto max-w-2xl sm:max-w-3xl w-full px-4 flex flex-col items-center sm:items-start text-center sm:text-left space-y-4">
-          
-          <div className="space-y-3">
-            <h1 className="text-5xl sm:text-7xl md:text-8xl font-pixel font-bold tracking-wider text-[#F5EFEB] doodly-title-stroke leading-tight">
-              <span className="watercolor-brush-highlight">PLUTO</span>
-            </h1>
-            <p className="text-2xl sm:text-3xl font-vt323 font-bold text-[#E5B25D] doodly-text-stroke tracking-wide pt-1">
-              Pixel-Pet v1.0 • Your Desktop Companion
-            </p>
-          </div>
-
-          <p className="text-xl sm:text-2xl font-vt323 font-bold text-[#F5EFEB] doodly-text-stroke max-w-xl leading-relaxed">
-            Transparent overlay, click-through everywhere except her body, zero rendering glitches or input conflicts. Pure native desk serotonin.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center gap-4 pt-2 w-full sm:w-auto">
-            <a
-              href="#download"
-              className="w-full sm:w-auto px-8 py-3.5 bg-[#C87A5B] hover:bg-[#B5684A] text-[#F5EFEB] border-2.5 border-[#2D231E] shadow-[5px_6px_0px_#2D231E] font-pixel font-bold text-xs rounded-full transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-3"
-            >
-              <Icons.Apple />
-              <span>Download Pluto for macOS</span>
-            </a>
-
-            <a
-              href="https://github.com/diablovocado/Pixel-Pet"
-              target="_blank"
-              rel="noreferrer"
-              className="w-full sm:w-auto px-8 py-3.5 bg-[#F5EFEB] hover:bg-[#E5B25D]/40 text-[#2D231E] border-2.5 border-[#2D231E] shadow-[5px_6px_0px_#2D231E] font-pixel font-bold text-xs rounded-full transition-all text-base flex items-center justify-center gap-3"
-            >
-              <Icons.Github />
-              <span>⭐ Star on GitHub</span>
-            </a>
-          </div>
-
-        </div>
-
-        {/* PLUTO PIXEL CAT MASCOT POSITIONED DIRECTLY ON THE STUDY TABLE (Right Side under Window) */}
+        {/* PLUTO PIXEL CAT MASCOT POSITIONED HIGHER DIRECTLY ON THE STUDY TABLE (Next to laptop under window) */}
         <div 
           onClick={handlePet}
-          className="absolute top-[48%] sm:top-[50%] left-[54%] sm:left-[60%] md:left-[62%] lg:left-[64%] transform -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer group"
+          className="absolute top-[42%] sm:top-[43%] left-[54%] sm:left-[60%] md:left-[62%] lg:left-[64%] transform -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer group"
         >
           {/* Speech Bubble above Pluto on Study Table */}
           <div className="absolute -top-14 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-[#F5EFEB] border-2 border-[#2D231E] px-3.5 py-1.5 rounded-xl shadow-[3px_3px_0px_#2D231E] font-vt323 text-xl font-bold text-[#2D231E] opacity-90 group-hover:opacity-100 transition-opacity pointer-events-none flex items-center gap-2">
@@ -451,10 +408,10 @@ export default function App() {
         </div>
 
         {/* Bottom Scroll Indicator Pill */}
-        <div className="relative z-10 pb-3">
+        <div className="relative z-10 pb-4">
           <a 
             href="#overview" 
-            className="px-5 py-2 rounded-full bg-[#F5EFEB]/95 backdrop-blur-md border-2 border-[#2D231E] shadow-[4px_4px_0px_#2D231E] text-xs font-pixel font-bold text-[#2D231E] hover:bg-[#E5B25D]/40 transition-all inline-flex items-center gap-2 group"
+            className="px-6 py-3 rounded-full bg-[#F5EFEB]/95 backdrop-blur-md border-2 border-[#2D231E] shadow-[4px_4px_0px_#2D231E] text-xs font-pixel font-bold text-[#2D231E] hover:bg-[#E5B25D]/40 transition-all inline-flex items-center gap-2.5 group"
           >
             <span className="group-hover:translate-y-0.5 transition-transform">Scroll to Explore ↓</span>
             <Icons.DownArrow />
