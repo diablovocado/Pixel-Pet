@@ -56,24 +56,20 @@ const Icons = {
 
 // Hand-drawn Decorative Art Illustrations
 const ScrapbookArt = {
-  // Detailed Hand-Drawn Vintage Typewriter Illustration
   Typewriter: () => (
     <div className="relative w-68 h-60 p-4 bg-[#EAE0D5] border-2 border-[#2D231E] rounded-3xl shadow-[5px_6px_0px_#2D231E] flex flex-col items-center justify-between">
-      {/* Paper Sheet sticking out */}
       <div className="w-48 h-20 bg-[#F5EFEB] border-2 border-[#2D231E] rounded-t-lg p-2 flex flex-col items-center justify-center text-center shadow-inner">
         <span className="font-vt323 text-lg font-bold text-[#2D231E]">Keyboard Instructions</span>
         <span className="font-mono text-[10px] text-[#8C5A3C] font-semibold mt-0.5">Press any key to test Pluto!</span>
       </div>
 
-      {/* Roller Bar */}
       <div className="w-56 h-5 bg-[#2D231E] rounded-full my-1 flex items-center justify-between px-3">
         <div className="w-3 h-3 bg-[#E5B25D] rounded-full border border-white" />
         <div className="w-3 h-3 bg-[#E5B25D] rounded-full border border-white" />
       </div>
 
-      {/* Main Metal Body */}
       <div className="w-60 h-28 bg-[#C87A5B]/30 border-2 border-[#2D231E] rounded-2xl p-2.5 flex flex-col justify-between shadow-sm">
-        <div className="text-center font-vt323 font-bold text-sm text-[#2D231E] tracking-wider uppercase">
+        <div className="text-center font-vt323 font-bold text-xs text-[#2D231E] tracking-wider uppercase">
           ★ PLUTO TYPEWRITER ★
         </div>
         <div className="grid grid-cols-7 gap-1 px-1">
@@ -91,7 +87,6 @@ const ScrapbookArt = {
     </div>
   ),
 
-  // Floating 3D Keycap Graphic
   Keycap: ({ label }: { label: string }) => (
     <div className="relative inline-flex items-center justify-center w-8 h-8 rounded-xl bg-[#F5EFEB] border-2 border-[#2D231E] shadow-[2px_2px_0px_#2D231E] font-mono font-bold text-sm text-[#2D231E] transform hover:-translate-y-0.5 transition-transform">
       {label || 'N'}
@@ -107,7 +102,7 @@ export default function App() {
   const [happiness, setHappiness] = useState(98);
   const [treatsCount, setTreatsCount] = useState(5);
   const [copied, setCopied] = useState(false);
-  const [speechBubble, setSpeechBubble] = useState("Meow! I'm Pluto! Type on your keyboard or use the input box to see me react! 🐾");
+  const [speechBubble, setSpeechBubble] = useState("Meow! I'm sitting on your desk! 🐾");
   const [bongoFrameIdx, setBongoFrameIdx] = useState(0);
 
   // Real-time typing states
@@ -333,7 +328,7 @@ export default function App() {
   const handlePet = () => {
     setActiveTab('petting');
     setHappiness(prev => Math.min(100, prev + 5));
-    setSpeechBubble("Purrrrrrr! You petted Pluto! ❤️");
+    setSpeechBubble("Purrrrrrr! You petted Pluto on the desk! ❤️");
   };
 
   return (
@@ -379,14 +374,14 @@ export default function App() {
         </div>
       </header>
 
-      {/* 2. PAGE 1: UNBOXED HERO SECTION DIRECTLY OVER COZY PIXEL ROOM (100vh Full Screen) */}
+      {/* 2. PAGE 1: HERO SECTION WITH PLUTO CAT POSITIONED DIRECTLY ON THE STUDY TABLE (100vh Full Screen) */}
       <section className="h-[calc(100vh-80px)] min-h-[660px] relative flex flex-col justify-between items-center px-6 py-6 text-center overflow-hidden">
         
         {/* Full-Screen Cozy Pixel Room Background Image */}
         <div className="absolute inset-0 bg-[url('/assets/hero_cozy_room.jpg')] bg-cover bg-center bg-no-repeat" />
         
         {/* Soft Darkening Vignette Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#2D231E]/30 via-black/25 to-[#F5EFEB]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#2D231E]/30 via-black/20 to-[#F5EFEB]" />
 
         {/* Top Floating Badge */}
         <div className="relative z-10 pt-2">
@@ -396,36 +391,23 @@ export default function App() {
           </div>
         </div>
 
-        {/* Central Display: UNBOXED PIXELATED TYPOGRAPHY Directly Over Pixel Room */}
-        <div className="relative z-10 my-auto max-w-4xl w-full px-4 flex flex-col items-center justify-center space-y-5">
+        {/* Hero Title & Text Block (Positioned cleanly on Left/Center) */}
+        <div className="relative z-10 my-auto max-w-2xl sm:max-w-3xl w-full px-4 flex flex-col items-center sm:items-start text-center sm:text-left space-y-4">
           
-          {/* Pluto Cat Mascot sitting on the background desk */}
-          <div className="relative cursor-pointer group" onClick={handlePet}>
-            <div className="w-40 h-8 bg-[#C87A5B]/40 rounded-full blur-md absolute -bottom-2 left-1/2 transform -translate-x-1/2" />
-            <img 
-              src="/assets/pepperino.png" 
-              alt="Pluto Cat Mascot" 
-              className="w-40 h-40 sm:w-48 sm:h-48 rendering-pixelated relative z-10 transform hover:scale-110 transition-transform duration-300 drop-shadow-2xl" 
-            />
-          </div>
-
-          {/* Large Bold Pixelated Title */}
           <div className="space-y-3">
             <h1 className="text-5xl sm:text-7xl md:text-8xl font-pixel font-bold tracking-wider text-[#F5EFEB] doodly-title-stroke leading-tight">
               <span className="watercolor-brush-highlight">PLUTO</span>
             </h1>
-            <p className="text-2xl sm:text-3xl font-vt323 font-bold text-[#E5B25D] doodly-text-stroke tracking-wide pt-2">
+            <p className="text-2xl sm:text-3xl font-vt323 font-bold text-[#E5B25D] doodly-text-stroke tracking-wide pt-1">
               Pixel-Pet v1.0 • Your Desktop Companion
             </p>
           </div>
 
-          {/* Large Bold Pixelated Description */}
-          <p className="text-xl sm:text-2xl font-vt323 font-bold text-[#F5EFEB] doodly-text-stroke max-w-3xl mx-auto leading-relaxed px-2">
+          <p className="text-xl sm:text-2xl font-vt323 font-bold text-[#F5EFEB] doodly-text-stroke max-w-xl leading-relaxed">
             Transparent overlay, click-through everywhere except her body, zero rendering glitches or input conflicts. Pure native desk serotonin.
           </p>
 
-          {/* Dual Primary Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-3 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-center gap-4 pt-2 w-full sm:w-auto">
             <a
               href="#download"
               className="w-full sm:w-auto px-8 py-3.5 bg-[#C87A5B] hover:bg-[#B5684A] text-[#F5EFEB] border-2.5 border-[#2D231E] shadow-[5px_6px_0px_#2D231E] font-pixel font-bold text-xs rounded-full transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-3"
@@ -445,6 +427,27 @@ export default function App() {
             </a>
           </div>
 
+        </div>
+
+        {/* PLUTO PIXEL CAT MASCOT POSITIONED DIRECTLY ON THE STUDY TABLE (Right Side under Window) */}
+        <div 
+          onClick={handlePet}
+          className="absolute top-[48%] sm:top-[50%] left-[54%] sm:left-[60%] md:left-[62%] lg:left-[64%] transform -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer group"
+        >
+          {/* Speech Bubble above Pluto on Study Table */}
+          <div className="absolute -top-14 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-[#F5EFEB] border-2 border-[#2D231E] px-3.5 py-1.5 rounded-xl shadow-[3px_3px_0px_#2D231E] font-vt323 text-xl font-bold text-[#2D231E] opacity-90 group-hover:opacity-100 transition-opacity pointer-events-none flex items-center gap-2">
+            <span>{speechBubble}</span>
+          </div>
+
+          {/* Wooden Table Shadow */}
+          <div className="w-24 h-5 bg-[#2D231E]/40 rounded-full blur-sm absolute -bottom-1 left-1/2 transform -translate-x-1/2" />
+          
+          {/* Pluto Cat Mascot Sprite */}
+          <img 
+            src="/assets/pepperino.png" 
+            alt="Pluto Cat on Study Table" 
+            className="w-24 h-24 sm:w-32 sm:h-32 rendering-pixelated relative z-10 transform hover:scale-110 transition-transform duration-300 drop-shadow-2xl" 
+          />
         </div>
 
         {/* Bottom Scroll Indicator Pill */}
