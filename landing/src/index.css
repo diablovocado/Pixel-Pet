@@ -1,9 +1,10 @@
 @import "tailwindcss";
 
 @theme {
+  --font-heading: 'Fredoka', 'Sniglet', cursive, sans-serif;
+  --font-hand: 'Caveat', 'Gaegu', cursive, sans-serif;
   --font-pixel: 'Press Start 2P', monospace;
-  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: 'Fredoka', system-ui, sans-serif;
 }
 
 @layer utilities {
@@ -11,34 +12,95 @@
     image-rendering: pixelated;
     image-rendering: crisp-edges;
   }
+
+  .font-hand {
+    font-family: 'Caveat', 'Gaegu', cursive, sans-serif;
+  }
+
+  .font-heading {
+    font-family: 'Fredoka', 'Sniglet', cursive, sans-serif;
+  }
+
+  .font-pixel {
+    font-family: 'Press Start 2P', monospace;
+  }
 }
 
-.bg-grid-pattern {
-  background-size: 32px 32px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+/* Paper grain texture */
+.bg-paper-grain {
+  background-color: #F5EFEB;
+  background-image: radial-gradient(#2D231E 0.4px, transparent 0.4px), radial-gradient(#2D231E 0.4px, #F5EFEB 0.4px);
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
+  background-opacity: 0.03;
 }
 
-.pixel-glow {
-  box-shadow: 0 0 40px rgba(168, 85, 247, 0.2);
+/* Hand-drawn sketchy border boxes */
+.sketchy-box {
+  border: 2px solid #2D231E;
+  box-shadow: 3px 4px 0px #2D231E;
+  border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
 }
 
-.pixel-glow-emerald {
-  box-shadow: 0 0 40px rgba(16, 185, 129, 0.2);
+.sketchy-card {
+  border: 2px solid #2D231E;
+  box-shadow: 4px 5px 0px #2D231E;
+  border-radius: 18px;
 }
 
-/* Custom scrollbars */
+.sketchy-badge {
+  border: 2px solid #2D231E;
+  box-shadow: 2px 2px 0px #2D231E;
+  border-radius: 12px;
+}
+
+.sketchy-pill {
+  border: 2px solid #2D231E;
+  box-shadow: 3px 3px 0px #2D231E;
+  border-radius: 9999px;
+}
+
+/* Watercolor wash highlights */
+.watercolor-terracotta {
+  background-color: rgba(200, 122, 91, 0.25);
+}
+
+.watercolor-ochre {
+  background-color: rgba(229, 178, 93, 0.35);
+}
+
+.watercolor-olive {
+  background-color: rgba(138, 154, 101, 0.25);
+}
+
+.watercolor-brush-highlight {
+  position: relative;
+  display: inline-block;
+}
+
+.watercolor-brush-highlight::before {
+  content: "";
+  position: absolute;
+  left: -4px;
+  right: -4px;
+  bottom: 4px;
+  top: 40%;
+  background: #E5B25D;
+  opacity: 0.55;
+  z-index: -1;
+  transform: rotate(-1deg);
+  border-radius: 8px 16px 12px 6px;
+}
+
+/* Custom scrollbars for scrapbook theme */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #090a0f;
+  background: #F5EFEB;
 }
 ::-webkit-scrollbar-thumb {
-  background: #22263a;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #3b4265;
+  background: #C87A5B;
+  border: 2px solid #2D231E;
+  border-radius: 6px;
 }
