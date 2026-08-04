@@ -22,8 +22,11 @@ export default defineConfig(({ mode }) => {
   const emitSourcemaps = mode === 'development'
 
   return {
+    root: path.resolve(__dirname, 'landing'),
     base: process.env.FIGMA_PUBLIC_URL ? `${process.env.FIGMA_PUBLIC_URL}/` : '/',
     build: {
+      outDir: path.resolve(__dirname, 'dist'),
+      emptyOutDir: true,
       sourcemap: emitSourcemaps ? 'inline' : false,
       minify: !emitSourcemaps,
     },
@@ -37,7 +40,7 @@ export default defineConfig(({ mode }) => {
     ],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src'),
+        '@': path.resolve(__dirname, './landing/src'),
       },
     },
     server: {
