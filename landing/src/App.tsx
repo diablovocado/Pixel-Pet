@@ -46,15 +46,10 @@ const Icons = {
     <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
       <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.03c.67-.81 1.13-1.94.99-3.03-.97.04-2.16.65-2.85 1.46-.61.71-1.14 1.86-.99 2.97 1.09.08 2.2-.59 2.85-1.4" />
     </svg>
-  ),
-  Keyboard: () => (
-    <svg className="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-    </svg>
   )
 };
 
-// Bongo Cat frame sequence paths
+// Bongo Cat frame sequence paths for Pluto
 const BONGO_FRAMES = Array.from({ length: 12 }, (_, i) => `/assets/bongo_cat_frames/tyoe_frame_${i}.png`);
 
 export default function App() {
@@ -62,7 +57,7 @@ export default function App() {
   const [happiness, setHappiness] = useState(98);
   const [treatsCount, setTreatsCount] = useState(5);
   const [copied, setCopied] = useState(false);
-  const [speechBubble, setSpeechBubble] = useState("Type on your keyboard anywhere or use the input box to see Bongo Cat react! 🎹⚡");
+  const [speechBubble, setSpeechBubble] = useState("Meow! I'm Pluto! Type on your keyboard or use the input box to see me react! 🐾");
   const [bongoFrameIdx, setBongoFrameIdx] = useState(0);
 
   // Real-time typing states
@@ -90,7 +85,7 @@ export default function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const catPosRef = useRef({ x: 80, y: 80, dir: 1 });
 
-  // Load all PNG assets
+  // Load all Pluto PNG assets
   useEffect(() => {
     const pep = new Image();
     pep.src = '/assets/pepperino.png';
@@ -108,7 +103,7 @@ export default function App() {
     bRight.src = '/assets/tyoe_right.png';
     bRight.onload = () => { imagesRef.current.bongoRight = bRight; };
 
-    // Preload Bongo Cat frame sequence
+    // Preload Pluto Bongo Cat frame sequence
     BONGO_FRAMES.forEach(src => {
       const img = new Image();
       img.src = src;
@@ -116,7 +111,7 @@ export default function App() {
     });
   }, []);
 
-  // Global Keyboard Typing Detector & KPS Calculator
+  // Global Keyboard Typing Detector & KPS Calculator for Pluto
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (['Control', 'Shift', 'Alt', 'Meta'].includes(e.key)) return;
@@ -131,19 +126,19 @@ export default function App() {
       setKps(currentKps);
       setKeystrokesCount(prev => prev + 1);
 
-      // Automatically switch to Bongo Cat mode when user types
+      // Automatically switch to Pluto Bongo mode when user types
       setActiveTab('bongo');
 
       // Advance Bongo Cat frame sequence immediately on keystroke
       setBongoFrameIdx(prev => (prev + 1) % BONGO_FRAMES.length);
 
-      // Dynamic speech bubble updates
+      // Dynamic Pluto speech bubble updates
       if (currentKps > 7) {
-        setSpeechBubble(`🔥 HIGH SPEED TYPING! ${currentKps} KPS! BONGO CAT IS SLAMMING PAWS FAST! 🎹⚡`);
+        setSpeechBubble(`🔥 HIGH SPEED TYPING! ${currentKps} KPS! PLUTO IS SLAMMING PAWS FAST! 🎹⚡`);
       } else if (currentKps > 2) {
         setSpeechBubble(`⚡ Typing at ${currentKps} KPS! Key '${lastKeyTypedRef.current}' pressed! 🎵`);
       } else {
-        setSpeechBubble(`Keystroke detected! Key '${lastKeyTypedRef.current}' • Bongo Cat reacting! 🐾`);
+        setSpeechBubble(`Keystroke detected! Key '${lastKeyTypedRef.current}' • Pluto is reacting! 🐾`);
       }
     };
 
@@ -151,7 +146,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // KPS Decay Ticker (resets KPS to 0 when user stops typing)
+  // KPS Decay Ticker
   useEffect(() => {
     const ticker = setInterval(() => {
       const now = Date.now();
@@ -171,7 +166,7 @@ export default function App() {
     return () => clearInterval(interval);
   }, [activeTab, kps]);
 
-  // Main Canvas Render Loop with true 1:1 aspect ratio & Typing Particles
+  // Main Canvas Render Loop for Pluto
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -192,7 +187,7 @@ export default function App() {
       ctx.lineTo(canvas.width - 15, 175);
       ctx.stroke();
 
-      // Move cat if walking
+      // Move Pluto if walking
       if (activeTab === 'walk') {
         catPosRef.current.x += 1.4 * catPosRef.current.dir;
         if (catPosRef.current.x > canvas.width - 120) catPosRef.current.dir = -1;
@@ -204,7 +199,7 @@ export default function App() {
       ctx.save();
 
       if (activeTab === 'sleep') {
-        // Draw Sleeping Cat asset (95x95)
+        // Draw Sleeping Pluto Cat asset (95x95)
         const sleepImg = imagesRef.current.sleep;
         if (sleepImg) {
           ctx.drawImage(sleepImg, 270, 80, 95, 95);
@@ -216,7 +211,7 @@ export default function App() {
         ctx.fillStyle = '#c084fc';
         ctx.fillText('Z z z...', 365, 80 + zOffset);
       } else if (activeTab === 'bongo') {
-        // Draw Bongo Cat Frame with true square aspect ratio (110x110)
+        // Draw Pluto Bongo Cat Frame (110x110)
         const currentFrameImg = imagesRef.current.bongoFrames[bongoFrameIdx];
         if (currentFrameImg && currentFrameImg.complete) {
           ctx.drawImage(currentFrameImg, 265, 62, 110, 110);
@@ -238,7 +233,7 @@ export default function App() {
           }
         }
       } else if (activeTab === 'excited') {
-        // Bounce Pepperino Cat asset (90x90)
+        // Bounce Pluto Cat asset (90x90)
         const bounceY = Math.abs(Math.sin(Date.now() / 140)) * 20;
         const pepImg = imagesRef.current.pepperino;
         if (pepImg) {
@@ -250,7 +245,7 @@ export default function App() {
         ctx.fillText('✨', 245, 80 - bounceY);
         ctx.fillText('💖', 375, 70 - bounceY);
       } else if (activeTab === 'petting') {
-        // Petting cat purr wobble
+        // Petting Pluto cat purr wobble
         const wobbleX = Math.sin(Date.now() / 80) * 3;
         const pepImg = imagesRef.current.pepperino;
         if (pepImg) {
@@ -259,7 +254,7 @@ export default function App() {
         ctx.font = '14px sans-serif';
         ctx.fillText('🥰', 360, 80);
       } else {
-        // Walk mode with real Pepperino asset (90x90)
+        // Walk mode with Pluto Pepperino asset (90x90)
         const pepImg = imagesRef.current.pepperino;
         ctx.translate(x, 85);
         if (dir === -1) {
@@ -293,17 +288,17 @@ export default function App() {
       setTreatsCount(prev => prev - 1);
       setHappiness(prev => Math.min(100, prev + 10));
       setActiveTab('excited');
-      setSpeechBubble("YUMMY! Fish treat devoured! 🐟✨");
-      setTimeout(() => setSpeechBubble("Purrrrr! Pixel Cat is super happy! 🥰"), 2500);
+      setSpeechBubble("YUMMY! Fish treat devoured! Pluto is super happy! 🐟✨");
+      setTimeout(() => setSpeechBubble("Purrrrr! Pluto loves you! 🥰"), 2500);
     } else {
-      setSpeechBubble("Treat box empty! Click '+ Restock Treats' to get more! 📦");
+      setSpeechBubble("Treat box empty! Click '+ Restock Treats' to get more for Pluto! 📦");
     }
   };
 
   const handlePet = () => {
     setActiveTab('petting');
     setHappiness(prev => Math.min(100, prev + 5));
-    setSpeechBubble("Purrrrrrr! You petted Pixel Cat! ❤️");
+    setSpeechBubble("Purrrrrrr! You petted Pluto! ❤️");
   };
 
   return (
@@ -317,19 +312,19 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-purple-950/80 border border-purple-500/30 flex items-center justify-center shadow-lg shadow-purple-500/20 overflow-hidden">
-              <img src="/assets/pepperino.png" alt="Pixel Pet Logo" className="w-8 h-8 rendering-pixelated object-contain" />
+              <img src="/assets/pepperino.png" alt="Pluto Logo" className="w-8 h-8 rendering-pixelated object-contain" />
             </div>
             <div>
               <div className="font-bold text-lg tracking-tight font-mono text-white flex items-center gap-2">
-                Pixel-Pet <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-sans font-medium border border-purple-500/30">v1.0</span>
+                Pluto <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-sans font-medium border border-purple-500/30">Pixel-Pet v1.0</span>
               </div>
-              <p className="text-xs text-slate-400 font-sans">Retro Desktop Companion</p>
+              <p className="text-xs text-slate-400 font-sans">Retro Desktop Cat Companion</p>
             </div>
           </div>
 
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
             <a href="#playground" className="hover:text-purple-400 transition-colors">Live Canvas Demo</a>
-            <a href="#gallery" className="hover:text-purple-400 transition-colors">Cat Assets Showcase</a>
+            <a href="#gallery" className="hover:text-purple-400 transition-colors">Pluto Assets</a>
             <a href="#features" className="hover:text-purple-400 transition-colors">Features</a>
             <a href="#download" className="hover:text-purple-400 transition-colors">Download</a>
             <a href="https://github.com/diablovocado/Pixel-Pet" target="_blank" rel="noreferrer" className="hover:text-purple-400 transition-colors flex items-center gap-1.5">
@@ -343,7 +338,7 @@ export default function App() {
               className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-sm font-semibold shadow-lg shadow-purple-500/25 transition-all transform hover:-translate-y-0.5 flex items-center gap-2"
             >
               <Icons.Download />
-              <span>Get Pixel-Pet</span>
+              <span>Get Pluto Desktop App</span>
             </a>
           </div>
         </div>
@@ -353,19 +348,19 @@ export default function App() {
       <section className="relative pt-16 pb-16 px-6 max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-950/70 border border-purple-500/30 text-purple-300 text-xs font-mono shadow-inner">
-            <img src="/assets/pepperino.png" alt="Icon" className="w-4 h-4 rendering-pixelated" />
-            <span>100% Free & Open Source Desktop Companion</span>
+            <img src="/assets/pepperino.png" alt="Pluto" className="w-4 h-4 rendering-pixelated" />
+            <span>Meet Pluto — 100% Free & Open Source Desktop Companion</span>
           </div>
 
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white leading-tight font-sans">
             Your Intelligent Retro <br />
             <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">
-              Desktop Pixel Pet
+              Desktop Pixel Cat "Pluto"
             </span>
           </h1>
 
           <p className="text-lg md:text-xl text-slate-300 font-sans leading-relaxed">
-            A tiny pixel cat that walks along your dock, sleeps when you step away, reacts to typing speed, and plays Bongo drums right on your screen.
+            Pluto is a tiny pixel cat that walks along your dock, sleeps when you step away, reacts to typing speed, and plays Bongo drums right on your screen.
           </p>
 
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -374,7 +369,7 @@ export default function App() {
               className="w-full sm:w-auto px-8 py-4 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold shadow-xl shadow-purple-600/30 transition-all transform hover:-translate-y-0.5 text-base flex items-center justify-center gap-3"
             >
               <Icons.Apple />
-              <span>Download for macOS</span>
+              <span>Download Pluto for macOS</span>
             </a>
             
             <a
@@ -406,11 +401,11 @@ export default function App() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
               </span>
-              <span className="font-mono text-xs uppercase tracking-wider text-slate-300 font-semibold">Live Interactive Typing Canvas</span>
+              <span className="font-mono text-xs uppercase tracking-wider text-slate-300 font-semibold">Live Pluto Typing Canvas</span>
             </div>
 
             <div className="flex items-center gap-2 font-mono text-xs text-slate-300">
-              <span className="text-slate-400">Typing Speed:</span>
+              <span className="text-slate-400">Pluto Typing Speed:</span>
               <span className={`px-2.5 py-0.5 rounded font-bold border ${kps > 0 ? 'bg-purple-950 text-purple-300 border-purple-500/40 animate-pulse' : 'bg-slate-800 text-slate-400 border-slate-700'}`}>
                 ⚡ {kps} KPS
               </span>
@@ -423,7 +418,7 @@ export default function App() {
               type="text"
               value={testInputText}
               onChange={(e) => setTestInputText(e.target.value)}
-              placeholder="Type anything on your keyboard here to see Bongo Cat react in real time... 🎹"
+              placeholder="Type anything on your keyboard here to see Pluto react in real time... 🎹"
               className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500/80 rounded-xl px-4 py-3 text-sm text-purple-200 placeholder-slate-500 font-mono focus:outline-none transition-colors shadow-inner"
             />
           </div>
@@ -441,15 +436,15 @@ export default function App() {
           >
             <canvas ref={canvasRef} width={640} height={210} className="w-full h-full rendering-pixelated" />
             <div className="absolute top-3 right-3 text-[10px] font-mono text-slate-400 bg-slate-900/90 px-3 py-1 rounded-full border border-slate-800 pointer-events-none flex items-center gap-1.5">
-              <img src="/assets/pepperino.png" alt="Cat" className="w-3.5 h-3.5 rendering-pixelated" />
-              <span>Click Canvas to Pet!</span>
+              <img src="/assets/pepperino.png" alt="Pluto" className="w-3.5 h-3.5 rendering-pixelated" />
+              <span>Click Canvas to Pet Pluto!</span>
             </div>
           </div>
 
           {/* Action Tabs */}
           <div className="mt-6 grid grid-cols-2 sm:grid-cols-5 gap-2">
             <button
-              onClick={() => { setActiveTab('walk'); setSpeechBubble("Walking along the dock... 🐾"); }}
+              onClick={() => { setActiveTab('walk'); setSpeechBubble("Pluto is walking along the dock... 🐾"); }}
               className={`px-3 py-3 rounded-xl text-xs font-mono font-medium transition-all flex items-center justify-center gap-2 ${activeTab === 'walk' ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20' : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800'}`}
             >
               <img src="/assets/pepperino.png" alt="Walk" className="w-4 h-4 rendering-pixelated" />
@@ -457,7 +452,7 @@ export default function App() {
             </button>
             
             <button
-              onClick={() => { setActiveTab('sleep'); setSpeechBubble("Shhh... Cat is sleeping! Zzz... 💤"); }}
+              onClick={() => { setActiveTab('sleep'); setSpeechBubble("Shhh... Pluto is sleeping! Zzz... 💤"); }}
               className={`px-3 py-3 rounded-xl text-xs font-mono font-medium transition-all flex items-center justify-center gap-2 ${activeTab === 'sleep' ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20' : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800'}`}
             >
               <img src="/assets/sleep.png" alt="Sleep" className="w-4 h-4 rendering-pixelated" />
@@ -465,7 +460,7 @@ export default function App() {
             </button>
 
             <button
-              onClick={() => { setActiveTab('bongo'); setSpeechBubble("Bongo Cat mode! Slamming paws on keyboard! 🎹⚡"); }}
+              onClick={() => { setActiveTab('bongo'); setSpeechBubble("Pluto Bongo mode! Slamming paws on keyboard! 🎹⚡"); }}
               className={`px-3 py-3 rounded-xl text-xs font-mono font-medium transition-all flex items-center justify-center gap-2 ${activeTab === 'bongo' ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20' : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800'}`}
             >
               <img src="/assets/tyoe_left.png" alt="Bongo" className="w-4 h-4 rendering-pixelated" />
@@ -476,7 +471,7 @@ export default function App() {
               onClick={handlePet}
               className="px-3 py-3 rounded-xl text-xs font-mono font-medium transition-all bg-pink-950/50 text-pink-300 border border-pink-500/30 hover:bg-pink-900/60 flex items-center justify-center gap-1.5"
             >
-              <Icons.Heart /> Pet Cat
+              <Icons.Heart /> Pet Pluto
             </button>
 
             <button
@@ -491,19 +486,19 @@ export default function App() {
           <div className="mt-6 pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 font-mono gap-4">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
-                <span>Happiness:</span>
+                <span>Pluto's Happiness:</span>
                 <div className="w-24 h-2 bg-slate-800 rounded-full overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-pink-500 to-purple-500 transition-all duration-300" style={{ width: `${happiness}%` }} />
                 </div>
                 <span className="text-white font-bold">{happiness}%</span>
               </div>
               <div>Keys Typed: <span className="text-purple-400 font-bold">{keystrokesCount}</span></div>
-              <div>Treats: <span className="text-cyan-400 font-bold">{treatsCount}</span></div>
+              <div>Treats Left: <span className="text-cyan-400 font-bold">{treatsCount}</span></div>
             </div>
 
             {treatsCount === 0 && (
               <button 
-                onClick={() => { setTreatsCount(5); setSpeechBubble("Treat box refilled! 🐟🐟"); }}
+                onClick={() => { setTreatsCount(5); setSpeechBubble("Treat box refilled for Pluto! 🐟🐟"); }}
                 className="text-xs text-purple-400 hover:text-purple-300 underline font-mono"
               >
                 + Restock Treats
@@ -516,36 +511,36 @@ export default function App() {
       {/* Cat Assets Showcase Section */}
       <section id="gallery" className="py-20 px-6 max-w-7xl mx-auto border-t border-slate-800/60">
         <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-          <h2 className="text-xs font-mono text-purple-400 uppercase tracking-widest font-semibold">Authentic Sprite Library</h2>
-          <p className="text-3xl font-extrabold text-white">Built With Transparent Pixel Cat Assets</p>
+          <h2 className="text-xs font-mono text-purple-400 uppercase tracking-widest font-semibold">Pluto Sprite Library</h2>
+          <p className="text-3xl font-extrabold text-white">Built With Pluto Transparent Pixel Assets</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-all flex flex-col items-center text-center">
             <div className="w-24 h-24 mb-4 bg-slate-950 rounded-xl p-2 border border-slate-800/80 flex items-center justify-center overflow-hidden">
-              <img src="/assets/pepperino.png" alt="Pepperino" className="w-16 h-16 rendering-pixelated object-contain" />
+              <img src="/assets/pepperino.png" alt="Pluto Sprite" className="w-16 h-16 rendering-pixelated object-contain" />
             </div>
-            <h4 className="font-bold text-white text-base mb-1">Pepperino Cat Sprite</h4>
+            <h4 className="font-bold text-white text-base mb-1">Pluto Cat Sprite</h4>
             <p className="text-slate-400 text-xs font-mono">assets/pepperino.png</p>
-            <p className="text-slate-500 text-xs mt-2">Main pixel cat mascot that walks along screen dock.</p>
+            <p className="text-slate-500 text-xs mt-2">Main Pluto pixel cat mascot that walks along screen dock.</p>
           </div>
 
           <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-all flex flex-col items-center text-center">
             <div className="w-24 h-24 mb-4 bg-slate-950 rounded-xl p-2 border border-slate-800/80 flex items-center justify-center overflow-hidden">
-              <img src="/assets/sleep.png" alt="Sleep" className="w-20 h-20 rendering-pixelated object-contain" />
+              <img src="/assets/sleep.png" alt="Pluto Sleeping" className="w-20 h-20 rendering-pixelated object-contain" />
             </div>
-            <h4 className="font-bold text-white text-base mb-1">Sleeping Cat Asset</h4>
+            <h4 className="font-bold text-white text-base mb-1">Sleeping Pluto Asset</h4>
             <p className="text-slate-400 text-xs font-mono">assets/sleep.png</p>
             <p className="text-slate-500 text-xs mt-2">Triggered automatically when system is idle.</p>
           </div>
 
           <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-all flex flex-col items-center text-center">
             <div className="w-24 h-24 mb-4 bg-slate-950 rounded-xl p-2 border border-slate-800/80 flex items-center justify-center overflow-hidden">
-              <img src="/assets/tyoe_left.png" alt="Bongo Left" className="w-16 h-16 rendering-pixelated object-contain" />
+              <img src="/assets/tyoe_left.png" alt="Pluto Bongo Left" className="w-16 h-16 rendering-pixelated object-contain" />
             </div>
-            <h4 className="font-bold text-white text-base mb-1">Bongo Cat Paws</h4>
+            <h4 className="font-bold text-white text-base mb-1">Pluto Bongo Paws</h4>
             <p className="text-slate-400 text-xs font-mono">assets/tyoe_left.png</p>
-            <p className="text-slate-500 text-xs mt-2">Paws slam in sync with typing speed.</p>
+            <p className="text-slate-500 text-xs mt-2">Pluto slams paws in sync with typing speed.</p>
           </div>
 
           <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-all flex flex-col items-center text-center">
@@ -554,7 +549,7 @@ export default function App() {
             </div>
             <h4 className="font-bold text-white text-base mb-1">12-Frame Animation</h4>
             <p className="text-slate-400 text-xs font-mono">assets/bongo_cat_frames/*</p>
-            <p className="text-slate-500 text-xs mt-2">Clean transparent PNG frame sequence for typing.</p>
+            <p className="text-slate-500 text-xs mt-2">Clean transparent PNG frame sequence for Pluto's typing.</p>
           </div>
         </div>
       </section>
@@ -563,7 +558,7 @@ export default function App() {
       <section id="features" className="py-20 px-6 max-w-7xl mx-auto border-t border-slate-800/60">
         <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
           <h2 className="text-xs font-mono text-purple-400 uppercase tracking-widest font-semibold">Desktop Integration</h2>
-          <p className="text-3xl font-extrabold text-white">Engineered For Zero Interruptions</p>
+          <p className="text-3xl font-extrabold text-white">Why Developers Love Pluto</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -573,7 +568,7 @@ export default function App() {
             </div>
             <h3 className="text-xl font-bold text-white mb-3">Power & Idle Watcher</h3>
             <p className="text-slate-400 text-sm leading-relaxed">
-              When system idle or display sleep triggers, Pixel-Pet curls up and falls asleep on your dock. Wakes up instantly when cursor moves.
+              When system idle or display sleep triggers, Pluto curls up and falls asleep on your dock. Wakes up instantly when cursor moves.
             </p>
           </div>
 
@@ -583,17 +578,17 @@ export default function App() {
             </div>
             <h3 className="text-xl font-bold text-white mb-3">Keystroke Reactive</h3>
             <p className="text-slate-400 text-sm leading-relaxed">
-              Monitors typing speed via global keystroke listener. Enters high-speed Bongo Cat typing mode when you type fast.
+              Monitors typing speed via global keystroke listener. Pluto enters high-speed Bongo Cat typing mode when you type fast.
             </p>
           </div>
 
           <div className="p-8 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-all">
             <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mb-6 overflow-hidden">
-              <img src="/assets/pepperino.png" alt="Cat" className="w-8 h-8 rendering-pixelated" />
+              <img src="/assets/pepperino.png" alt="Pluto" className="w-8 h-8 rendering-pixelated" />
             </div>
             <h3 className="text-xl font-bold text-white mb-3">Seamless Passthrough</h3>
             <p className="text-slate-400 text-sm leading-relaxed">
-              Uses transparent overlay with click forwarding. Never steals focus or blocks IDE, browser, or terminal clicks.
+              Uses transparent overlay with click forwarding. Pluto never steals focus or blocks IDE, browser, or terminal clicks.
             </p>
           </div>
         </div>
@@ -603,10 +598,10 @@ export default function App() {
       <section className="py-16 px-6 max-w-5xl mx-auto">
         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-xl">
           <h3 className="text-sm font-mono text-purple-400 mb-4 flex items-center gap-2">
-            <Icons.Sparkles /> Official Preview Card
+            <Icons.Sparkles /> Official Pluto Preview Card
           </h3>
           <div className="rounded-2xl overflow-hidden border border-slate-800 shadow-2xl">
-            <img src="/assets/social_card.png" alt="Pixel Pet Preview" className="w-full h-auto object-cover" />
+            <img src="/assets/social_card.png" alt="Pluto Preview" className="w-full h-auto object-cover" />
           </div>
         </div>
       </section>
@@ -615,9 +610,9 @@ export default function App() {
       <section id="download" className="py-20 px-6 max-w-5xl mx-auto border-t border-slate-800/60">
         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
           <div className="max-w-2xl space-y-6">
-            <h2 className="text-3xl font-extrabold text-white">Get Started in 30 Seconds</h2>
+            <h2 className="text-3xl font-extrabold text-white">Get Started With Pluto in 30 Seconds</h2>
             <p className="text-slate-300 text-sm leading-relaxed">
-              Clone the repository and launch Pixel-Pet instantly on macOS, Linux, or Windows.
+              Clone the repository and launch Pluto instantly on macOS, Linux, or Windows.
             </p>
 
             <div className="bg-slate-950 rounded-xl p-4 border border-slate-800 font-mono text-xs text-purple-300 flex items-center justify-between gap-4 overflow-x-auto shadow-inner">
@@ -642,7 +637,7 @@ export default function App() {
                 className="px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm shadow-lg shadow-purple-600/25 flex items-center gap-2"
               >
                 <Icons.Download />
-                <span>Download DMG / App Package</span>
+                <span>Download Pluto App Package</span>
               </a>
             </div>
           </div>
@@ -653,12 +648,12 @@ export default function App() {
       <footer className="py-12 border-t border-slate-800/60 text-center text-xs text-slate-500 font-mono">
         <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <img src="/assets/pepperino.png" alt="Cat" className="w-4 h-4 rendering-pixelated" />
-            <span>© {new Date().getFullYear()} Pixel-Pet. Open source under MIT License.</span>
+            <img src="/assets/pepperino.png" alt="Pluto" className="w-4 h-4 rendering-pixelated" />
+            <span>© {new Date().getFullYear()} Pluto (Pixel-Pet). Open source under MIT License.</span>
           </div>
           <div className="flex items-center gap-6">
             <a href="https://github.com/diablovocado/Pixel-Pet" target="_blank" rel="noreferrer" className="hover:text-slate-300 transition-colors">GitHub Repository</a>
-            <a href="#playground" className="hover:text-slate-300 transition-colors">Live Canvas Demo</a>
+            <a href="#playground" className="hover:text-slate-300 transition-colors">Live Pluto Demo</a>
           </div>
         </div>
       </footer>
