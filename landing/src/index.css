@@ -1,78 +1,71 @@
 @import "tailwindcss";
 
 :root {
-  --bg-space: #0b0b1a;
-  --card-navy: #1a1a2e;
-  --cyan-primary: #00d9ff;
-  --magenta-accent: #ff00aa;
-  --green-neon: #00ff9d;
-  --border-cyan: rgba(0, 217, 255, 0.3);
+  --soft-blue: #9ECAD6;
+  --muted-indigo: #748DAE;
+  --blush-pink: #F5CBCB;
+  --light-rose: #FFEAEA;
+  --dark-text: #2B3A4A;
 }
 
 @theme {
   --font-mono: 'Fira Code', 'JetBrains Mono', monospace;
   --font-terminal: 'Share Tech Mono', monospace;
   --font-pixel: 'Press Start 2P', monospace;
+  --font-sans: 'Fredoka', sans-serif;
 }
 
 html, body {
   scroll-behavior: smooth;
-  background-color: var(--bg-space);
-  color: #f1f1f1;
+  background-color: var(--light-rose);
+  color: var(--dark-text);
   font-family: 'Fira Code', monospace;
 }
 
-/* Cyberpunk Terminal Cards & Buttons */
-.cyber-card {
-  background-color: var(--card-navy);
-  border: 1px solid var(--border-cyan);
-  box-shadow: 0 0 15px rgba(0, 217, 255, 0.1);
-  border-radius: 12px;
-  transition: all 0.25s ease;
+/* Pastel Terminal Cards & Buttons */
+.pastel-card {
+  background-color: #FFFFFF;
+  border: 2px solid var(--muted-indigo);
+  box-shadow: 4px 4px 0px var(--muted-indigo);
+  border-radius: 16px;
+  transition: all 0.2s ease;
 }
 
-.cyber-card:hover {
-  border-color: var(--cyan-primary);
-  box-shadow: 0 0 25px rgba(0, 217, 255, 0.25);
+.pastel-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 6px 6px 0px var(--muted-indigo);
+}
+
+.pastel-btn-blue {
+  background-color: var(--soft-blue);
+  color: var(--dark-text);
+  font-weight: 700;
+  border: 2px solid var(--dark-text);
+  box-shadow: 3px 3px 0px var(--dark-text);
+  border-radius: 9999px;
+  transition: all 0.15s ease;
+}
+
+.pastel-btn-blue:hover {
+  background-color: #8dbbc7;
   transform: translateY(-2px);
+  box-shadow: 5px 5px 0px var(--dark-text);
 }
 
-.cyber-btn-cyan {
-  background: linear-gradient(135deg, #00d9ff 0%, #0099ff 100%);
-  color: #0b0b1a;
+.pastel-btn-pink {
+  background-color: var(--blush-pink);
+  color: var(--dark-text);
   font-weight: 700;
-  border: 1px solid #00d9ff;
-  box-shadow: 0 0 12px rgba(0, 217, 255, 0.4);
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  border: 2px solid var(--dark-text);
+  box-shadow: 3px 3px 0px var(--dark-text);
+  border-radius: 9999px;
+  transition: all 0.15s ease;
 }
 
-.cyber-btn-cyan:hover {
-  box-shadow: 0 0 20px rgba(0, 217, 255, 0.7);
-  transform: translateY(-1px);
-}
-
-.cyber-btn-magenta {
-  background: linear-gradient(135deg, #ff00aa 0%, #cc0088 100%);
-  color: #ffffff;
-  font-weight: 700;
-  border: 1px solid #ff00aa;
-  box-shadow: 0 0 12px rgba(255, 0, 170, 0.4);
-  border-radius: 8px;
-  transition: all 0.2s ease;
-}
-
-.cyber-btn-magenta:hover {
-  box-shadow: 0 0 20px rgba(255, 0, 170, 0.7);
-  transform: translateY(-1px);
-}
-
-.cyber-glow-text {
-  text-shadow: 0 0 10px rgba(0, 217, 255, 0.6);
-}
-
-.cyber-magenta-text {
-  text-shadow: 0 0 10px rgba(255, 0, 170, 0.6);
+.pastel-btn-pink:hover {
+  background-color: #e5b8b8;
+  transform: translateY(-2px);
+  box-shadow: 5px 5px 0px var(--dark-text);
 }
 
 .rendering-pixelated {
@@ -80,15 +73,15 @@ html, body {
   image-rendering: crisp-edges;
 }
 
-/* Custom Cyberpunk Scrollbar */
+/* Custom Pastel Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #0b0b1a;
+  background: var(--light-rose);
 }
 ::-webkit-scrollbar-thumb {
-  background: #1a1a2e;
-  border: 1px solid #00d9ff;
-  border-radius: 4px;
+  background: var(--soft-blue);
+  border: 2px solid var(--dark-text);
+  border-radius: 6px;
 }
