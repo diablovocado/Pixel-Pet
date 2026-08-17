@@ -417,7 +417,7 @@ export default function App() {
           </div>
 
           {/* Title */}
-          <h1 className="font-['Press_Start_2P'] text-5xl md:text-6xl text-[#2D231E] mt-4 tracking-wider">
+          <h1 className="font-[#2D231E] font-['Press_Start_2P'] text-5xl md:text-6xl text-[#2D231E] mt-4 tracking-wider">
             PLUTO
           </h1>
 
