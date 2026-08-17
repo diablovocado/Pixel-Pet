@@ -505,7 +505,37 @@ export default function App() {
             A living, interactive pixel-art cat that sits on your Mac Dock. She chases your cursor, sleeps when idle, slams paws to keyboard speed, and stretches like mochi!
           </p>
 
-          <div className="flex flex-wrap justify-center gap-4 pt-4">
+          {/* Interactive Bongo Cat Typing Animation Showcase Stage */}
+          <div className="w-full max-w-xl my-6 bg-[#FFFFFF] border-2 border-[#2B3A4A] shadow-[6px_6px_0px_#2B3A4A] rounded-2xl p-6 relative flex flex-col items-center space-y-4">
+            
+            {/* Floating Speech Bubble */}
+            <div className="bg-[#F5CBCB] border-2 border-[#2B3A4A] shadow-[2px_2px_0px_#2B3A4A] px-4 py-2 rounded-xl text-base font-bold text-[#2B3A4A] transition-all">
+              {speechBubble}
+            </div>
+
+            {/* Bongo Typing Canvas */}
+            <div 
+              onMouseDown={handleMouseDownStage}
+              onMouseMove={handleMouseMoveStage}
+              onMouseUp={handleMouseUpStage}
+              onClick={handlePet}
+              className="w-full h-56 bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl flex items-center justify-center cursor-pointer overflow-hidden relative shadow-inner"
+            >
+              <canvas ref={canvasRef} width={640} height={210} className="w-full h-full rendering-pixelated" />
+
+              <div className="absolute top-3 right-3 bg-[#9ECAD6] border border-[#2B3A4A] px-3 py-1 rounded-full text-xs font-bold text-[#2B3A4A]">
+                ⚡ {kps > 0 ? `${kps} KPS Typing!` : 'Press keys to type!'}
+              </div>
+            </div>
+
+            {/* Real-time typing hint */}
+            <div className="w-full flex items-center justify-between text-xs font-bold text-[#748DAE] pt-2 border-t border-[#748DAE]/20">
+              <span>🥁 Real-time Hardware Key Event Guard</span>
+              <span className="text-[#2B3A4A]">Key: [{lastKeyTyped}]</span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-4 pt-2">
             <a
               href="#sandbox"
               onClick={scrollToSection('sandbox')}
