@@ -574,20 +574,19 @@ export default function App() {
         {currentPage === 'home' && (
           <div className="space-y-20">
             
-            {/* HERO SECTION WITH COZY BACKGROUND */}
-            <section className="relative min-h-[520px] rounded-3xl border-2.5 border-[#565264] shadow-[6px_8px_0px_#565264] overflow-hidden flex flex-col justify-between p-8 sm:p-12 text-center bg-[url('/assets/hero_cozy_room.jpg')] bg-cover bg-center">
-              <div className="absolute inset-0 bg-[#565264]/40 backdrop-blur-xs" />
+            {/* HERO SECTION */}
+            <section className="relative min-h-[520px] rounded-3xl border-2.5 border-[#565264] shadow-[6px_8px_0px_#565264] overflow-hidden flex flex-col justify-between p-8 sm:p-12 text-center bg-[#CCB7AE] text-[#565264]">
               
               <div className="relative z-10 max-w-2xl mx-auto space-y-4">
-                <span className="inline-block px-4 py-1.5 rounded-full bg-[#CCB7AE] text-[#565264] font-hand text-xl font-bold border-2 border-[#565264] shadow-[3px_3px_0px_#565264]">
+                <span className="inline-block px-4 py-1.5 rounded-full bg-[#F5EFEB] text-[#565264] font-hand text-xl font-bold border-2 border-[#565264] shadow-[3px_3px_0px_#565264]">
                   ✨ Boho Desktop Companion for macOS
                 </span>
                 
-                <h1 className="font-boho text-5xl sm:text-7xl font-bold text-[#F5EFEB] drop-shadow-md leading-tight">
+                <h1 className="font-boho text-5xl sm:text-7xl font-bold text-[#A6808C] leading-tight">
                   Pluto — Your Desk Pet
                 </h1>
 
-                <p className="font-hand text-2xl text-[#F5EFEB] leading-relaxed max-w-xl mx-auto drop-shadow-sm">
+                <p className="font-hand text-2xl text-[#565264] leading-relaxed max-w-xl mx-auto">
                   A living, interactive pixel-art cat that sits on your Mac Dock. She chases your cursor, sleeps when idle, slams paws to keyboard speed, and stretches like mochi!
                 </p>
               </div>
