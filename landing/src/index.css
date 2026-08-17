@@ -1,145 +1,87 @@
 @import "tailwindcss";
 
+:root {
+  --color-charcoal: #565264;
+  --color-dim-grey: #706677;
+  --color-dusty-mauve: #A6808C;
+  --color-almond-silk: #CCB7AE;
+  --color-dust-grey: #D6CFCB;
+}
+
 @theme {
-  --font-heading: 'Press Start 2P', 'Silkscreen', 'Fredoka', sans-serif;
-  --font-hand: 'VT323', 'Press Start 2P', monospace;
+  --font-boho: 'Caveat', cursive, sans-serif;
+  --font-hand: 'Patrick Hand', cursive, monospace;
   --font-pixel: 'Press Start 2P', monospace;
-  --font-sans: 'Press Start 2P', 'VT323', monospace;
+  --font-sans: 'Fredoka', sans-serif;
 }
 
-html, body, * {
-  font-style: normal !important;
+html, body {
   scroll-behavior: smooth;
+  font-family: 'Fredoka', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-@layer utilities {
-  .rendering-pixelated {
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
-  }
-
-  .font-hand {
-    font-family: 'VT323', 'Press Start 2P', monospace;
-    font-style: normal !important;
-  }
-
-  .font-heading {
-    font-family: 'Press Start 2P', 'Silkscreen', sans-serif;
-    font-style: normal !important;
-  }
-
-  .font-pixel {
-    font-family: 'Press Start 2P', monospace;
-    font-style: normal !important;
-  }
-
-  .font-vt323 {
-    font-family: 'VT323', monospace;
-    font-style: normal !important;
-  }
+/* Custom Boho Utilities */
+.font-boho {
+  font-family: 'Caveat', cursive, sans-serif;
 }
 
-/* Bold Doodly & Pixel Text Stroke for text directly over background images */
-.doodly-text-stroke {
-  text-shadow: 
-    2px 2px 0px #2D231E,
-    -2px -2px 0px #2D231E,
-    2px -2px 0px #2D231E,
-    -2px 2px 0px #2D231E,
-    0px 3px 8px rgba(0, 0, 0, 0.85);
+.font-hand {
+  font-family: 'Patrick Hand', cursive, monospace;
 }
 
-.doodly-title-stroke {
-  text-shadow: 
-    4px 4px 0px #2D231E,
-    -4px -4px 0px #2D231E,
-    4px -4px 0px #2D231E,
-    -4px 4px 0px #2D231E,
-    0px 6px 12px rgba(0, 0, 0, 0.95);
+.font-pixel {
+  font-family: 'Press Start 2P', monospace;
 }
 
-/* Soft grey dot-grid canvas background */
-.bg-dot-grid {
-  background-color: #F5EFEB;
-  background-image: radial-gradient(rgba(45, 35, 30, 0.12) 1.2px, transparent 1.2px);
-  background-size: 24px 24px;
-  background-position: 0 0;
+.rendering-pixelated {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
-/* Paper grain texture fallback */
-.bg-paper-grain {
-  background-color: #F5EFEB;
-  background-image: radial-gradient(#2D231E 0.4px, transparent 0.4px), radial-gradient(#2D231E 0.4px, #F5EFEB 0.4px);
-  background-size: 24px 24px;
-  background-position: 0 0, 12px 12px;
+/* Boho Card & Shadows */
+.boho-card {
+  background-color: var(--color-almond-silk);
+  border: 2px solid var(--color-charcoal);
+  box-shadow: 4px 4px 0px var(--color-charcoal);
+  border-radius: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Hand-drawn sketchy border boxes */
-.sketchy-box {
-  border: 2px solid #2D231E;
-  box-shadow: 3px 4px 0px #2D231E;
-  border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+.boho-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 6px 6px 0px var(--color-charcoal);
 }
 
-.sketchy-card {
-  border: 2.5px solid #2D231E;
-  box-shadow: 5px 6px 0px #2D231E;
-  border-radius: 22px;
-}
-
-.sketchy-badge {
-  border: 2px solid #2D231E;
-  box-shadow: 2px 2px 0px #2D231E;
-  border-radius: 14px;
-}
-
-.sketchy-pill {
-  border: 2.5px solid #2D231E;
-  box-shadow: 3px 4px 0px #2D231E;
+.boho-btn {
+  background-color: var(--color-dusty-mauve);
+  color: #FFFFFF;
+  border: 2px solid var(--color-charcoal);
+  box-shadow: 3px 3px 0px var(--color-charcoal);
   border-radius: 9999px;
+  transition: all 0.15s ease;
 }
 
-/* Watercolor wash highlights */
-.watercolor-terracotta {
-  background-color: rgba(200, 122, 91, 0.25);
+.boho-btn:hover {
+  background-color: #956F7B;
+  transform: translateY(-2px);
+  box-shadow: 5px 5px 0px var(--color-charcoal);
 }
 
-.watercolor-ochre {
-  background-color: rgba(229, 178, 93, 0.35);
+.boho-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px var(--color-charcoal);
 }
 
-.watercolor-olive {
-  background-color: rgba(138, 154, 101, 0.25);
-}
-
-.watercolor-brush-highlight {
-  position: relative;
-  display: inline-block;
-}
-
-.watercolor-brush-highlight::before {
-  content: "";
-  position: absolute;
-  left: -8px;
-  right: -8px;
-  bottom: 4px;
-  top: 35%;
-  background: #E5B25D;
-  opacity: 0.8;
-  z-index: -1;
-  transform: rotate(-1.5deg);
-  border-radius: 12px 24px 16px 8px;
-}
-
-/* Custom scrollbars for scrapbook theme */
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #F5EFEB;
+  background: var(--color-dust-grey);
 }
 ::-webkit-scrollbar-thumb {
-  background: #C87A5B;
-  border: 2px solid #2D231E;
+  background: var(--color-dusty-mauve);
+  border: 2px solid var(--color-charcoal);
   border-radius: 6px;
 }
