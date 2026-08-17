@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import {
   Volume2,
@@ -339,9 +338,8 @@ export default function App() {
         <div className="max-w-[1120px] mx-auto w-full px-6 flex items-center justify-between">
           
           {/* Left Logo */}
-          <motion.div 
-            whileHover={{ scale: 1.03 }}
-            className="flex items-center gap-2.5 cursor-pointer"
+          <div 
+            className="flex items-center gap-2.5 cursor-pointer transform hover:scale-[1.03] transition-transform"
           >
             <img 
               src="/assets/pepperino.png" 
@@ -354,7 +352,7 @@ export default function App() {
             <span className="bg-[#E5B25D] text-[#2D231E] border border-[#2D231E] px-2 py-0.5 text-xs font-['Fredoka'] font-bold rounded-sm shadow-[1px_1px_0px_#2D231E]">
               v1.0
             </span>
-          </motion.div>
+          </div>
 
           {/* Center Links (Desktop) */}
           <nav className="hidden md:flex items-center gap-8 text-[11px] font-['Press_Start_2P'] text-[#2D231E]">
@@ -382,16 +380,14 @@ export default function App() {
               {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4 text-[#C87A5B]" />}
             </button>
 
-            <motion.a 
-              whileHover={{ y: -2 }}
-              whileTap={{ y: 0 }}
+            <a 
               href="#download"
               onClick={scrollToSection('download')}
               className="bg-[#C87A5B] text-white border-[2px] border-[#2D231E] shadow-[3px_3px_0px_#2D231E] hover:bg-[#b56b4e] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_#2D231E] px-4 py-2 text-xs font-['Press_Start_2P'] transition-all inline-flex items-center gap-2"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Get Pluto App</span>
-            </motion.a>
+            </a>
           </div>
         </div>
       </header>
@@ -408,26 +404,17 @@ export default function App() {
         <div className="max-w-[1120px] mx-auto w-full px-6 relative z-10 flex flex-col items-center justify-center text-center my-auto">
           
           {/* Floating Speech Bubble above mascot */}
-          <AnimatePresence mode="wait">
-            <motion.div 
-              key={speechBubble}
-              initial={{ scale: 0.8, opacity: 0, y: 10 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-[#F5EFEB] border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] px-4 py-2 font-['VT323'] text-2xl text-[#2D231E] mb-3 inline-block rounded-md"
-            >
-              <span>{speechBubble}</span>
-            </motion.div>
-          </AnimatePresence>
+          <div className="bg-[#F5EFEB] border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] px-4 py-2 font-['VT323'] text-2xl text-[#2D231E] mb-3 inline-block rounded-md transition-all">
+            <span>{speechBubble}</span>
+          </div>
 
           {/* Central Mascot Sprite on Desk */}
           <div className="relative cursor-pointer group" onClick={handlePet}>
             <div className="w-32 h-6 bg-[#2D231E]/35 rounded-full blur-xs absolute -bottom-1 left-1/2 transform -translate-x-1/2" />
-            <motion.img 
-              whileHover={{ scale: 1.1 }}
+            <img 
               src="/assets/pepperino.png" 
               alt="Pluto Cat" 
-              className="w-[140px] h-[140px] image-rendering-pixelated object-contain relative z-10 drop-shadow-xl" 
+              className="w-[140px] h-[140px] image-rendering-pixelated object-contain relative z-10 drop-shadow-xl transform group-hover:scale-110 transition-transform duration-200" 
             />
           </div>
 
@@ -444,11 +431,7 @@ export default function App() {
         </div>
 
         {/* Bottom CTA Floating Pill */}
-        <motion.div 
-          animate={{ y: [0, 6, 0] }}
-          transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
-          className="relative z-10"
-        >
+        <div className="relative z-10 animate-bounce">
           <a 
             href="#overview" 
             onClick={scrollToSection('overview')}
@@ -456,7 +439,7 @@ export default function App() {
           >
             <span>Scroll to Explore ↓</span>
           </a>
-        </motion.div>
+        </div>
 
       </section>
 
@@ -476,41 +459,29 @@ export default function App() {
           {/* 4 Feature Stat Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
             
-            <motion.div 
-              whileHover={{ y: -4 }}
-              className="bg-[#EAE0D5] border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] p-6 rounded-md hover:-translate-y-1 transition-transform"
-            >
+            <div className="bg-[#EAE0D5] border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] p-6 rounded-md hover:-translate-y-1 transition-transform">
               <div className="text-4xl mb-3">💾</div>
               <div className="font-['Press_Start_2P'] text-xs text-[#2D231E] mb-2">0.1% CPU Usage</div>
               <div className="font-['VT323'] text-xl text-[#2D231E]/80">Ultra Lightweight Performance</div>
-            </motion.div>
+            </div>
 
-            <motion.div 
-              whileHover={{ y: -4 }}
-              className="bg-[#EAE0D5] border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] p-6 rounded-md hover:-translate-y-1 transition-transform"
-            >
+            <div className="bg-[#EAE0D5] border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] p-6 rounded-md hover:-translate-y-1 transition-transform">
               <div className="text-4xl mb-3">💼</div>
               <div className="font-['Press_Start_2P'] text-xs text-[#2D231E] mb-2">~15MB RAM</div>
               <div className="font-['VT323'] text-xl text-[#2D231E]/80">Minimal Memory Footprint</div>
-            </motion.div>
+            </div>
 
-            <motion.div 
-              whileHover={{ y: -4 }}
-              className="bg-[#EAE0D5] border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] p-6 rounded-md hover:-translate-y-1 transition-transform"
-            >
+            <div className="bg-[#EAE0D5] border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] p-6 rounded-md hover:-translate-y-1 transition-transform">
               <div className="text-4xl mb-3">🌐</div>
               <div className="font-['Press_Start_2P'] text-xs text-[#2D231E] mb-2">100% Offline</div>
               <div className="font-['VT323'] text-xl text-[#2D231E]/80">Zero Analytics & 100% Private</div>
-            </motion.div>
+            </div>
 
-            <motion.div 
-              whileHover={{ y: -4 }}
-              className="bg-[#EAE0D5] border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] p-6 rounded-md hover:-translate-y-1 transition-transform"
-            >
+            <div className="bg-[#EAE0D5] border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] p-6 rounded-md hover:-translate-y-1 transition-transform">
               <div className="text-4xl mb-3">🖥</div>
               <div className="font-['Press_Start_2P'] text-xs text-[#2D231E] mb-2">macOS Universal</div>
               <div className="font-['VT323'] text-xl text-[#2D231E]/80">Apple Silicon M-Series & Intel</div>
-            </motion.div>
+            </div>
 
           </div>
 
@@ -529,7 +500,7 @@ export default function App() {
                 Interactive Sandbox → Test Pluto Live
               </div>
               <div className="bg-[#E5B25D] text-[#2D231E] border-[2px] border-[#2D231E] px-3 py-1 font-['Press_Start_2P'] text-xs shadow-[2px_2px_0px_#2D231E] flex items-center gap-2">
-                <Zap className="w-3.5 h-3.5" />
+                <Zap className="w-3.5 h-3.5 text-[#C87A5B]" />
                 <span>⚡ Typing Speed: {kps} KPS</span>
               </div>
             </div>
@@ -634,36 +605,27 @@ export default function App() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
             {/* Card 1 */}
-            <motion.div 
-              whileHover={{ y: -4 }}
-              className="bg-[#F5EFEB] border-[2px] border-[#2D231E] shadow-[3px_3px_0px_#2D231E] p-4 text-center flex flex-col items-center justify-center rounded-md"
-            >
+            <div className="bg-[#F5EFEB] border-[2px] border-[#2D231E] shadow-[3px_3px_0px_#2D231E] p-4 text-center flex flex-col items-center justify-center rounded-md hover:-translate-y-1 transition-transform">
               <div className="w-24 h-24 bg-[#EAE0D5] border-[2px] border-[#2D231E] rounded-md mb-3 flex items-center justify-center">
                 <img src="/assets/pepperino.png" alt="Pepperino" className="w-[90px] h-[90px] image-rendering-pixelated object-contain" />
               </div>
               <div className="font-['Press_Start_2P'] text-xs text-[#2D231E] mb-1">Cat Sprite</div>
               <div className="font-['VT323'] text-lg text-[#2D231E]/70">assets/pepperino.png (90x90px)</div>
               <div className="font-['VT323'] text-lg text-[#2D231E] mt-2">Standard resting & walking sprite.</div>
-            </motion.div>
+            </div>
 
             {/* Card 2 */}
-            <motion.div 
-              whileHover={{ y: -4 }}
-              className="bg-[#F5EFEB] border-[2px] border-[#2D231E] shadow-[3px_3px_0px_#2D231E] p-4 text-center flex flex-col items-center justify-center rounded-md"
-            >
+            <div className="bg-[#F5EFEB] border-[2px] border-[#2D231E] shadow-[3px_3px_0px_#2D231E] p-4 text-center flex flex-col items-center justify-center rounded-md hover:-translate-y-1 transition-transform">
               <div className="w-24 h-24 bg-[#EAE0D5] border-[2px] border-[#2D231E] rounded-md mb-3 flex items-center justify-center">
                 <img src="/assets/sleep.png" alt="Sleep" className="w-[95px] h-[95px] image-rendering-pixelated object-contain" />
               </div>
               <div className="font-['Press_Start_2P'] text-xs text-[#2D231E] mb-1">Sleeping Pose</div>
               <div className="font-['VT323'] text-lg text-[#2D231E]/70">assets/sleep.png (95x95px)</div>
               <div className="font-['VT323'] text-lg text-[#2D231E] mt-2">Dock sleeping pose sprite.</div>
-            </motion.div>
+            </div>
 
             {/* Card 3 */}
-            <motion.div 
-              whileHover={{ y: -4 }}
-              className="bg-[#F5EFEB] border-[2px] border-[#2D231E] shadow-[3px_3px_0px_#2D231E] p-4 text-center flex flex-col items-center justify-center rounded-md"
-            >
+            <div className="bg-[#F5EFEB] border-[2px] border-[#2D231E] shadow-[3px_3px_0px_#2D231E] p-4 text-center flex flex-col items-center justify-center rounded-md hover:-translate-y-1 transition-transform">
               <div className="w-24 h-24 bg-[#EAE0D5] border-[2px] border-[#2D231E] rounded-md mb-3 flex items-center justify-center gap-1">
                 <img src="/assets/tyoe_left.png" alt="Left Paw" className="w-10 h-10 image-rendering-pixelated object-contain" />
                 <img src="/assets/tyoe_right.png" alt="Right Paw" className="w-10 h-10 image-rendering-pixelated object-contain" />
@@ -671,20 +633,17 @@ export default function App() {
               <div className="font-['Press_Start_2P'] text-xs text-[#2D231E] mb-1">Bongo Paws</div>
               <div className="font-['VT323'] text-lg text-[#2D231E]/70">tyoe_left & tyoe_right.png</div>
               <div className="font-['VT323'] text-lg text-[#2D231E] mt-2">Bongo paws typing frames.</div>
-            </motion.div>
+            </div>
 
             {/* Card 4 */}
-            <motion.div 
-              whileHover={{ y: -4 }}
-              className="bg-[#F5EFEB] border-[2px] border-[#2D231E] shadow-[3px_3px_0px_#2D231E] p-4 text-center flex flex-col items-center justify-center rounded-md"
-            >
+            <div className="bg-[#F5EFEB] border-[2px] border-[#2D231E] shadow-[3px_3px_0px_#2D231E] p-4 text-center flex flex-col items-center justify-center rounded-md hover:-translate-y-1 transition-transform">
               <div className="w-24 h-24 bg-[#EAE0D5] border-[2px] border-[#2D231E] rounded-md mb-3 flex items-center justify-center">
                 <img src="/assets/bongo_cat_frames/tyoe_frame_2.png" alt="Frame" className="w-16 h-16 image-rendering-pixelated object-contain" />
               </div>
               <div className="font-['Press_Start_2P'] text-xs text-[#2D231E] mb-1">12-Frame Anim</div>
               <div className="font-['VT323'] text-lg text-[#2D231E]/70">assets/bongo_cat_frames/*</div>
               <div className="font-['VT323'] text-lg text-[#2D231E] mt-2">12-Frame full typing sequence.</div>
-            </motion.div>
+            </div>
 
           </div>
 

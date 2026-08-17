@@ -23,7 +23,11 @@ export default defineConfig(({ mode }) => {
 
   return {
     root: path.resolve(process.cwd(), 'landing'),
-    base: process.env.FIGMA_PUBLIC_URL ? `${process.env.FIGMA_PUBLIC_URL}/` : './',
+    base: process.env.FIGMA_PUBLIC_URL 
+      ? `${process.env.FIGMA_PUBLIC_URL}/` 
+      : mode === 'production' 
+        ? './' 
+        : '/',
     build: {
       outDir: path.resolve(process.cwd(), 'dist'),
       emptyOutDir: true,
