@@ -16,6 +16,8 @@ import {
   Disc as Discord,
   Check,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ArrowUp,
   Menu,
   X,
@@ -25,7 +27,10 @@ import {
   Play,
   RotateCcw,
   Activity,
-  Layers
+  Layers,
+  Sliders,
+  Eye,
+  SlidersHorizontal
 } from 'lucide-react';
 
 // Bongo Cat frame sequence paths
@@ -45,6 +50,42 @@ const RANDOM_GREETINGS = [
   "cozy desk vibes! 🌙"
 ];
 
+// Hero Carousel Slides Data
+const HERO_SLIDES = [
+  {
+    tag: "01 // KEYBOARD TYPING ENGINE",
+    title: "1.38x Scaled Bongo Cat WebM",
+    subtitle: "Pluto seamlessly switches to her 12-frame typing animation on real keydown events with hardware key identifier filtering (kVK_ANSI_). Zero size jumps or pops.",
+    command: "$ pluto run --bongo-engine",
+    badge: "HARDWARE KEY GUARD",
+    activeMode: 'bongo' as const
+  },
+  {
+    tag: "02 // DOCK SLEEPING PHYSICS",
+    title: "Dock Proximity & Click-to-Wake",
+    subtitle: "Move your cursor near the bottom screen Dock (mouseY ≥ innerHeight - 80) to settle Pluto down with drifting blue Zzz particles. Hover and click her sleeping body to wake her up!",
+    command: "$ pluto run --dock-sleep",
+    badge: "DOCK DETECTION",
+    activeMode: 'sleep' as const
+  },
+  {
+    tag: "03 // CURSOR PURSUIT MATH",
+    title: "Directional Pursuit & Stride",
+    subtitle: "When mouse distance exceeds 45px, Pluto runs towards target coordinates with directional face flipping (scaleX * faceDir) and Math.sin(Date.now() * 0.018) * 3 stride bounce.",
+    command: "$ pluto run --cursor-pursuit",
+    badge: "SINE WAVE BOUNCE",
+    activeMode: 'walk' as const
+  },
+  {
+    tag: "04 // MOCHI DRAG TRANSFORM",
+    title: "Mochi Vertical Drag Stretch",
+    subtitle: "Click-and-drag vertically to stretch Pluto like soft mochi (scaleY = 1 + min(dragY / 100, 0.7); scaleX = 1 / scaleY). Releasing mouse instantly snaps proportions back 1-to-1!",
+    command: "$ pluto run --mochi-stretch",
+    badge: "MOCHI TRANSFORM",
+    activeMode: 'excited' as const
+  }
+];
+
 // FAQ Accordion Data
 const FAQS = [
   {
@@ -62,20 +103,27 @@ const FAQS = [
   {
     q: "04. What is the Mochi Vertical Drag transformation formula?",
     a: "Click-and-drag vertically stretches Pluto like soft mochi using scaleY = 1 + Math.min(dragDistanceY / 100, 0.7) and scaleX = 1 / scaleY. Releasing the mouse instantly snaps proportions back 1-to-1."
+  },
+  {
+    q: "05. Can I run Pluto on multiple monitors?",
+    a: "Yes! Electron transparent overlays support multi-display coordinate mapping, ensuring Pluto follows your cursor seamlessly across external displays."
   }
 ];
 
 export default function App() {
-  // Navigation & Page View State
-  const [currentPage, setCurrentPage] = useState<'home' | 'features' | 'cli' | 'pricing' | 'faq' | 'contact'>('home');
+  // Navigation & 7-Page SPA Router View State
+  const [currentPage, setCurrentPage] = useState<'home' | 'features' | 'cli' | 'showcase' | 'pricing' | 'faq' | 'contact'>('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
 
-  // Interactive CLI Terminal Input & Output Log State
+  // Hero Carousel Slider State
+  const [heroSlideIdx, setHeroSlideIdx] = useState(0);
+
+  // Interactive CLI Terminal State
   const [cliInput, setCliInput] = useState('');
   const [cliLogs, setCliLogs] = useState<string[]>([
-    "System initialized: Pluto OS v1.0.0",
-    "Type 'help' or click quick commands below..."
+    "System initialized: Pluto Core v1.0.0",
+    "Type 'help' or click quick command buttons below..."
   ]);
 
   // Sandbox & Mascot States
@@ -121,6 +169,19 @@ export default function App() {
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const catPosRef = useRef({ x: 80, y: 80, dir: 1 });
+
+  // Auto-play Hero Carousel Slider ticker
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHeroSlideIdx((prev) => (prev + 1) % HERO_SLIDES.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Update active canvas mode when hero slide changes
+  useEffect(() => {
+    setActiveTab(HERO_SLIDES[heroSlideIdx].activeMode);
+  }, [heroSlideIdx]);
 
   // Track scroll position for Back To Top button
   useEffect(() => {
@@ -429,47 +490,18 @@ export default function App() {
             </div>
           </div>
 
-          {/* Center Navigation Links */}
-          <nav className="hidden md:flex items-center gap-6 text-sm text-[#f1f1f1]/80">
-            <button 
-              onClick={() => setCurrentPage('home')} 
-              className={`hover:text-[#00d9ff] transition-colors flex items-center gap-1.5 ${currentPage === 'home' ? 'text-[#00d9ff] font-bold border-b border-[#00d9ff]' : ''}`}
-            >
-              <Terminal className="w-4 h-4" /> Home
-            </button>
-            <button 
-              onClick={() => setCurrentPage('features')} 
-              className={`hover:text-[#00d9ff] transition-colors flex items-center gap-1.5 ${currentPage === 'features' ? 'text-[#00d9ff] font-bold border-b border-[#00d9ff]' : ''}`}
-            >
-              <Cpu className="w-4 h-4" /> Architecture
-            </button>
-            <button 
-              onClick={() => setCurrentPage('cli')} 
-              className={`hover:text-[#00d9ff] transition-colors flex items-center gap-1.5 ${currentPage === 'cli' ? 'text-[#00d9ff] font-bold border-b border-[#00d9ff]' : ''}`}
-            >
-              <Code2 className="w-4 h-4" /> Interactive CLI
-            </button>
-            <button 
-              onClick={() => setCurrentPage('pricing')} 
-              className={`hover:text-[#00d9ff] transition-colors flex items-center gap-1.5 ${currentPage === 'pricing' ? 'text-[#00d9ff] font-bold border-b border-[#00d9ff]' : ''}`}
-            >
-              <Layers className="w-4 h-4" /> Enterprise
-            </button>
-            <button 
-              onClick={() => setCurrentPage('faq')} 
-              className={`hover:text-[#00d9ff] transition-colors flex items-center gap-1.5 ${currentPage === 'faq' ? 'text-[#00d9ff] font-bold border-b border-[#00d9ff]' : ''}`}
-            >
-              <Activity className="w-4 h-4" /> Docs & FAQ
-            </button>
-            <button 
-              onClick={() => setCurrentPage('contact')} 
-              className={`hover:text-[#00d9ff] transition-colors flex items-center gap-1.5 ${currentPage === 'contact' ? 'text-[#00d9ff] font-bold border-b border-[#00d9ff]' : ''}`}
-            >
-              <Send className="w-4 h-4" /> Contact
-            </button>
+          {/* Center Navigation Tabs (7 distinct page views) */}
+          <nav className="hidden lg:flex items-center gap-5 text-xs text-[#f1f1f1]/80">
+            <button onClick={() => setCurrentPage('home')} className={`hover:text-[#00d9ff] transition-colors ${currentPage === 'home' ? 'text-[#00d9ff] font-bold border-b border-[#00d9ff]' : ''}`}>Home</button>
+            <button onClick={() => setCurrentPage('features')} className={`hover:text-[#00d9ff] transition-colors ${currentPage === 'features' ? 'text-[#00d9ff] font-bold border-b border-[#00d9ff]' : ''}`}>Architecture</button>
+            <button onClick={() => setCurrentPage('cli')} className={`hover:text-[#00d9ff] transition-colors ${currentPage === 'cli' ? 'text-[#00d9ff] font-bold border-b border-[#00d9ff]' : ''}`}>Interactive CLI</button>
+            <button onClick={() => setCurrentPage('showcase')} className={`hover:text-[#00d9ff] transition-colors ${currentPage === 'showcase' ? 'text-[#00d9ff] font-bold border-b border-[#00d9ff]' : ''}`}>Showcase</button>
+            <button onClick={() => setCurrentPage('pricing')} className={`hover:text-[#00d9ff] transition-colors ${currentPage === 'pricing' ? 'text-[#00d9ff] font-bold border-b border-[#00d9ff]' : ''}`}>Enterprise</button>
+            <button onClick={() => setCurrentPage('faq')} className={`hover:text-[#00d9ff] transition-colors ${currentPage === 'faq' ? 'text-[#00d9ff] font-bold border-b border-[#00d9ff]' : ''}`}>Docs & FAQ</button>
+            <button onClick={() => setCurrentPage('contact')} className={`hover:text-[#00d9ff] transition-colors ${currentPage === 'contact' ? 'text-[#00d9ff] font-bold border-b border-[#00d9ff]' : ''}`}>Contact</button>
           </nav>
 
-          {/* Right Download CTA */}
+          {/* Right Action Button */}
           <div className="flex items-center gap-3">
             <a
               href="https://github.com/diablovocado/Pixel-Pet"
@@ -484,7 +516,7 @@ export default function App() {
             {/* Mobile Hamburger Menu */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg bg-[#1a1a2e] border border-[#00d9ff] text-[#00d9ff]"
+              className="lg:hidden p-2 rounded-lg bg-[#1a1a2e] border border-[#00d9ff] text-[#00d9ff]"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -493,109 +525,115 @@ export default function App() {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden mt-3 px-6 py-4 border-t border-[#00d9ff]/30 bg-[#1a1a2e] flex flex-col gap-3 text-sm text-[#f1f1f1]">
-            <button onClick={() => { setCurrentPage('home'); setMobileMenuOpen(false); }} className="text-left py-1 flex items-center gap-2"><Terminal className="w-4 h-4 text-[#00d9ff]" /> Home</button>
-            <button onClick={() => { setCurrentPage('features'); setMobileMenuOpen(false); }} className="text-left py-1 flex items-center gap-2"><Cpu className="w-4 h-4 text-[#00d9ff]" /> Architecture</button>
-            <button onClick={() => { setCurrentPage('cli'); setMobileMenuOpen(false); }} className="text-left py-1 flex items-center gap-2"><Code2 className="w-4 h-4 text-[#00d9ff]" /> Interactive CLI</button>
-            <button onClick={() => { setCurrentPage('pricing'); setMobileMenuOpen(false); }} className="text-left py-1 flex items-center gap-2"><Layers className="w-4 h-4 text-[#00d9ff]" /> Enterprise</button>
-            <button onClick={() => { setCurrentPage('faq'); setMobileMenuOpen(false); }} className="text-left py-1 flex items-center gap-2"><Activity className="w-4 h-4 text-[#00d9ff]" /> Docs & FAQ</button>
-            <button onClick={() => { setCurrentPage('contact'); setMobileMenuOpen(false); }} className="text-left py-1 flex items-center gap-2"><Send className="w-4 h-4 text-[#00d9ff]" /> Contact</button>
+          <div className="lg:hidden mt-3 px-6 py-4 border-t border-[#00d9ff]/30 bg-[#1a1a2e] flex flex-col gap-3 text-sm text-[#f1f1f1]">
+            <button onClick={() => { setCurrentPage('home'); setMobileMenuOpen(false); }} className="text-left py-1">Home</button>
+            <button onClick={() => { setCurrentPage('features'); setMobileMenuOpen(false); }} className="text-left py-1">Architecture</button>
+            <button onClick={() => { setCurrentPage('cli'); setMobileMenuOpen(false); }} className="text-left py-1">Interactive CLI</button>
+            <button onClick={() => { setCurrentPage('showcase'); setMobileMenuOpen(false); }} className="text-left py-1">Showcase</button>
+            <button onClick={() => { setCurrentPage('pricing'); setMobileMenuOpen(false); }} className="text-left py-1">Enterprise</button>
+            <button onClick={() => { setCurrentPage('faq'); setMobileMenuOpen(false); }} className="text-left py-1">Docs & FAQ</button>
+            <button onClick={() => { setCurrentPage('contact'); setMobileMenuOpen(false); }} className="text-left py-1">Contact</button>
           </div>
         )}
       </header>
 
-      {/* 2. MAIN CONTENT AREA */}
-      <main className="max-w-[1120px] mx-auto w-full px-6 py-12">
+      {/* 2. MAIN CONTENT MULTI-PAGE ROUTER */}
+      <main className="max-w-[1120px] mx-auto w-full px-6 py-10">
 
-        {/* PAGE 1: HOME PAGE (SPLIT HERO SECTION) */}
+        {/* PAGE 1: HOME PAGE WITH HERO CAROUSEL SLIDER */}
         {currentPage === 'home' && (
-          <div className="space-y-20">
+          <div className="space-y-16">
             
-            {/* SPLIT HERO SECTION (TEXT LEFT, MASCOT TERMINAL RIGHT) */}
-            <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              
-              {/* Left Column: Text & CTAs */}
-              <div className="space-y-6">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00d9ff]/10 border border-[#00d9ff]/40 text-[#00d9ff] text-xs font-mono">
-                  <Sparkles className="w-3.5 h-3.5 text-[#ff00aa]" />
-                  <span>Terminal Desktop Companion v1.0</span>
-                </div>
-
-                <h1 className="text-4xl sm:text-6xl font-bold leading-tight tracking-tight">
-                  Pluto — <br />
-                  <span className="text-[#00d9ff] cyber-glow-text">Your desk pet</span>
-                </h1>
-
-                <p className="text-[#f1f1f1]/70 text-lg leading-relaxed">
-                  A high-performance, pixel-art cat that lives on your Mac Dock. Featuring cursor pursuit, Dock sleeping physics, hardware-level key event detection, and Mochi drag stretch math.
-                </p>
-
-                {/* Live CLI Buttons */}
-                <div className="flex flex-wrap gap-3">
-                  <button
-                    onClick={() => setCurrentPage('cli')}
-                    className="cyber-btn-cyan px-6 py-3 text-sm flex items-center gap-2"
-                  >
-                    <Terminal className="w-4 h-4" />
-                    <span>Launch Terminal Sandbox</span>
-                  </button>
-                  <button
-                    onClick={() => setCurrentPage('features')}
-                    className="px-6 py-3 rounded-lg bg-[#1a1a2e] border border-[#00d9ff]/40 text-[#00d9ff] hover:bg-[#00d9ff]/10 text-sm font-bold transition-all"
-                  >
-                    View Architecture Specs →
-                  </button>
-                </div>
-
-                {/* Status Bar Pills */}
-                <div className="pt-4 border-t border-[#00d9ff]/20 flex flex-wrap gap-4 text-xs font-mono text-[#00ff9d]">
-                  <div>✓ CPU: 0.1% Footprint</div>
-                  <div>✓ RAM: ~15MB</div>
-                  <div>✓ 100% Offline</div>
-                </div>
-              </div>
-
-              {/* Right Column: Terminal Window Showcase with Live Mascot Canvas */}
-              <div className="cyber-card p-6 relative overflow-hidden">
-                {/* Window Controls */}
-                <div className="flex items-center justify-between pb-4 border-b border-[#00d9ff]/30 mb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-[#ff5f56] inline-block" />
-                    <span className="w-3 h-3 rounded-full bg-[#ffbd2e] inline-block" />
-                    <span className="w-3 h-3 rounded-full bg-[#27c93f] inline-block" />
-                    <span className="ml-2 text-xs text-[#00d9ff]">pluto-core-process --dock</span>
+            {/* HERO CAROUSEL SLIDER */}
+            <section className="cyber-card p-6 md:p-10 relative overflow-hidden">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                
+                {/* Left Slide Info (7 cols) */}
+                <div className="lg:col-span-7 space-y-6">
+                  <div className="flex items-center gap-3">
+                    <span className="px-3 py-1 rounded bg-[#00d9ff]/20 text-[#00d9ff] border border-[#00d9ff]/40 text-xs font-mono">
+                      {HERO_SLIDES[heroSlideIdx].tag}
+                    </span>
+                    <span className="px-3 py-1 rounded bg-[#ff00aa]/20 text-[#ff00aa] border border-[#ff00aa]/40 text-xs font-mono">
+                      {HERO_SLIDES[heroSlideIdx].badge}
+                    </span>
                   </div>
-                  <div className="text-xs text-[#ff00aa]">STATUS: ACTIVE</div>
-                </div>
 
-                {/* Speech Bubble */}
-                <div className="bg-[#0b0b1a] border border-[#00d9ff] text-[#00d9ff] px-3 py-1.5 rounded text-xs mb-3 inline-block">
-                  {speechBubble}
-                </div>
+                  <h1 className="text-3xl sm:text-5xl font-bold leading-tight text-[#f1f1f1]">
+                    {HERO_SLIDES[heroSlideIdx].title}
+                  </h1>
 
-                {/* Interactive Mascot Canvas */}
-                <div 
-                  onMouseDown={handleMouseDownStage}
-                  onMouseMove={handleMouseMoveStage}
-                  onMouseUp={handleMouseUpStage}
-                  onClick={handlePet}
-                  className="bg-[#0b0b1a] border border-[#00d9ff]/30 h-60 rounded-lg flex items-center justify-center cursor-grab active:cursor-grabbing relative overflow-hidden"
-                >
-                  <canvas ref={canvasRef} width={640} height={210} className="w-full h-full rendering-pixelated" />
-                  <div className="absolute bottom-3 right-3 text-[10px] bg-[#1a1a2e] border border-[#00d9ff]/40 px-2 py-0.5 rounded text-[#00d9ff]">
-                    ↕️ Drag vertically to stretch Mochi!
+                  <p className="text-[#f1f1f1]/70 text-base leading-relaxed">
+                    {HERO_SLIDES[heroSlideIdx].subtitle}
+                  </p>
+
+                  <div className="bg-[#0b0b1a] p-3 rounded-lg border border-[#00d9ff]/30 text-xs font-mono text-[#00ff9d] flex items-center justify-between">
+                    <span>{HERO_SLIDES[heroSlideIdx].command}</span>
+                    <button 
+                      onClick={() => handleCliSubmit(undefined, HERO_SLIDES[heroSlideIdx].activeMode)}
+                      className="px-3 py-1 bg-[#00d9ff] text-[#0b0b1a] rounded font-bold hover:bg-[#00ff9d] transition-colors"
+                    >
+                      Test Mode
+                    </button>
+                  </div>
+
+                  {/* Slide Control Buttons & Indicator Dots */}
+                  <div className="flex items-center justify-between pt-4 border-t border-[#00d9ff]/20">
+                    <div className="flex items-center gap-2">
+                      {HERO_SLIDES.map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setHeroSlideIdx(i)}
+                          className={`w-3 h-3 rounded-full transition-all ${heroSlideIdx === i ? 'bg-[#00d9ff] w-8' : 'bg-[#1a1a2e] border border-[#00d9ff]/40'}`}
+                        />
+                      ))}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setHeroSlideIdx((prev) => (prev === 0 ? HERO_SLIDES.length - 1 : prev - 1))}
+                        className="p-2 rounded bg-[#0b0b1a] border border-[#00d9ff]/40 text-[#00d9ff] hover:bg-[#00d9ff] hover:text-[#0b0b1a] transition-all"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setHeroSlideIdx((prev) => (prev === HERO_SLIDES.length - 1 ? 0 : prev + 1))}
+                        className="p-2 rounded bg-[#0b0b1a] border border-[#00d9ff]/40 text-[#00d9ff] hover:bg-[#00d9ff] hover:text-[#0b0b1a] transition-all"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
 
-                {/* Fast Action Buttons */}
-                <div className="flex flex-wrap gap-2 mt-4 text-xs">
-                  <button onClick={() => handleCliSubmit(undefined, 'pet')} className="px-3 py-1.5 rounded bg-[#1a1a2e] border border-[#00d9ff] text-[#00d9ff] hover:bg-[#00d9ff] hover:text-[#0b0b1a]">❤️ Pet</button>
-                  <button onClick={() => handleCliSubmit(undefined, 'feed')} className="px-3 py-1.5 rounded bg-[#1a1a2e] border border-[#00ff9d] text-[#00ff9d] hover:bg-[#00ff9d] hover:text-[#0b0b1a]">🐟 Feed ({treatsCount})</button>
-                  <button onClick={() => handleCliSubmit(undefined, 'bongo')} className="px-3 py-1.5 rounded bg-[#1a1a2e] border border-[#ff00aa] text-[#ff00aa] hover:bg-[#ff00aa] hover:text-[#ffffff]">🥁 Bongo Drums</button>
-                  <button onClick={() => handleCliSubmit(undefined, 'sleep')} className="px-3 py-1.5 rounded bg-[#1a1a2e] border border-[#f1f1f1]/40 text-[#f1f1f1]/80 hover:bg-[#f1f1f1] hover:text-[#0b0b1a]">💤 Sleep</button>
-                </div>
-              </div>
+                {/* Right Interactive Mascot Canvas Window (5 cols) */}
+                <div className="lg:col-span-5 bg-[#0b0b1a] p-5 rounded-xl border border-[#00d9ff]/30 space-y-4">
+                  <div className="flex items-center justify-between text-xs pb-2 border-b border-[#00d9ff]/30">
+                    <div className="text-[#00d9ff]">pluto-core-process --active</div>
+                    <div className="text-[#00ff9d]">STATE: {activeTab.toUpperCase()}</div>
+                  </div>
 
+                  <div className="bg-[#0b0b1a] border border-[#00d9ff]/20 text-[#00d9ff] px-3 py-1 rounded text-xs inline-block">
+                    {speechBubble}
+                  </div>
+
+                  <div 
+                    onMouseDown={handleMouseDownStage}
+                    onMouseMove={handleMouseMoveStage}
+                    onMouseUp={handleMouseUpStage}
+                    onClick={handlePet}
+                    className="bg-[#0b0b1a] border border-[#00d9ff]/30 h-52 rounded-lg flex items-center justify-center cursor-grab active:cursor-grabbing relative overflow-hidden"
+                  >
+                    <canvas ref={canvasRef} width={640} height={210} className="w-full h-full rendering-pixelated" />
+                  </div>
+
+                  <div className="flex justify-between items-center text-xs text-[#f1f1f1]/70">
+                    <div>Happiness: <span className="text-[#00ff9d] font-bold">{happiness}%</span></div>
+                    <button onClick={handleFeed} className="text-[#ff00aa] hover:underline font-bold">🐟 Feed Treat ({treatsCount})</button>
+                  </div>
+                </div>
+
+              </div>
             </section>
 
             {/* CARD-BASED GRID LAYOUT FOR CORE MECHANICS */}
@@ -667,21 +705,6 @@ export default function App() {
                 <p className="text-xs text-[#f1f1f1]/70">Zero analytics, zero telemetry data, zero background web sockets.</p>
               </div>
             </div>
-
-            <div className="cyber-card p-8 space-y-4">
-              <h2 className="text-2xl font-bold text-[#00d9ff]">Transparent Overlay Window Contract</h2>
-              <pre className="bg-[#0b0b1a] p-4 rounded-lg border border-[#00d9ff]/30 text-xs text-[#00ff9d] overflow-x-auto">
-{`const windowConfig = {
-  width: 140,
-  height: 140,
-  transparent: true,
-  frame: false,
-  alwaysOnTop: true,
-  hasShadow: false,
-  webPreferences: { nodeIntegration: true, contextIsolation: false }
-};`}
-              </pre>
-            </div>
           </div>
         )}
 
@@ -694,20 +717,17 @@ export default function App() {
             </div>
 
             <div className="cyber-card p-6 space-y-4">
-              {/* Terminal Header */}
               <div className="flex items-center justify-between pb-3 border-b border-[#00d9ff]/30 text-xs">
                 <div className="text-[#00d9ff]">bash — pluto@desktop:~$</div>
                 <button onClick={() => handleCliSubmit(undefined, 'clear')} className="text-xs text-[#ff00aa] hover:underline">Clear Logs</button>
               </div>
 
-              {/* Terminal Logs Output */}
               <div className="bg-[#0b0b1a] p-4 rounded-lg border border-[#00d9ff]/30 font-mono text-xs text-[#00ff9d] min-h-[180px] max-h-[300px] overflow-y-auto space-y-1">
                 {cliLogs.map((log, idx) => (
                   <div key={idx}>{log}</div>
                 ))}
               </div>
 
-              {/* Terminal Command Input */}
               <form onSubmit={(e) => handleCliSubmit(e)} className="flex items-center gap-2">
                 <span className="text-[#ff00aa] font-bold">$</span>
                 <input
@@ -723,7 +743,52 @@ export default function App() {
           </div>
         )}
 
-        {/* PAGE 4: ENTERPRISE & PRICING */}
+        {/* PAGE 4: SPRITE ASSETS SHOWCASE */}
+        {currentPage === 'showcase' && (
+          <div className="space-y-8">
+            <div className="text-center max-w-2xl mx-auto space-y-2">
+              <h1 className="text-4xl font-bold text-[#00d9ff] cyber-glow-text">Sprite Asset Showcase</h1>
+              <p className="text-[#f1f1f1]/70">Transparent PNG pixel art assets driving Pluto's animations</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="cyber-card p-6 text-center space-y-3">
+                <div className="w-20 h-20 mx-auto bg-[#0b0b1a] border border-[#00d9ff]/40 rounded-lg flex items-center justify-center">
+                  <img src="/assets/pepperino.png" alt="Resting" className="w-14 h-14 rendering-pixelated object-contain" />
+                </div>
+                <div className="text-sm font-bold text-[#00d9ff]">pepperino.png</div>
+                <div className="text-xs text-[#f1f1f1]/70">Standard resting & walking sprite.</div>
+              </div>
+
+              <div className="cyber-card p-6 text-center space-y-3">
+                <div className="w-20 h-20 mx-auto bg-[#0b0b1a] border border-[#00d9ff]/40 rounded-lg flex items-center justify-center">
+                  <img src="/assets/sleep.png" alt="Sleep" className="w-14 h-14 rendering-pixelated object-contain" />
+                </div>
+                <div className="text-sm font-bold text-[#00d9ff]">sleep.png</div>
+                <div className="text-xs text-[#f1f1f1]/70">Dock sleeping pose sprite.</div>
+              </div>
+
+              <div className="cyber-card p-6 text-center space-y-3">
+                <div className="w-20 h-20 mx-auto bg-[#0b0b1a] border border-[#00d9ff]/40 rounded-lg flex items-center justify-center gap-1">
+                  <img src="/assets/tyoe_left.png" alt="Left" className="w-8 h-8 rendering-pixelated object-contain" />
+                  <img src="/assets/tyoe_right.png" alt="Right" className="w-8 h-8 rendering-pixelated object-contain" />
+                </div>
+                <div className="text-sm font-bold text-[#00d9ff]">tyoe_left/right.png</div>
+                <div className="text-xs text-[#f1f1f1]/70">Bongo cat typing paws.</div>
+              </div>
+
+              <div className="cyber-card p-6 text-center space-y-3">
+                <div className="w-20 h-20 mx-auto bg-[#0b0b1a] border border-[#00d9ff]/40 rounded-lg flex items-center justify-center">
+                  <img src="/assets/bongo_cat_frames/tyoe_frame_2.png" alt="Sequence" className="w-12 h-12 rendering-pixelated object-contain" />
+                </div>
+                <div className="text-sm font-bold text-[#00d9ff]">12-Frame Sequence</div>
+                <div className="text-xs text-[#f1f1f1]/70">Full WebM keyboard animation.</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* PAGE 5: ENTERPRISE & PRICING */}
         {currentPage === 'pricing' && (
           <div className="space-y-12">
             <div className="text-center max-w-2xl mx-auto space-y-2">
@@ -774,7 +839,7 @@ export default function App() {
           </div>
         )}
 
-        {/* PAGE 5: DOCS & FAQ */}
+        {/* PAGE 6: DOCS & FAQ */}
         {currentPage === 'faq' && (
           <div className="space-y-8 max-w-3xl mx-auto">
             <div className="text-center space-y-2">
@@ -803,7 +868,7 @@ export default function App() {
           </div>
         )}
 
-        {/* PAGE 6: CONTACT FORM */}
+        {/* PAGE 7: CONTACT FORM */}
         {currentPage === 'contact' && (
           <div className="space-y-8 max-w-2xl mx-auto">
             <div className="text-center space-y-2">
