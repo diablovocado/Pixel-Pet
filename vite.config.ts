@@ -7,7 +7,7 @@ import fs from 'node:fs'
 
 let siteConfiguration = {}
 try {
-  const siteJsonPath = path.resolve(__dirname, './.figma/make/site.json')
+  const siteJsonPath = path.resolve(process.cwd(), './.figma/make/site.json')
   if (fs.existsSync(siteJsonPath)) {
     siteConfiguration = JSON.parse(fs.readFileSync(siteJsonPath, 'utf-8'))
   }
@@ -22,10 +22,10 @@ export default defineConfig(({ mode }) => {
   const emitSourcemaps = mode === 'development'
 
   return {
-    root: path.resolve(__dirname, 'landing'),
-    base: process.env.FIGMA_PUBLIC_URL ? `${process.env.FIGMA_PUBLIC_URL}/` : '/',
+    root: path.resolve(process.cwd(), 'landing'),
+    base: process.env.FIGMA_PUBLIC_URL ? `${process.env.FIGMA_PUBLIC_URL}/` : './',
     build: {
-      outDir: path.resolve(__dirname, 'dist'),
+      outDir: path.resolve(process.cwd(), 'dist'),
       emptyOutDir: true,
       sourcemap: emitSourcemaps ? 'inline' : false,
       minify: !emitSourcemaps,
@@ -40,7 +40,7 @@ export default defineConfig(({ mode }) => {
     ],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './landing/src'),
+        '@': path.resolve(process.cwd(), './landing/src'),
       },
     },
     server: {

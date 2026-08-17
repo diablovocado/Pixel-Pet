@@ -6,6 +6,8 @@
 
 A living, interactive pixel-art cat that sits on your Mac desktop — transparent overlay, click-through everywhere except on its own body, with zero rendering glitches or input conflicts.
 
+🌐 **Live Web Landing Page**: [https://diablovocado.github.io/Pixel-Pet/](https://diablovocado.github.io/Pixel-Pet/)
+
 ---
 
 ## 🚀 Quick Start
