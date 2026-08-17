@@ -1,38 +1,123 @@
 import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import {
-  Volume2,
-  VolumeX,
-  Copy,
-  Check,
+  Terminal,
+  Cpu,
+  HardDrive,
+  ShieldCheck,
+  MousePointer,
+  Keyboard,
+  Bed,
+  Smile,
+  Zap,
   Download,
   Github,
-  Zap,
-  RotateCcw
+  Twitter,
+  Disc as Discord,
+  Check,
+  ChevronDown,
+  ArrowUp,
+  Menu,
+  X,
+  Send,
+  Code2,
+  Sparkles,
+  Play,
+  RotateCcw,
+  Activity,
+  Layers,
+  Heart,
+  Cat,
+  Search,
+  CheckCircle2,
+  ExternalLink
 } from 'lucide-react';
 
+/**
+ * Pluto — "Your desk pet" Multi-Page Pastel Terminal Application
+ * Color Palette:
+ * - Soft Blue: #9ECAD6
+ * - Muted Indigo: #748DAE
+ * - Blush Pink: #F5CBCB
+ * - Light Rose: #FFEAEA
+ * - Dark Text: #2B3A4A
+ */
+
+// Bongo Cat frame sequence paths
 const BONGO_FRAMES = Array.from(
   { length: 12 },
   (_, i) => `/assets/bongo_cat_frames/tyoe_frame_${i}.png`
 );
 
+// Randomized Mood Bubble Greetings
+const RANDOM_GREETINGS = [
+  "hi maith! 👋",
+  "meow~ 💕",
+  "let's code! 💻",
+  "purrrrr~ ✨",
+  "more treats please! 🐟",
+  "bongo paw time! 🥁",
+  "cozy desk vibes! 🌙"
+];
+
+// FAQ Data
+const FAQS = [
+  {
+    q: "01. How does Pluto track cursor pursuit and running stride?",
+    a: "When your mouse moves further than 45px away, Pluto enters pursuit state with smooth stride math and directional face flipping (scaleX * faceDir). Dynamic sine-wave stride bounce is computed via Math.sin(Date.now() * 0.018) * 3."
+  },
+  {
+    q: "02. How does Dock Sleeping and Click-to-Wake work?",
+    a: "Moving your cursor down near the bottom screen Dock (mouseY >= window.innerHeight - 80) triggers Dock Sleeping mode. Pluto emits drifting blue Zzz particles. Hovering over her sleeping body and clicking restores normal IDLE state."
+  },
+  {
+    q: "03. How is hardware-level keystroke guarding implemented?",
+    a: "Pluto utilizes native macOS kVK_ANSI_ hardware key identifier filtering in Electron to strictly distinguish keyboard typing from trackpad/mouse clicks, instantly triggering 1.38x scaled Bongo Cat WebM typing animations."
+  },
+  {
+    q: "04. What is the Mochi Vertical Drag transformation formula?",
+    a: "Click-and-drag vertically stretches Pluto like soft mochi using scaleY = 1 + Math.min(dragDistanceY / 100, 0.7) and scaleX = 1 / scaleY. Releasing the mouse instantly snaps proportions back 1-to-1."
+  },
+  {
+    q: "05. Can I run Pluto on multi-display setups?",
+    a: "Yes! Electron transparent overlays support multi-display coordinate mapping, ensuring Pluto follows your cursor seamlessly across external displays."
+  }
+];
+
 export default function App() {
+  // Page Router View State
+  const [currentPage, setCurrentPage] = useState<'home' | 'mechanics' | 'architecture' | 'sprites' | 'pricing' | 'faq' | 'contact'>('home');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  // Mascot & Live Interactive Playground States
   const [activeTab, setActiveTab] = useState<'walk' | 'sleep' | 'bongo' | 'excited' | 'petting'>('bongo');
   const [happiness, setHappiness] = useState(98);
   const [treatsCount, setTreatsCount] = useState(5);
-  const [copied, setCopied] = useState(false);
-  const [speechBubble, setSpeechBubble] = useState("Keystroke detected! Pluto is reacting! 🐾");
+  const [speechBubble, setSpeechBubble] = useState("hi maith! 👋");
   const [bongoFrameIdx, setBongoFrameIdx] = useState(0);
-  const [soundEnabled, setSoundEnabled] = useState(true);
 
-  // Real-time typing states
+  // Mochi Vertical Drag Stretch Physics State
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartY, setDragStartY] = useState(0);
+  const [stretchScale, setStretchScale] = useState({ scaleX: 1, scaleY: 1 });
+
+  // Typing Speed Detector States
   const [kps, setKps] = useState(0);
   const [keystrokesCount, setKeystrokesCount] = useState(0);
   const [testInputText, setTestInputText] = useState('');
   const [lastKeyTyped, setLastKeyTyped] = useState('N');
   const keystrokeTimestampsRef = useRef<number[]>([]);
 
-  // Preloaded image references for HTML5 Canvas rendering
+  // FAQ Search & Accordion State
+  const [faqQuery, setFaqQuery] = useState('');
+  const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
+
+  // Contact Form State
+  const [contactForm, setContactForm] = useState({ name: '', email: '', subject: '', message: '' });
+  const [formSubmitted, setFormSubmitted] = useState(false);
+
+  // Preloaded image references for Canvas
   const imagesRef = useRef<{
     pepperino: HTMLImageElement | null;
     sleep: HTMLImageElement | null;
@@ -50,7 +135,14 @@ export default function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const catPosRef = useRef({ x: 80, y: 80, dir: 1 });
 
-  // Preload image assets
+  // Scroll listener for Back to Top button
+  useEffect(() => {
+    const handleScroll = () => setShowBackToTop(window.scrollY > 300);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Preload Image Assets
   useEffect(() => {
     const pep = new Image();
     pep.src = '/assets/pepperino.png';
@@ -75,54 +167,6 @@ export default function App() {
     });
   }, []);
 
-  // Web Audio Synthesizer for Retro Beep Sound Effects
-  const playRetroSound = (type: 'meow' | 'type' | 'treat' | 'pet') => {
-    if (!soundEnabled) return;
-    try {
-      const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      const now = ctx.currentTime;
-      if (type === 'type') {
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(440 + Math.random() * 200, now);
-        gain.gain.setValueAtTime(0.05, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-        osc.start(now);
-        osc.stop(now + 0.05);
-      } else if (type === 'treat') {
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(300, now);
-        osc.frequency.exponentialRampToValueAtTime(800, now + 0.15);
-        gain.gain.setValueAtTime(0.08, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-        osc.start(now);
-        osc.stop(now + 0.15);
-      } else if (type === 'pet') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(523.25, now);
-        osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.12);
-        gain.gain.setValueAtTime(0.06, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-        osc.start(now);
-        osc.stop(now + 0.12);
-      } else if (type === 'meow') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(700, now);
-        osc.frequency.exponentialRampToValueAtTime(450, now + 0.2);
-        gain.gain.setValueAtTime(0.08, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-        osc.start(now);
-        osc.stop(now + 0.2);
-      }
-    } catch {
-      // AudioContext fallback
-    }
-  };
-
   // Global Keyboard Typing Detector & KPS Calculator
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -132,7 +176,6 @@ export default function App() {
       keystrokeTimestampsRef.current.push(now);
       const keyChar = e.key.length === 1 ? e.key.toUpperCase() : e.key;
       setLastKeyTyped(keyChar);
-      playRetroSound('type');
 
       keystrokeTimestampsRef.current = keystrokeTimestampsRef.current.filter(t => now - t <= 1000);
       const currentKps = keystrokeTimestampsRef.current.length;
@@ -143,33 +186,30 @@ export default function App() {
       setBongoFrameIdx(prev => (prev + 1) % BONGO_FRAMES.length);
 
       if (currentKps > 7) {
-        setSpeechBubble(`🔥 HIGH SPEED TYPING! ${currentKps} KPS! PLUTO IS SLAMMING PAWS FAST! 🎹⚡`);
+        setSpeechBubble(`🔥 HIGH SPEED TYPING! ${currentKps} KPS! 🎹⚡`);
       } else if (currentKps > 2) {
         setSpeechBubble(`⚡ Typing at ${currentKps} KPS! Key '${keyChar}' pressed! 🎵`);
       } else {
-        setSpeechBubble(`Keystroke detected! Key '${keyChar}' • Pluto is reacting! 🐾`);
+        const randomGreeting = RANDOM_GREETINGS[Math.floor(Math.random() * RANDOM_GREETINGS.length)];
+        setSpeechBubble(randomGreeting);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [soundEnabled]);
+  }, []);
 
   // KPS Decay Ticker
   useEffect(() => {
     const ticker = setInterval(() => {
       const now = Date.now();
       keystrokeTimestampsRef.current = keystrokeTimestampsRef.current.filter(t => now - t <= 1000);
-      const currentKps = keystrokeTimestampsRef.current.length;
-      setKps(currentKps);
-      if (currentKps === 0 && activeTab === 'bongo') {
-        setSpeechBubble("Keystroke detected! Pluto is reacting! 🐾");
-      }
+      setKps(keystrokeTimestampsRef.current.length);
     }, 200);
     return () => clearInterval(ticker);
-  }, [activeTab]);
+  }, []);
 
-  // Automatic Idle Bongo frame ticker when typing or active
+  // Automatic Idle Bongo frame ticker
   useEffect(() => {
     if (activeTab !== 'bongo') return;
     const speed = kps > 5 ? 40 : kps > 0 ? 70 : 110;
@@ -179,7 +219,7 @@ export default function App() {
     return () => clearInterval(interval);
   }, [activeTab, kps]);
 
-  // Main Canvas Render Loop for Pluto
+  // Canvas Render Loop for Pluto
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -192,8 +232,8 @@ export default function App() {
     const render = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Solid horizontal separator line beneath cat paws
-      ctx.strokeStyle = '#2D231E';
+      // Floor separator line
+      ctx.strokeStyle = '#748DAE';
       ctx.lineWidth = 2.5;
       ctx.beginPath();
       ctx.moveTo(15, 175);
@@ -210,22 +250,31 @@ export default function App() {
 
       ctx.save();
 
+      // Mochi Vertical Drag Stretch transformation math
+      if (stretchScale.scaleY !== 1) {
+        ctx.translate(canvas.width / 2, 130);
+        ctx.scale(stretchScale.scaleX, stretchScale.scaleY);
+        ctx.translate(-canvas.width / 2, -130);
+      }
+
       if (activeTab === 'sleep') {
         const sleepImg = imagesRef.current.sleep;
         if (sleepImg) {
           ctx.drawImage(sleepImg, 270, 80, 95, 95);
         }
-
         const zOffset = Math.sin(Date.now() / 250) * 6;
-        ctx.font = '20px "VT323", monospace';
-        ctx.fillStyle = '#C87A5B';
+        ctx.font = '20px "Share Tech Mono", monospace';
+        ctx.fillStyle = '#748DAE';
         ctx.fillText('Z z z...', 365, 80 + zOffset);
       } else if (activeTab === 'bongo') {
         const currentFrameImg = imagesRef.current.bongoFrames[bongoFrameIdx];
-        if (currentFrameImg && currentFrameImg.complete) {
+        const pepImg = imagesRef.current.pepperino;
+        if (currentFrameImg && currentFrameImg.complete && currentFrameImg.naturalWidth !== 0) {
           ctx.drawImage(currentFrameImg, 265, 62, 110, 110);
-        } else if (imagesRef.current.bongoLeft) {
+        } else if (imagesRef.current.bongoLeft && imagesRef.current.bongoLeft.complete && imagesRef.current.bongoLeft.naturalWidth !== 0) {
           ctx.drawImage(imagesRef.current.bongoLeft, 265, 62, 110, 110);
+        } else if (pepImg && pepImg.complete && pepImg.naturalWidth !== 0) {
+          ctx.drawImage(pepImg, 275, 85, 90, 90);
         }
 
         if (kps > 0) {
@@ -236,7 +285,7 @@ export default function App() {
 
           if (lastKeyTyped) {
             ctx.font = '12px "Press Start 2P", monospace';
-            ctx.fillStyle = '#C87A5B';
+            ctx.fillStyle = '#748DAE';
             ctx.fillText(`[${lastKeyTyped}]`, 310, 48 + noteY);
           }
         }
@@ -246,7 +295,6 @@ export default function App() {
         if (pepImg) {
           ctx.drawImage(pepImg, 275, 85 - bounceY, 90, 90);
         }
-
         ctx.font = '16px sans-serif';
         ctx.fillText('✨', 245, 80 - bounceY);
         ctx.fillText('💖', 375, 70 - bounceY);
@@ -265,7 +313,6 @@ export default function App() {
           ctx.scale(-1, 1);
           ctx.translate(-90, 0);
         }
-
         if (pepImg) {
           ctx.drawImage(pepImg, 0, 0, 90, 90);
         }
@@ -277,21 +324,36 @@ export default function App() {
 
     render();
     return () => cancelAnimationFrame(animId);
-  }, [activeTab, bongoFrameIdx, kps, lastKeyTyped]);
+  }, [activeTab, bongoFrameIdx, kps, lastKeyTyped, stretchScale]);
 
-  const copyInstallCommand = () => {
-    navigator.clipboard.writeText(
-      'git clone https://github.com/diablovocado/Pixel-Pet.git && cd Pixel-Pet && npm install && npm start'
-    );
-    setCopied(true);
-    playRetroSound('treat');
-    confetti({
-      particleCount: 50,
-      spread: 60,
-      origin: { y: 0.8 },
-      colors: ['#C87A5B', '#E5B25D', '#8A9A65']
-    });
-    setTimeout(() => setCopied(false), 3000);
+  // Mochi Vertical Drag Handlers
+  const handleMouseDownStage = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setDragStartY(e.clientY);
+  };
+
+  const handleMouseMoveStage = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    const dragDistY = Math.max(0, e.clientY - dragStartY);
+    const scaleY = 1 + Math.min(dragDistY / 100, 0.7);
+    const scaleX = 1 / scaleY;
+    setStretchScale({ scaleX, scaleY });
+  };
+
+  const handleMouseUpStage = () => {
+    if (isDragging) {
+      setIsDragging(false);
+      setStretchScale({ scaleX: 1, scaleY: 1 });
+      const randomGreeting = RANDOM_GREETINGS[Math.floor(Math.random() * RANDOM_GREETINGS.length)];
+      setSpeechBubble(randomGreeting);
+    }
+  };
+
+  const handlePet = () => {
+    setActiveTab('petting');
+    setHappiness(prev => Math.min(100, prev + 5));
+    const randomGreeting = RANDOM_GREETINGS[Math.floor(Math.random() * RANDOM_GREETINGS.length)];
+    setSpeechBubble(randomGreeting);
   };
 
   const handleFeed = () => {
@@ -299,460 +361,513 @@ export default function App() {
       setTreatsCount(prev => prev - 1);
       setHappiness(prev => Math.min(100, prev + 10));
       setActiveTab('excited');
-      playRetroSound('treat');
-      setSpeechBubble("YUMMY! Fish treat devoured! Pluto is super happy! 🐟✨");
+      setSpeechBubble("YUMMY! Fish treat devoured! 🐟✨");
 
       confetti({
         particleCount: 35,
         spread: 50,
         origin: { y: 0.6 },
-        colors: ['#8A9A65', '#E5B25D', '#C87A5B']
+        colors: ['#9ECAD6', '#F5CBCB', '#748DAE']
       });
 
-      setTimeout(() => setSpeechBubble("Purrrrr! Pluto loves you! 🥰"), 2500);
+      setTimeout(() => setSpeechBubble("meow~ 💕"), 2500);
     } else {
-      setSpeechBubble("Treat box empty! Click '+ Restock Treats' to get more for Pluto! 📦");
+      setSpeechBubble("Treat box empty! Restock treats! 📦");
     }
   };
 
-  const handlePet = () => {
-    setActiveTab('petting');
-    setHappiness(prev => Math.min(100, prev + 5));
-    playRetroSound('pet');
-    setSpeechBubble("Purrrrrrr! You petted Pluto on the desk! ❤️");
-  };
-
-  const scrollToSection = (id: string) => (e: React.MouseEvent) => {
+  const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+    setFormSubmitted(true);
+    confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 } });
   };
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  const navigateTo = (page: typeof currentPage) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setMobileMenuOpen(false);
+  };
+
+  const filteredFaqs = FAQS.filter(
+    f => f.q.toLowerCase().includes(faqQuery.toLowerCase()) || f.a.toLowerCase().includes(faqQuery.toLowerCase())
+  );
 
   return (
-    <div className="min-h-screen bg-[#F5EFEB] text-[#2D231E] font-['Press_Start_2P'] relative selection:bg-[#E5B25D] selection:text-[#2D231E] overflow-x-hidden">
+    <div className="min-h-screen bg-[#FFEAEA] text-[#2B3A4A] font-mono relative overflow-x-hidden selection:bg-[#9ECAD6] selection:text-[#2B3A4A]">
       
-      {/* 2. HEADER & NAVIGATION (FIXED) */}
-      <header className="sticky top-0 z-50 bg-[#F5EFEB]/90 backdrop-blur-md border-b-[2.5px] border-[#2D231E] py-4">
+      {/* 1. FIXED TOP NAVIGATION BAR WITH MULTI-PAGE ROUTER LINKS */}
+      <header className="sticky top-0 z-50 bg-[#FFEAEA]/90 backdrop-blur-md border-b-2 border-[#748DAE] py-3.5">
         <div className="max-w-[1120px] mx-auto w-full px-6 flex items-center justify-between">
           
-          {/* Left Logo */}
-          <div className="flex items-center gap-2.5 cursor-pointer transform hover:scale-[1.03] transition-transform">
-            <img 
-              src="/assets/pepperino.png" 
-              alt="Pluto Logo" 
-              className="w-[32px] h-[32px] image-rendering-pixelated object-contain" 
-            />
-            <span className="font-['Press_Start_2P'] text-[14px] text-[#2D231E] font-bold">
-              PLUTO
-            </span>
-            <span className="bg-[#E5B25D] text-[#2D231E] border border-[#2D231E] px-2 py-0.5 text-xs font-['Fredoka'] font-bold rounded-sm shadow-[1px_1px_0px_#2D231E]">
-              v1.0
-            </span>
+          {/* Logo Left */}
+          <div onClick={() => navigateTo('home')} className="flex items-center gap-3 cursor-pointer group">
+            <div className="w-10 h-10 rounded-full bg-[#9ECAD6] border-2 border-[#2B3A4A] flex items-center justify-center shadow-[2px_2px_0px_#2B3A4A] overflow-hidden">
+              <img src="/assets/pepperino.png" alt="Pluto Logo" className="w-7 h-7 rendering-pixelated object-contain" />
+            </div>
+            <div>
+              <div className="font-bold text-xl text-[#748DAE] flex items-center gap-2">
+                PLUTO <span className="text-xs px-2 py-0.5 rounded-full bg-[#F5CBCB] text-[#2B3A4A] border border-[#2B3A4A]">v1.0.0</span>
+              </div>
+              <div className="text-[11px] text-[#2B3A4A]">Your desk pet</div>
+            </div>
           </div>
 
-          {/* Center Navigation Links */}
-          <nav className="hidden md:flex items-center gap-8 text-[11px] font-['Press_Start_2P'] text-[#2D231E]">
-            <a href="#overview" onClick={scrollToSection('overview')} className="hover:text-[#C87A5B] transition-colors">Features</a>
-            <a href="#playground" onClick={scrollToSection('playground')} className="hover:text-[#C87A5B] transition-colors">Setup</a>
-            <a href="#gallery" onClick={scrollToSection('gallery')} className="hover:text-[#C87A5B] transition-colors">Assets</a>
-            <a 
-              href="https://github.com/diablovocado/Pixel-Pet" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="hover:text-[#C87A5B] transition-colors flex items-center gap-1.5"
-            >
-              <Github className="w-3.5 h-3.5" />
-              <span>GitHub</span>
-            </a>
+          {/* Navigation Page Tabs */}
+          <nav className="hidden lg:flex items-center gap-5 text-xs font-bold text-[#2B3A4A]">
+            <button onClick={() => navigateTo('home')} className={`hover:text-[#748DAE] transition-colors ${currentPage === 'home' ? 'text-[#748DAE] underline underline-offset-4 font-extrabold' : ''}`}>Home</button>
+            <button onClick={() => navigateTo('mechanics')} className={`hover:text-[#748DAE] transition-colors ${currentPage === 'mechanics' ? 'text-[#748DAE] underline underline-offset-4 font-extrabold' : ''}`}>4 Mechanics</button>
+            <button onClick={() => navigateTo('architecture')} className={`hover:text-[#748DAE] transition-colors ${currentPage === 'architecture' ? 'text-[#748DAE] underline underline-offset-4 font-extrabold' : ''}`}>Architecture</button>
+            <button onClick={() => navigateTo('sprites')} className={`hover:text-[#748DAE] transition-colors ${currentPage === 'sprites' ? 'text-[#748DAE] underline underline-offset-4 font-extrabold' : ''}`}>Sprite Library</button>
+            <button onClick={() => navigateTo('pricing')} className={`hover:text-[#748DAE] transition-colors ${currentPage === 'pricing' ? 'text-[#748DAE] underline underline-offset-4 font-extrabold' : ''}`}>Packages</button>
+            <button onClick={() => navigateTo('faq')} className={`hover:text-[#748DAE] transition-colors ${currentPage === 'faq' ? 'text-[#748DAE] underline underline-offset-4 font-extrabold' : ''}`}>FAQ & Docs</button>
+            <button onClick={() => navigateTo('contact')} className={`hover:text-[#748DAE] transition-colors ${currentPage === 'contact' ? 'text-[#748DAE] underline underline-offset-4 font-extrabold' : ''}`}>Contact</button>
           </nav>
 
-          {/* Right Action Group */}
+          {/* Right Download Button */}
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSoundEnabled(!soundEnabled)}
-              className="p-2 rounded-sm bg-[#EAE0D5] border-[2px] border-[#2D231E] shadow-[2px_2px_0px_#2D231E] hover:bg-[#E5B25D]/30 active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_#2D231E] transition-all text-[#2D231E]"
-              title={soundEnabled ? 'Mute Sound' : 'Enable Sound'}
-            >
-              {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4 text-[#C87A5B]" />}
-            </button>
-
-            <a 
-              href="#download"
-              onClick={scrollToSection('download')}
-              className="bg-[#C87A5B] text-white border-[2.5px] border-[#2D231E] shadow-[3px_3px_0px_#2D231E] hover:bg-[#b56b4e] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_#2D231E] px-4 py-2 text-xs font-['Press_Start_2P'] transition-all inline-flex items-center gap-2"
+            <a
+              href="https://github.com/diablovocado/Pixel-Pet"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pastel-btn-blue px-4 py-2 text-xs flex items-center gap-2"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>⤓ Get Pluto App</span>
+              <span className="hidden sm:inline">Get App (macOS)</span>
             </a>
+
+            {/* Mobile Hamburger Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 rounded-lg bg-[#9ECAD6] border-2 border-[#2B3A4A] text-[#2B3A4A]"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Navigation Drawer */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden mt-3 px-6 py-4 border-t-2 border-[#2B3A4A] bg-[#9ECAD6] flex flex-col gap-3 text-sm font-bold text-[#2B3A4A]">
+            <button onClick={() => navigateTo('home')} className="text-left py-1">Home</button>
+            <button onClick={() => navigateTo('mechanics')} className="text-left py-1">4 Mechanics</button>
+            <button onClick={() => navigateTo('architecture')} className="text-left py-1">Architecture</button>
+            <button onClick={() => navigateTo('sprites')} className="text-left py-1">Sprite Library</button>
+            <button onClick={() => navigateTo('pricing')} className="text-left py-1">Packages</button>
+            <button onClick={() => navigateTo('faq')} className="text-left py-1">FAQ & Docs</button>
+            <button onClick={() => navigateTo('contact')} className="text-left py-1">Contact</button>
+          </div>
+        )}
       </header>
 
-      {/* 3. SECTION 1 — HERO (100vh Cozy Study Room) */}
-      <section className="min-h-screen relative flex flex-col justify-between items-center pt-24 pb-8 overflow-hidden bg-[#F5EFEB]">
+      {/* MULTI-PAGE VIEWS CONTAINER */}
+      <main className="max-w-[1120px] mx-auto w-full px-6 py-10 min-h-[75vh]">
         
-        {/* Background Visual Illustration Layer */}
-        <div className="absolute inset-0 bg-[url('/assets/hero_cozy_room.jpg')] bg-cover bg-center bg-no-repeat opacity-95" />
-        <div className="absolute inset-0 bg-dot-grid pointer-events-none opacity-40" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#F5EFEB]/30 via-transparent to-[#F5EFEB]" />
-
-        {/* Center Stage Content */}
-        <div className="max-w-[1120px] mx-auto w-full px-6 relative z-10 flex flex-col items-center justify-center text-center my-auto">
-          
-          {/* Floating Speech Bubble above mascot */}
-          <div className="bg-[#F5EFEB] border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] px-4 py-2 font-['VT323'] text-2xl text-[#2D231E] mb-3 inline-block rounded-md transition-all">
-            <span>{speechBubble}</span>
-          </div>
-
-          {/* Mascot Sprite sitting on wooden desk */}
-          <div className="relative cursor-pointer group" onClick={handlePet}>
-            <div className="w-24 h-5 bg-[#2D231E]/35 rounded-full blur-xs absolute -bottom-1 left-1/2 transform -translate-x-1/2" />
-            <img 
-              src="/assets/pepperino.png" 
-              alt="Pluto Cat" 
-              className="w-[90px] h-[90px] image-rendering-pixelated object-contain relative z-10 drop-shadow-xl transform group-hover:scale-110 transition-transform duration-200" 
-            />
-          </div>
-
-          {/* Title */}
-          <h1 className="font-['Press_Start_2P'] text-5xl md:text-6xl text-[#2D231E] mt-4 tracking-wider">
-            PLUTO
-          </h1>
-
-          {/* Subtitle */}
-          <p className="font-['VT323'] text-2xl text-[#2D231E] mt-2">
-            Pixel-Pet v1.0 • Your Desktop Companion
-          </p>
-
-        </div>
-
-        {/* Bottom Scroll Indicator Pill */}
-        <div className="relative z-10 animate-bounce">
-          <a 
-            href="#overview" 
-            onClick={scrollToSection('overview')}
-            className="bg-[#F5EFEB] border-[2px] border-[#2D231E] shadow-[3px_3px_0px_#2D231E] px-5 py-2 font-['Press_Start_2P'] text-xs text-[#2D231E] hover:bg-[#E5B25D]/40 transition-all cursor-pointer inline-flex items-center gap-2"
-          >
-            <span>Scroll to Explore ↓</span>
-          </a>
-        </div>
-
-      </section>
-
-      {/* 4. SECTION 2 — FEATURES & PERFORMANCE SPECS */}
-      <section id="overview" className="py-24 bg-[#F5EFEB]">
-        <div className="max-w-[1120px] mx-auto w-full px-6">
-          
-          <div className="text-center">
-            <h2 className="font-['Press_Start_2P'] text-2xl md:text-3xl text-center leading-relaxed text-[#2D231E]">
-              A Living Pixel Cat for Your Mac Desktop
-            </h2>
-            <p className="font-['VT323'] text-2xl text-center text-[#2D231E]/80 max-w-2xl mx-auto mt-4 leading-relaxed">
-              Pluto sits on your dock, sleeps when you step away, reacts to typing speed, and plays Bongo drums right on your screen.
-            </p>
-          </div>
-
-          {/* 4-Card Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+        {/* PAGE 1: HOME VIEW */}
+        {currentPage === 'home' && (
+          <div className="space-y-24">
             
-            <div className="bg-[#EAE0D5] border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] p-6 rounded-md text-left hover:-translate-y-1 transition-transform">
-              <div className="text-4xl mb-3">💾</div>
-              <div className="font-['Press_Start_2P'] text-xs text-[#2D231E] mb-2">0.1% CPU Usage</div>
-              <div className="font-['VT323'] text-xl text-[#2D231E]/80">Ultra Lightweight Performance</div>
-            </div>
-
-            <div className="bg-[#EAE0D5] border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] p-6 rounded-md text-left hover:-translate-y-1 transition-transform">
-              <div className="text-4xl mb-3">💼</div>
-              <div className="font-['Press_Start_2P'] text-xs text-[#2D231E] mb-2">~15MB RAM</div>
-              <div className="font-['VT323'] text-xl text-[#2D231E]/80">Minimal Memory Footprint</div>
-            </div>
-
-            <div className="bg-[#EAE0D5] border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] p-6 rounded-md text-left hover:-translate-y-1 transition-transform">
-              <div className="text-4xl mb-3">🌐</div>
-              <div className="font-['Press_Start_2P'] text-xs text-[#2D231E] mb-2">100% Offline</div>
-              <div className="font-['VT323'] text-xl text-[#2D231E]/80">Zero Analytics & 100% Private</div>
-            </div>
-
-            <div className="bg-[#EAE0D5] border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] p-6 rounded-md text-left hover:-translate-y-1 transition-transform">
-              <div className="text-4xl mb-3">🖥</div>
-              <div className="font-['Press_Start_2P'] text-xs text-[#2D231E] mb-2">macOS Universal</div>
-              <div className="font-['VT323'] text-xl text-[#2D231E]/80">Apple Silicon M-Series & Intel</div>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* 5. SECTION 3 — INTERACTIVE LIVE SANDBOX */}
-      <section id="playground" className="py-12 bg-[#F5EFEB]">
-        <div className="max-w-[1120px] mx-auto w-full px-6">
-          
-          <div className="bg-[#EAE0D5] border-[2.5px] border-[#2D231E] shadow-[6px_6px_0px_#2D231E] rounded-md p-6 md:p-8 my-16">
-            
-            {/* Panel Header */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b-[2px] border-[#2D231E]">
-              <div className="font-['Press_Start_2P'] text-sm md:text-base text-[#2D231E]">
-                Interactive Sandbox → Test Pluto Live
+            {/* FULL-SCREEN HERO SECTION */}
+            <section className="min-h-[75vh] flex flex-col justify-center items-center text-center space-y-6 pt-4">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#9ECAD6] text-[#2B3A4A] text-sm font-bold border-2 border-[#2B3A4A] shadow-[2px_2px_0px_#2B3A4A]">
+                <Sparkles className="w-4 h-4 text-[#748DAE]" />
+                <span>✨ Pastel Terminal Desktop Companion for macOS</span>
               </div>
-              <div className="bg-[#E5B25D] text-[#2D231E] border-[2px] border-[#2D231E] px-3 py-1 font-['Press_Start_2P'] text-xs shadow-[2px_2px_0px_#2D231E] flex items-center gap-2">
-                <Zap className="w-3.5 h-3.5 text-[#C87A5B]" />
-                <span>⚡ Typing Speed: {kps} KPS</span>
-              </div>
-            </div>
 
-            {/* Interactive Typing Input */}
-            <div className="mt-6 mb-6">
-              <input 
-                type="text" 
-                value={testInputText}
-                onChange={(e) => setTestInputText(e.target.value)}
-                placeholder="Type anything here to see Pluto react in real time..." 
-                className="w-full bg-[#F5EFEB] border-[2.5px] border-[#2D231E] p-4 font-['VT323'] text-2xl text-[#2D231E] shadow-[3px_3px_0px_#2D231E] focus:outline-none placeholder-[#2D231E]/40"
-              />
-            </div>
+              <h1 className="text-5xl sm:text-7xl font-bold leading-tight text-[#2B3A4A] max-w-3xl tracking-tight">
+                Pluto — <span className="text-[#748DAE]">Your desk pet</span>
+              </h1>
 
-            {/* Stage & Mascot Animation Canvas */}
-            <div 
-              onClick={handlePet}
-              className="bg-[#F5EFEB] border-[2px] border-[#2D231E] min-h-[220px] relative flex flex-col items-center justify-center cursor-pointer overflow-hidden shadow-inner group mb-6"
-            >
-              <canvas ref={canvasRef} width={640} height={210} className="w-full h-full image-rendering-pixelated" />
-              
-              <div className="absolute top-4 right-4 bg-[#EAE0D5] border-[2px] border-[#2D231E] shadow-[2px_2px_0px_#2D231E] px-3 py-1 font-['Press_Start_2P'] text-[10px] text-[#2D231E] pointer-events-none flex items-center gap-2">
-                <img src="/assets/pepperino.png" alt="Pluto" className="w-4 h-4 image-rendering-pixelated" />
-                <span>🐾 Click Stage to Pet Pluto</span>
-              </div>
-            </div>
+              <p className="text-[#2B3A4A]/80 text-xl sm:text-2xl leading-relaxed max-w-2xl mx-auto font-sans font-semibold">
+                A living, interactive pixel-art cat that sits on your Mac Dock. She chases your cursor, sleeps when idle, slams paws to keyboard speed, and stretches like mochi!
+              </p>
 
-            {/* Controls & Action Bar */}
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={() => { setActiveTab('walk'); setSpeechBubble("Pluto is walking along the dock... 🐾"); }}
-                className={`bg-[#F5EFEB] hover:bg-[#C87A5B] hover:text-white border-[2px] border-[#2D231E] shadow-[3px_3px_0px_#2D231E] px-4 py-2 font-['Press_Start_2P'] text-xs transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_#2D231E] ${activeTab === 'walk' ? 'bg-[#C87A5B] text-white' : ''}`}
-              >
-                🐾 Walk
-              </button>
+              {/* Central Mascot Cat Sprite & Interactive Typing Stage */}
+              <div className="w-full max-w-xl my-4 bg-[#FFFFFF] border-2 border-[#2B3A4A] shadow-[6px_6px_0px_#2B3A4A] rounded-2xl p-6 relative flex flex-col items-center space-y-4">
+                <div className="bg-[#F5CBCB] border-2 border-[#2B3A4A] shadow-[2px_2px_0px_#2B3A4A] px-4 py-2 rounded-xl text-base font-bold text-[#2B3A4A]">
+                  {speechBubble}
+                </div>
 
-              <button
-                onClick={() => { setActiveTab('sleep'); setSpeechBubble("Shhh... Pluto is sleeping! Zzz... 💤"); }}
-                className={`bg-[#F5EFEB] hover:bg-[#C87A5B] hover:text-white border-[2px] border-[#2D231E] shadow-[3px_3px_0px_#2D231E] px-4 py-2 font-['Press_Start_2P'] text-xs transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_#2D231E] ${activeTab === 'sleep' ? 'bg-[#C87A5B] text-white' : ''}`}
-              >
-                💤 Sleep
-              </button>
+                <div className="relative group cursor-pointer" onClick={handlePet}>
+                  <div className="w-24 h-4 bg-[#2B3A4A]/20 rounded-full blur-xs absolute -bottom-1 left-1/2 transform -translate-x-1/2" />
+                  <img 
+                    src={activeTab === 'sleep' ? '/assets/sleep.png' : activeTab === 'bongo' ? BONGO_FRAMES[bongoFrameIdx] : '/assets/pepperino.png'} 
+                    alt="Pluto Cat Mascot" 
+                    className="w-28 h-28 rendering-pixelated object-contain relative z-10 transform group-hover:scale-110 transition-transform duration-200" 
+                  />
+                </div>
 
-              <button
-                onClick={() => { setActiveTab('bongo'); setSpeechBubble("Pluto Bongo mode! Slamming paws on keyboard! 🎹⚡"); }}
-                className={`bg-[#F5EFEB] hover:bg-[#C87A5B] hover:text-white border-[2px] border-[#2D231E] shadow-[3px_3px_0px_#2D231E] px-4 py-2 font-['Press_Start_2P'] text-xs transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_#2D231E] ${activeTab === 'bongo' ? 'bg-[#C87A5B] text-white' : ''}`}
-              >
-                🥁 Bongo
-              </button>
-
-              <button
-                onClick={handlePet}
-                className="bg-[#F5EFEB] hover:bg-[#C87A5B] hover:text-white border-[2px] border-[#2D231E] shadow-[3px_3px_0px_#2D231E] px-4 py-2 font-['Press_Start_2P'] text-xs transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_#2D231E]"
-              >
-                ❤️ Pet
-              </button>
-
-              <button
-                onClick={handleFeed}
-                className="bg-[#F5EFEB] hover:bg-[#8A9A65] hover:text-white border-[2px] border-[#2D231E] shadow-[3px_3px_0px_#2D231E] px-4 py-2 font-['Press_Start_2P'] text-xs transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_#2D231E]"
-              >
-                🐟 Feed Treat ({treatsCount})
-              </button>
-            </div>
-
-            {/* Status Metrics Footer */}
-            <div className="mt-6 pt-4 border-t-[2px] border-[#2D231E] flex flex-col sm:flex-row items-center justify-between font-['VT323'] text-2xl text-[#2D231E] gap-4">
-              <div className="flex items-center gap-6">
-                <div className="flex items-center gap-2">
-                  <span>Happiness:</span>
-                  <div className="w-32 h-4 bg-[#F5EFEB] border-[2px] border-[#2D231E] rounded-full overflow-hidden">
-                    <div className="h-full bg-[#C87A5B] transition-all duration-300" style={{ width: `${happiness}%` }} />
+                <div 
+                  onMouseDown={handleMouseDownStage}
+                  onMouseMove={handleMouseMoveStage}
+                  onMouseUp={handleMouseUpStage}
+                  onClick={handlePet}
+                  className="w-full h-44 bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl flex items-center justify-center cursor-pointer overflow-hidden relative shadow-inner"
+                >
+                  <canvas ref={canvasRef} width={640} height={210} className="w-full h-full rendering-pixelated" />
+                  <div className="absolute top-3 right-3 bg-[#9ECAD6] border border-[#2B3A4A] px-3 py-1 rounded-full text-xs font-bold text-[#2B3A4A]">
+                    ⚡ {kps > 0 ? `${kps} KPS Typing!` : 'Press keys to type!'}
                   </div>
-                  <span className="font-bold">{happiness}%</span>
+                </div>
+
+                <div className="w-full flex items-center justify-between text-xs font-bold text-[#748DAE] pt-2 border-t border-[#748DAE]/20">
+                  <span>🥁 Real-time Hardware Key Event Guard</span>
+                  <span className="text-[#2B3A4A]">Key: [{lastKeyTyped}]</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-6">
-                <div>Keystrokes: <span className="text-[#C87A5B] font-bold">{keystrokesCount}</span></div>
-                {treatsCount === 0 && (
-                  <button 
-                    onClick={() => { setTreatsCount(5); setSpeechBubble("Treat box refilled for Pluto! 🐟🐟"); }}
-                    className="text-xl text-[#C87A5B] hover:underline font-bold flex items-center gap-1 cursor-pointer"
+              {/* Action Buttons */}
+              <div className="flex flex-wrap justify-center gap-4">
+                <button
+                  onClick={() => navigateTo('mechanics')}
+                  className="pastel-btn-blue px-7 py-3.5 text-lg font-bold flex items-center gap-2"
+                >
+                  <Play className="w-5 h-5 fill-current" />
+                  <span>Explore 4 Mechanics</span>
+                </button>
+                <button
+                  onClick={() => navigateTo('pricing')}
+                  className="pastel-btn-pink px-7 py-3.5 text-lg font-bold flex items-center gap-2"
+                >
+                  <span>Download Packages →</span>
+                </button>
+              </div>
+
+              {/* Quick Metrics */}
+              <div className="pt-6 border-t-2 border-[#748DAE]/30 flex flex-wrap justify-center gap-8 text-sm font-bold text-[#748DAE]">
+                <div>⚡ 0.1% CPU Redraw</div>
+                <div>💾 ~15MB Memory Footprint</div>
+                <div>🔒 100% Offline & Private</div>
+              </div>
+            </section>
+
+          </div>
+        )}
+
+        {/* PAGE 2: 4 CORE MECHANICS VIEW */}
+        {currentPage === 'mechanics' && (
+          <div className="space-y-12">
+            <div className="text-center max-w-2xl mx-auto space-y-2">
+              <h1 className="text-4xl font-bold text-[#748DAE]">4 Core Technical Mechanics</h1>
+              <p className="text-[#2B3A4A]/70 text-lg font-sans">Detailed formulas and behavioral specifications for Pluto</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="pastel-card p-8 space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-[#9ECAD6] border-2 border-[#2B3A4A] flex items-center justify-center text-[#2B3A4A]">
+                  <MousePointer className="w-6 h-6" />
+                </div>
+                <h2 className="text-2xl font-bold text-[#2B3A4A]">1. Cursor Pursuit & Running Stride</h2>
+                <p className="text-base text-[#2B3A4A]/80 font-sans leading-relaxed">
+                  When your mouse moves further than 45px away, Pluto runs towards target coordinates with smooth stride math and directional face flipping (<code className="text-[#748DAE] font-mono">scaleX * faceDir</code>). Dynamic sine-wave stride bounce is computed via <code className="text-[#748DAE] font-mono">Math.sin(Date.now() * 0.018) * 3</code>.
+                </p>
+              </div>
+
+              <div className="pastel-card p-8 space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-[#F5CBCB] border-2 border-[#2B3A4A] flex items-center justify-center text-[#2B3A4A]">
+                  <Bed className="w-6 h-6" />
+                </div>
+                <h2 className="text-2xl font-bold text-[#2B3A4A]">2. Dock Sleeping & Click-to-Wake</h2>
+                <p className="text-base text-[#2B3A4A]/80 font-sans leading-relaxed">
+                  Move cursor down near bottom screen Dock (<code className="text-[#748DAE] font-mono">mouseY ≥ window.innerHeight - 80</code>) to trigger Dock Sleeping mode with blue Zzz particles. Hover over her sleeping body and click to restore normal IDLE state!
+                </p>
+              </div>
+
+              <div className="pastel-card p-8 space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-[#9ECAD6] border-2 border-[#2B3A4A] flex items-center justify-center text-[#2B3A4A]">
+                  <Keyboard className="w-6 h-6" />
+                </div>
+                <h2 className="text-2xl font-bold text-[#2B3A4A]">3. Keyboard Typing & WebM Animation</h2>
+                <p className="text-base text-[#2B3A4A]/80 font-sans leading-relaxed">
+                  Real keydown events switch Pluto to her 12-frame typing animation, seamlessly scaled 1.38x using hardware key identifier filtering (<code className="text-[#748DAE] font-mono">kVK_ANSI_</code>) to prevent trackpad click confusion.
+                </p>
+              </div>
+
+              <div className="pastel-card p-8 space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-[#F5CBCB] border-2 border-[#2B3A4A] flex items-center justify-center text-[#2B3A4A]">
+                  <Smile className="w-6 h-6" />
+                </div>
+                <h2 className="text-2xl font-bold text-[#2B3A4A]">4. Mochi Drag & Mood Petting</h2>
+                <p className="text-base text-[#2B3A4A]/80 font-sans leading-relaxed">
+                  Click-and-drag vertically stretches Pluto like soft mochi (<code className="text-[#748DAE] font-mono">scaleY = 1 + min(dragY / 100, 0.7)</code>). Mouseup instantly snaps proportions back 1-to-1 with heart particle bursts!
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* PAGE 3: ARCHITECTURE VIEW */}
+        {currentPage === 'architecture' && (
+          <div className="space-y-12">
+            <div className="text-center max-w-2xl mx-auto space-y-2">
+              <h1 className="text-4xl font-bold text-[#748DAE]">System Architecture</h1>
+              <p className="text-[#2B3A4A]/70 text-lg font-sans">Under the hood of Pluto's native macOS process</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="pastel-card p-6 space-y-3">
+                <Cpu className="w-8 h-8 text-[#748DAE]" />
+                <h2 className="text-xl font-bold">0.1% CPU Redraw</h2>
+                <p className="text-sm text-[#2B3A4A]/80 font-sans">Single HTML5 Canvas loop with zero DOM redrawing or procedural overlay math.</p>
+              </div>
+              <div className="pastel-card p-6 space-y-3">
+                <HardDrive className="w-8 h-8 text-[#748DAE]" />
+                <h2 className="text-xl font-bold">15MB Memory Footprint</h2>
+                <p className="text-sm text-[#2B3A4A]/80 font-sans">Ultra lightweight memory allocation optimized for Apple Silicon M1/M2/M3 and Intel chips.</p>
+              </div>
+              <div className="pastel-card p-6 space-y-3">
+                <ShieldCheck className="w-8 h-8 text-[#748DAE]" />
+                <h2 className="text-xl font-bold">100% Offline & Secure</h2>
+                <p className="text-sm text-[#2B3A4A]/80 font-sans">Zero analytics, zero telemetry data, zero background web sockets.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* PAGE 4: SPRITE LIBRARY VIEW */}
+        {currentPage === 'sprites' && (
+          <div className="space-y-12">
+            <div className="text-center max-w-2xl mx-auto space-y-2">
+              <h1 className="text-4xl font-bold text-[#748DAE]">Sprite Asset Library</h1>
+              <p className="text-[#2B3A4A]/70 text-lg font-sans">Transparent PNG pixel art assets driving Pluto's animations</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="pastel-card p-6 text-center space-y-3">
+                <div className="w-20 h-20 mx-auto bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl flex items-center justify-center">
+                  <img src="/assets/pepperino.png" alt="Resting" className="w-14 h-14 rendering-pixelated object-contain" />
+                </div>
+                <div className="text-sm font-bold text-[#2B3A4A]">pepperino.png</div>
+                <div className="text-xs text-[#2B3A4A]/70 font-sans">Standard resting & walking sprite.</div>
+              </div>
+
+              <div className="pastel-card p-6 text-center space-y-3">
+                <div className="w-20 h-20 mx-auto bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl flex items-center justify-center">
+                  <img src="/assets/sleep.png" alt="Sleep" className="w-14 h-14 rendering-pixelated object-contain" />
+                </div>
+                <div className="text-sm font-bold text-[#2B3A4A]">sleep.png</div>
+                <div className="text-xs text-[#2B3A4A]/70 font-sans">Dock sleeping pose sprite.</div>
+              </div>
+
+              <div className="pastel-card p-6 text-center space-y-3">
+                <div className="w-20 h-20 mx-auto bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl flex items-center justify-center gap-1">
+                  <img src="/assets/tyoe_left.png" alt="Left" className="w-8 h-8 rendering-pixelated object-contain" />
+                  <img src="/assets/tyoe_right.png" alt="Right" className="w-8 h-8 rendering-pixelated object-contain" />
+                </div>
+                <div className="text-sm font-bold text-[#2B3A4A]">tyoe_left/right.png</div>
+                <div className="text-xs text-[#2B3A4A]/70 font-sans">Bongo cat typing paws.</div>
+              </div>
+
+              <div className="pastel-card p-6 text-center space-y-3">
+                <div className="w-20 h-20 mx-auto bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl flex items-center justify-center">
+                  <img src="/assets/bongo_cat_frames/tyoe_frame_2.png" alt="Sequence" className="w-12 h-12 rendering-pixelated object-contain" />
+                </div>
+                <div className="text-sm font-bold text-[#2B3A4A]">12-Frame Sequence</div>
+                <div className="text-xs text-[#2B3A4A]/70 font-sans">Full WebM keyboard animation.</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* PAGE 5: PRICING VIEW */}
+        {currentPage === 'pricing' && (
+          <div className="space-y-12">
+            <div className="text-center max-w-2xl mx-auto space-y-2">
+              <h1 className="text-4xl font-bold text-[#748DAE]">Open Source Packages</h1>
+              <p className="text-[#2B3A4A]/70 text-lg font-sans">Choose your desktop package. 100% free under MIT license.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="pastel-card p-8 space-y-6 flex flex-col justify-between">
+                <div className="space-y-4">
+                  <div className="text-xl font-bold text-[#748DAE]">Free Kitten</div>
+                  <div className="text-4xl font-bold">$0 <span className="text-xs text-[#2B3A4A]/60">forever</span></div>
+                  <ul className="space-y-2 text-sm text-[#2B3A4A] font-sans">
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Standard Resting & Walking</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Cursor Chasing & Stride Math</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Dock Sleeping Physics</li>
+                  </ul>
+                </div>
+                <button onClick={() => navigateTo('home')} className="pastel-btn-blue w-full py-3 text-center text-sm font-bold">Download Free</button>
+              </div>
+
+              <div className="pastel-card p-8 space-y-6 flex flex-col justify-between">
+                <div className="space-y-4">
+                  <div className="text-xl font-bold text-[#748DAE]">Developer Pro</div>
+                  <div className="text-4xl font-bold">$9 <span className="text-xs text-[#2B3A4A]/60">one-time</span></div>
+                  <ul className="space-y-2 text-sm text-[#2B3A4A] font-sans">
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> 12-Frame Bongo Cat WebM</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Mochi Vertical Drag Stretch</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Hardware Key Guarding (kVK_)</li>
+                  </ul>
+                </div>
+                <button onClick={() => navigateTo('home')} className="pastel-btn-pink w-full py-3 text-center text-sm font-bold">Get Pro Version</button>
+              </div>
+
+              <div className="pastel-card p-8 space-y-6 flex flex-col justify-between">
+                <div className="space-y-4">
+                  <div className="text-xl font-bold text-[#748DAE]">Supporter Pack</div>
+                  <div className="text-4xl font-bold">$25 <span className="text-xs text-[#2B3A4A]/60">lifetime</span></div>
+                  <ul className="space-y-2 text-sm text-[#2B3A4A] font-sans">
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> All Pro Features</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Custom Sprite Importer</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Priority GitHub Support</li>
+                  </ul>
+                </div>
+                <button onClick={() => navigateTo('contact')} className="pastel-btn-blue w-full py-3 text-center text-sm font-bold">Support Pluto</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* PAGE 6: FAQ & DOCS VIEW */}
+        {currentPage === 'faq' && (
+          <div className="space-y-8 max-w-3xl mx-auto">
+            <div className="text-center space-y-2">
+              <h1 className="text-4xl font-bold text-[#748DAE]">Documentation & FAQ</h1>
+              <p className="text-[#2B3A4A]/70 text-lg font-sans font-semibold">Technical execution contract specifications</p>
+            </div>
+
+            {/* Search Input */}
+            <div className="relative">
+              <Search className="w-5 h-5 absolute left-4 top-3.5 text-[#748DAE]" />
+              <input
+                type="text"
+                value={faqQuery}
+                onChange={(e) => setFaqQuery(e.target.value)}
+                placeholder="Search documentation and FAQ..."
+                className="w-full bg-[#FFFFFF] border-2 border-[#2B3A4A] rounded-2xl pl-12 pr-4 py-3 text-sm text-[#2B3A4A] focus:outline-none"
+              />
+            </div>
+
+            <div className="space-y-4">
+              {filteredFaqs.map((faq, i) => (
+                <div key={i} className="pastel-card overflow-hidden">
+                  <button
+                    onClick={() => setOpenFaqIdx(openFaqIdx === i ? null : i)}
+                    className="w-full p-6 text-left text-sm sm:text-base font-bold text-[#2B3A4A] flex items-center justify-between gap-4"
                   >
-                    <RotateCcw className="w-4 h-4" /> Restock Treats
+                    <span>{faq.q}</span>
+                    <ChevronDown className={`w-5 h-5 text-[#748DAE] transition-transform ${openFaqIdx === i ? 'rotate-180' : ''}`} />
                   </button>
-                )}
-              </div>
+                  {openFaqIdx === i && (
+                    <div className="px-6 pb-6 text-sm text-[#2B3A4A]/80 font-sans border-t-2 border-[#748DAE]/20 pt-4 leading-relaxed">
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
-
           </div>
+        )}
 
-        </div>
-      </section>
-
-      {/* 6. SECTION 4 — SPRITE ASSET LIBRARY */}
-      <section id="gallery" className="py-16 bg-[#F5EFEB]">
-        <div className="max-w-[1120px] mx-auto w-full px-6">
-          
-          <h2 className="font-['Press_Start_2P'] text-xl text-[#2D231E] mb-8">
-            Sprite Library → Transparent Pixel Assets
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            
-            {/* Item 1 */}
-            <div className="bg-[#EAE0D5] border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] p-6 text-center flex flex-col items-center justify-between rounded-md hover:-translate-y-1 transition-transform">
-              <div className="w-24 h-24 bg-[#F5EFEB] border-[2px] border-[#2D231E] rounded-md mb-3 flex items-center justify-center">
-                <img src="/assets/pepperino.png" alt="Pepperino" className="w-[90px] h-[90px] image-rendering-pixelated object-contain" />
-              </div>
-              <div>
-                <div className="font-['Press_Start_2P'] text-xs text-[#2D231E] mb-1">Cat Sprite</div>
-                <div className="font-['VT323'] text-lg text-[#2D231E]/70 font-mono">assets/pepperino.png (90x90px)</div>
-                <div className="font-['VT323'] text-lg text-[#2D231E] mt-2">Standard resting & walking sprite.</div>
-              </div>
+        {/* PAGE 7: CONTACT VIEW */}
+        {currentPage === 'contact' && (
+          <div className="space-y-8 max-w-2xl mx-auto">
+            <div className="text-center space-y-2">
+              <h1 className="text-4xl font-bold text-[#748DAE]">Contact Development Team</h1>
+              <p className="text-[#2B3A4A]/70 text-lg font-sans">Have questions or bug reports? Transmit a terminal message.</p>
             </div>
 
-            {/* Item 2 */}
-            <div className="bg-[#EAE0D5] border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] p-6 text-center flex flex-col items-center justify-between rounded-md hover:-translate-y-1 transition-transform">
-              <div className="w-24 h-24 bg-[#F5EFEB] border-[2px] border-[#2D231E] rounded-md mb-3 flex items-center justify-center">
-                <img src="/assets/sleep.png" alt="Sleep" className="w-[95px] h-[95px] image-rendering-pixelated object-contain" />
-              </div>
-              <div>
-                <div className="font-['Press_Start_2P'] text-xs text-[#2D231E] mb-1">Sleeping Pose</div>
-                <div className="font-['VT323'] text-lg text-[#2D231E]/70 font-mono">assets/sleep.png (95x95px)</div>
-                <div className="font-['VT323'] text-lg text-[#2D231E] mt-2">Dock sleeping pose sprite.</div>
-              </div>
-            </div>
+            <div className="pastel-card p-8">
+              {formSubmitted ? (
+                <div className="p-6 rounded-2xl bg-[#9ECAD6] border-2 border-[#2B3A4A] text-[#2B3A4A] text-center text-base font-bold space-y-2">
+                  <CheckCircle2 className="w-8 h-8 mx-auto text-[#2B3A4A]" />
+                  <div>Message Transmitted Successfully!</div>
+                  <p className="text-xs text-[#2B3A4A]/80 font-sans">We will reply to your email within 24 hours.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleContactSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-[#2B3A4A] mb-1">Your Name</label>
+                    <input
+                      type="text"
+                      value={contactForm.name}
+                      onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                      placeholder="e.g. Maithili Pawar"
+                      className="w-full bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl p-3 text-sm text-[#2B3A4A] focus:outline-none"
+                      required
+                    />
+                  </div>
 
-            {/* Item 3 */}
-            <div className="bg-[#EAE0D5] border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] p-6 text-center flex flex-col items-center justify-between rounded-md hover:-translate-y-1 transition-transform">
-              <div className="w-24 h-24 bg-[#F5EFEB] border-[2px] border-[#2D231E] rounded-md mb-3 flex items-center justify-center gap-1">
-                <img src="/assets/tyoe_left.png" alt="Left Paw" className="w-10 h-10 image-rendering-pixelated object-contain" />
-                <img src="/assets/tyoe_right.png" alt="Right Paw" className="w-10 h-10 image-rendering-pixelated object-contain" />
-              </div>
-              <div>
-                <div className="font-['Press_Start_2P'] text-xs text-[#2D231E] mb-1">Bongo Paws</div>
-                <div className="font-['VT323'] text-lg text-[#2D231E]/70 font-mono">tyoe_left & tyoe_right.png</div>
-                <div className="font-['VT323'] text-lg text-[#2D231E] mt-2">Bongo paws typing frames.</div>
-              </div>
-            </div>
+                  <div>
+                    <label className="block text-xs font-bold text-[#2B3A4A] mb-1">Work Email</label>
+                    <input
+                      type="email"
+                      value={contactForm.email}
+                      onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                      placeholder="e.g. developer@company.com"
+                      className="w-full bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl p-3 text-sm text-[#2B3A4A] focus:outline-none"
+                      required
+                    />
+                  </div>
 
-            {/* Item 4 */}
-            <div className="bg-[#EAE0D5] border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] p-6 text-center flex flex-col items-center justify-between rounded-md hover:-translate-y-1 transition-transform">
-              <div className="w-24 h-24 bg-[#F5EFEB] border-[2px] border-[#2D231E] rounded-md mb-3 flex items-center justify-center">
-                <img src="/assets/bongo_cat_frames/tyoe_frame_2.png" alt="Frame" className="w-16 h-16 image-rendering-pixelated object-contain" />
-              </div>
-              <div>
-                <div className="font-['Press_Start_2P'] text-xs text-[#2D231E] mb-1">12-Frame Anim</div>
-                <div className="font-['VT323'] text-lg text-[#2D231E]/70 font-mono">assets/bongo_cat_frames/*</div>
-                <div className="font-['VT323'] text-lg text-[#2D231E] mt-2">12-Frame full typing sequence.</div>
-              </div>
-            </div>
+                  <div>
+                    <label className="block text-xs font-bold text-[#2B3A4A] mb-1">Subject</label>
+                    <input
+                      type="text"
+                      value={contactForm.subject}
+                      onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
+                      placeholder="e.g. Feature Request"
+                      className="w-full bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl p-3 text-sm text-[#2B3A4A] focus:outline-none"
+                      required
+                    />
+                  </div>
 
+                  <div>
+                    <label className="block text-xs font-bold text-[#2B3A4A] mb-1">Message</label>
+                    <textarea
+                      rows={4}
+                      value={contactForm.message}
+                      onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                      placeholder="Type your message here..."
+                      className="w-full bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl p-3 text-sm text-[#2B3A4A] focus:outline-none"
+                      required
+                    />
+                  </div>
+
+                  <button type="submit" className="pastel-btn-blue w-full py-3 text-sm font-bold flex items-center justify-center gap-2">
+                    <Send className="w-4 h-4" /> Transmit Message
+                  </button>
+                </form>
+              )}
+            </div>
           </div>
+        )}
 
-        </div>
-      </section>
+      </main>
 
-      {/* 7. SECTION 5 — QUICK SETUP & TERMINAL */}
-      <section id="download" className="py-20 bg-[#F5EFEB]">
-        <div className="max-w-[1120px] mx-auto w-full px-6">
-          
-          <div className="mb-6">
-            <h2 className="font-['Press_Start_2P'] text-2xl text-[#2D231E]">
-              Get Started In 30s
-            </h2>
-            <p className="font-['VT323'] text-2xl text-[#2D231E]/80 mt-2 mb-6">
-              Clone the repository and launch Pluto instantly on macOS, Linux, or Windows.
-            </p>
-          </div>
+      {/* BACK TO TOP BUTTON */}
+      {showBackToTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 z-40 p-3 rounded-full bg-[#9ECAD6] border-2 border-[#2B3A4A] text-[#2B3A4A] shadow-[3px_3px_0px_#2B3A4A] hover:bg-[#F5CBCB] transition-all"
+          title="Back to Top"
+        >
+          <ArrowUp className="w-5 h-5" />
+        </button>
+      )}
 
-          {/* Terminal Component */}
-          <div className="bg-[#2D231E] text-[#F5EFEB] border-[2.5px] border-[#2D231E] shadow-[6px_6px_0px_#C87A5B] p-6 rounded-md font-['VT323'] text-2xl relative">
-            
-            {/* Window Header */}
-            <div className="flex items-center gap-2 pb-4 mb-4 border-b border-[#F5EFEB]/20">
-              <span className="w-3.5 h-3.5 rounded-full bg-[#FF5F56] inline-block border border-black/20" />
-              <span className="w-3.5 h-3.5 rounded-full bg-[#FFBD2E] inline-block border border-black/20" />
-              <span className="w-3.5 h-3.5 rounded-full bg-[#27C93F] inline-block border border-black/20" />
-              <span className="ml-3 font-mono text-xs text-[#F5EFEB]/60">bash — pixel-pet-setup</span>
-            </div>
-
-            {/* Command Line Box */}
-            <div className="overflow-x-auto whitespace-nowrap py-2 flex items-center justify-between gap-4">
-              <div>
-                <span className="text-[#C87A5B] font-bold mr-2">$</span>
-                <span>git clone https://github.com/diablovocado/Pixel-Pet.git && cd Pixel-Pet && npm install && npm start</span>
-              </div>
-
-              <button 
-                onClick={copyInstallCommand}
-                className="bg-[#F5EFEB] text-[#2D231E] hover:bg-[#E5B25D] border-[2px] border-[#2D231E] px-4 py-2 font-['Press_Start_2P'] text-xs cursor-pointer transition-all shrink-0 active:translate-x-[1px] active:translate-y-[1px]"
-              >
-                {copied ? '📋 Copied!' : '📋 Copy Command'}
-              </button>
-            </div>
-
-            {/* Terracotta Visual Progress Bar Track */}
-            <div className="w-full h-1.5 bg-[#F5EFEB]/20 rounded-full mt-4 overflow-hidden">
-              <div className="h-full bg-[#C87A5B] w-full" />
-            </div>
-
-          </div>
-
-          {/* Primary Download CTA */}
-          <div className="mt-6">
-            <a 
-              href="https://github.com/diablovocado/Pixel-Pet" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="bg-[#C87A5B] text-white border-[2.5px] border-[#2D231E] shadow-[4px_4px_0px_#2D231E] px-8 py-4 font-['Press_Start_2P'] text-sm hover:bg-[#b56b4e] inline-block cursor-pointer active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_#2D231E] transition-all"
-            >
-              Download Pluto App Package
-            </a>
-          </div>
-
-        </div>
-      </section>
-
-      {/* 8. FOOTER */}
-      <footer className="bg-[#EAE0D5] border-t-[2.5px] border-[#2D231E] py-8 text-[#2D231E] font-['VT323'] text-xl">
-        <div className="max-w-[1120px] mx-auto w-full px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          
+      {/* MINIMAL ONE-LINE FOOTER */}
+      <footer className="border-t-2 border-[#748DAE] py-6 text-xs text-[#2B3A4A] bg-[#9ECAD6]/30">
+        <div className="max-w-[1120px] mx-auto w-full px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <img src="/assets/pepperino.png" alt="Pluto" className="w-5 h-5 image-rendering-pixelated" />
-            <span className="font-['Press_Start_2P'] text-xs text-[#2D231E] mr-2">PLUTO</span>
-            <span>Open Source Desktop Companion Under MIT License</span>
+            <img src="/assets/pepperino.png" alt="Pluto" className="w-5 h-5 rendering-pixelated" />
+            <span>© {new Date().getFullYear()} Pluto — Your desk pet. MIT License.</span>
           </div>
 
-          <div className="flex items-center gap-6">
-            <a 
-              href="https://github.com/diablovocado/Pixel-Pet" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="hover:text-[#C87A5B] transition-colors"
-            >
-              GitHub Repository
+          <div className="flex items-center gap-6 font-bold">
+            <a href="https://github.com/diablovocado/Pixel-Pet" target="_blank" rel="noopener noreferrer" className="hover:text-[#748DAE] transition-colors flex items-center gap-1">
+              <Github className="w-4 h-4" /> GitHub
             </a>
-            <a 
-              href="https://diablovocado.github.io/Pixel-Pet/" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="hover:text-[#C87A5B] transition-colors"
-            >
-              Live Demo
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#748DAE] transition-colors flex items-center gap-1">
+              <Twitter className="w-4 h-4" /> Twitter
+            </a>
+            <a href="https://discord.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#748DAE] transition-colors flex items-center gap-1">
+              <Discord className="w-4 h-4" /> Discord
             </a>
           </div>
-
-          <div>
-            Crafted for cozy desktops • 2026
-          </div>
-
         </div>
       </footer>
 
