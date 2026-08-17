@@ -29,12 +29,11 @@ import {
   Heart,
   Cat,
   Search,
-  CheckCircle2,
-  ExternalLink
+  CheckCircle2
 } from 'lucide-react';
 
 /**
- * Pluto — "Your desk pet" Multi-Page Pastel Terminal Application
+ * Pluto — "Your desk pet" Continuous Scrolling Pastel Terminal Application
  * Color Palette:
  * - Soft Blue: #9ECAD6
  * - Muted Indigo: #748DAE
@@ -85,8 +84,6 @@ const FAQS = [
 ];
 
 export default function App() {
-  // Page Router View State
-  const [currentPage, setCurrentPage] = useState<'home' | 'mechanics' | 'architecture' | 'sprites' | 'pricing' | 'faq' | 'contact'>('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
 
@@ -382,13 +379,16 @@ export default function App() {
     confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 } });
   };
 
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  const navigateTo = (page: typeof currentPage) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const scrollToSection = (id: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
     setMobileMenuOpen(false);
   };
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   const filteredFaqs = FAQS.filter(
     f => f.q.toLowerCase().includes(faqQuery.toLowerCase()) || f.a.toLowerCase().includes(faqQuery.toLowerCase())
@@ -397,12 +397,12 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#FFEAEA] text-[#2B3A4A] font-mono relative overflow-x-hidden selection:bg-[#9ECAD6] selection:text-[#2B3A4A]">
       
-      {/* 1. FIXED TOP NAVIGATION BAR WITH MULTI-PAGE ROUTER LINKS */}
+      {/* 1. FIXED TOP NAVIGATION BAR WITH SMOOTH SCROLL ANCHOR LINKS */}
       <header className="sticky top-0 z-50 bg-[#FFEAEA]/90 backdrop-blur-md border-b-2 border-[#748DAE] py-3.5">
         <div className="max-w-[1120px] mx-auto w-full px-6 flex items-center justify-between">
           
           {/* Logo Left */}
-          <div onClick={() => navigateTo('home')} className="flex items-center gap-3 cursor-pointer group">
+          <a href="#hero" onClick={scrollToSection('hero')} className="flex items-center gap-3 cursor-pointer group">
             <div className="w-10 h-10 rounded-full bg-[#9ECAD6] border-2 border-[#2B3A4A] flex items-center justify-center shadow-[2px_2px_0px_#2B3A4A] overflow-hidden">
               <img src="/assets/pepperino.png" alt="Pluto Logo" className="w-7 h-7 rendering-pixelated object-contain" />
             </div>
@@ -412,20 +412,21 @@ export default function App() {
               </div>
               <div className="text-[11px] text-[#2B3A4A]">Your desk pet</div>
             </div>
-          </div>
+          </a>
 
-          {/* Navigation Page Tabs */}
+          {/* Smooth Scroll Navigation Links */}
           <nav className="hidden lg:flex items-center gap-5 text-xs font-bold text-[#2B3A4A]">
-            <button onClick={() => navigateTo('home')} className={`hover:text-[#748DAE] transition-colors ${currentPage === 'home' ? 'text-[#748DAE] underline underline-offset-4 font-extrabold' : ''}`}>Home</button>
-            <button onClick={() => navigateTo('mechanics')} className={`hover:text-[#748DAE] transition-colors ${currentPage === 'mechanics' ? 'text-[#748DAE] underline underline-offset-4 font-extrabold' : ''}`}>4 Mechanics</button>
-            <button onClick={() => navigateTo('architecture')} className={`hover:text-[#748DAE] transition-colors ${currentPage === 'architecture' ? 'text-[#748DAE] underline underline-offset-4 font-extrabold' : ''}`}>Architecture</button>
-            <button onClick={() => navigateTo('sprites')} className={`hover:text-[#748DAE] transition-colors ${currentPage === 'sprites' ? 'text-[#748DAE] underline underline-offset-4 font-extrabold' : ''}`}>Sprite Library</button>
-            <button onClick={() => navigateTo('pricing')} className={`hover:text-[#748DAE] transition-colors ${currentPage === 'pricing' ? 'text-[#748DAE] underline underline-offset-4 font-extrabold' : ''}`}>Packages</button>
-            <button onClick={() => navigateTo('faq')} className={`hover:text-[#748DAE] transition-colors ${currentPage === 'faq' ? 'text-[#748DAE] underline underline-offset-4 font-extrabold' : ''}`}>FAQ & Docs</button>
-            <button onClick={() => navigateTo('contact')} className={`hover:text-[#748DAE] transition-colors ${currentPage === 'contact' ? 'text-[#748DAE] underline underline-offset-4 font-extrabold' : ''}`}>Contact</button>
+            <a href="#hero" onClick={scrollToSection('hero')} className="hover:text-[#748DAE] transition-colors">Home</a>
+            <a href="#mechanics" onClick={scrollToSection('mechanics')} className="hover:text-[#748DAE] transition-colors">4 Mechanics</a>
+            <a href="#architecture" onClick={scrollToSection('architecture')} className="hover:text-[#748DAE] transition-colors">Architecture</a>
+            <a href="#sandbox" onClick={scrollToSection('sandbox')} className="hover:text-[#748DAE] transition-colors">Live Sandbox</a>
+            <a href="#sprites" onClick={scrollToSection('sprites')} className="hover:text-[#748DAE] transition-colors">Sprite Library</a>
+            <a href="#pricing" onClick={scrollToSection('pricing')} className="hover:text-[#748DAE] transition-colors">Packages</a>
+            <a href="#faq" onClick={scrollToSection('faq')} className="hover:text-[#748DAE] transition-colors">FAQ</a>
+            <a href="#contact" onClick={scrollToSection('contact')} className="hover:text-[#748DAE] transition-colors">Contact</a>
           </nav>
 
-          {/* Right Download Button */}
+          {/* Right Action Button */}
           <div className="flex items-center gap-3">
             <a
               href="https://github.com/diablovocado/Pixel-Pet"
@@ -450,391 +451,449 @@ export default function App() {
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
           <div className="lg:hidden mt-3 px-6 py-4 border-t-2 border-[#2B3A4A] bg-[#9ECAD6] flex flex-col gap-3 text-sm font-bold text-[#2B3A4A]">
-            <button onClick={() => navigateTo('home')} className="text-left py-1">Home</button>
-            <button onClick={() => navigateTo('mechanics')} className="text-left py-1">4 Mechanics</button>
-            <button onClick={() => navigateTo('architecture')} className="text-left py-1">Architecture</button>
-            <button onClick={() => navigateTo('sprites')} className="text-left py-1">Sprite Library</button>
-            <button onClick={() => navigateTo('pricing')} className="text-left py-1">Packages</button>
-            <button onClick={() => navigateTo('faq')} className="text-left py-1">FAQ & Docs</button>
-            <button onClick={() => navigateTo('contact')} className="text-left py-1">Contact</button>
+            <a href="#hero" onClick={scrollToSection('hero')} className="py-1">Home</a>
+            <a href="#mechanics" onClick={scrollToSection('mechanics')} className="py-1">4 Mechanics</a>
+            <a href="#architecture" onClick={scrollToSection('architecture')} className="py-1">Architecture</a>
+            <a href="#sandbox" onClick={scrollToSection('sandbox')} className="py-1">Live Sandbox</a>
+            <a href="#sprites" onClick={scrollToSection('sprites')} className="py-1">Sprite Library</a>
+            <a href="#pricing" onClick={scrollToSection('pricing')} className="py-1">Packages</a>
+            <a href="#faq" onClick={scrollToSection('faq')} className="py-1">FAQ</a>
+            <a href="#contact" onClick={scrollToSection('contact')} className="py-1">Contact</a>
           </div>
         )}
       </header>
 
-      {/* MULTI-PAGE VIEWS CONTAINER */}
-      <main className="max-w-[1120px] mx-auto w-full px-6 py-10 min-h-[75vh]">
+      {/* CONTINUOUS SCROLLING MAIN CONTAINER */}
+      <main className="max-w-[1120px] mx-auto w-full px-6 space-y-28 py-12">
         
-        {/* PAGE 1: HOME VIEW */}
-        {currentPage === 'home' && (
-          <div className="space-y-24">
-            
-            {/* FULL-SCREEN HERO SECTION */}
-            <section className="min-h-[75vh] flex flex-col justify-center items-center text-center space-y-6 pt-4">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#9ECAD6] text-[#2B3A4A] text-sm font-bold border-2 border-[#2B3A4A] shadow-[2px_2px_0px_#2B3A4A]">
-                <Sparkles className="w-4 h-4 text-[#748DAE]" />
-                <span>✨ Pastel Terminal Desktop Companion for macOS</span>
-              </div>
-
-              <h1 className="text-5xl sm:text-7xl font-bold leading-tight text-[#2B3A4A] max-w-3xl tracking-tight">
-                Pluto — <span className="text-[#748DAE]">Your desk pet</span>
-              </h1>
-
-              <p className="text-[#2B3A4A]/80 text-xl sm:text-2xl leading-relaxed max-w-2xl mx-auto font-sans font-semibold">
-                A living, interactive pixel-art cat that sits on your Mac Dock. She chases your cursor, sleeps when idle, slams paws to keyboard speed, and stretches like mochi!
-              </p>
-
-              {/* Central Mascot Cat Sprite & Interactive Typing Stage */}
-              <div className="w-full max-w-xl my-4 bg-[#FFFFFF] border-2 border-[#2B3A4A] shadow-[6px_6px_0px_#2B3A4A] rounded-2xl p-6 relative flex flex-col items-center space-y-4">
-                <div className="bg-[#F5CBCB] border-2 border-[#2B3A4A] shadow-[2px_2px_0px_#2B3A4A] px-4 py-2 rounded-xl text-base font-bold text-[#2B3A4A]">
-                  {speechBubble}
-                </div>
-
-                <div className="relative group cursor-pointer" onClick={handlePet}>
-                  <div className="w-24 h-4 bg-[#2B3A4A]/20 rounded-full blur-xs absolute -bottom-1 left-1/2 transform -translate-x-1/2" />
-                  <img 
-                    src={activeTab === 'sleep' ? '/assets/sleep.png' : activeTab === 'bongo' ? BONGO_FRAMES[bongoFrameIdx] : '/assets/pepperino.png'} 
-                    alt="Pluto Cat Mascot" 
-                    className="w-28 h-28 rendering-pixelated object-contain relative z-10 transform group-hover:scale-110 transition-transform duration-200" 
-                  />
-                </div>
-
-                <div 
-                  onMouseDown={handleMouseDownStage}
-                  onMouseMove={handleMouseMoveStage}
-                  onMouseUp={handleMouseUpStage}
-                  onClick={handlePet}
-                  className="w-full h-44 bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl flex items-center justify-center cursor-pointer overflow-hidden relative shadow-inner"
-                >
-                  <canvas ref={canvasRef} width={640} height={210} className="w-full h-full rendering-pixelated" />
-                  <div className="absolute top-3 right-3 bg-[#9ECAD6] border border-[#2B3A4A] px-3 py-1 rounded-full text-xs font-bold text-[#2B3A4A]">
-                    ⚡ {kps > 0 ? `${kps} KPS Typing!` : 'Press keys to type!'}
-                  </div>
-                </div>
-
-                <div className="w-full flex items-center justify-between text-xs font-bold text-[#748DAE] pt-2 border-t border-[#748DAE]/20">
-                  <span>🥁 Real-time Hardware Key Event Guard</span>
-                  <span className="text-[#2B3A4A]">Key: [{lastKeyTyped}]</span>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-wrap justify-center gap-4">
-                <button
-                  onClick={() => navigateTo('mechanics')}
-                  className="pastel-btn-blue px-7 py-3.5 text-lg font-bold flex items-center gap-2"
-                >
-                  <Play className="w-5 h-5 fill-current" />
-                  <span>Explore 4 Mechanics</span>
-                </button>
-                <button
-                  onClick={() => navigateTo('pricing')}
-                  className="pastel-btn-pink px-7 py-3.5 text-lg font-bold flex items-center gap-2"
-                >
-                  <span>Download Packages →</span>
-                </button>
-              </div>
-
-              {/* Quick Metrics */}
-              <div className="pt-6 border-t-2 border-[#748DAE]/30 flex flex-wrap justify-center gap-8 text-sm font-bold text-[#748DAE]">
-                <div>⚡ 0.1% CPU Redraw</div>
-                <div>💾 ~15MB Memory Footprint</div>
-                <div>🔒 100% Offline & Private</div>
-              </div>
-            </section>
-
+        {/* SECTION 1: FULL-SCREEN HERO SECTION */}
+        <section id="hero" className="min-h-[80vh] flex flex-col justify-center items-center text-center space-y-6 pt-6">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#9ECAD6] text-[#2B3A4A] text-sm font-bold border-2 border-[#2B3A4A] shadow-[2px_2px_0px_#2B3A4A]">
+            <Sparkles className="w-4 h-4 text-[#748DAE]" />
+            <span>✨ Pastel Terminal Desktop Companion for macOS</span>
           </div>
-        )}
 
-        {/* PAGE 2: 4 CORE MECHANICS VIEW */}
-        {currentPage === 'mechanics' && (
-          <div className="space-y-12">
-            <div className="text-center max-w-2xl mx-auto space-y-2">
-              <h1 className="text-4xl font-bold text-[#748DAE]">4 Core Technical Mechanics</h1>
-              <p className="text-[#2B3A4A]/70 text-lg font-sans">Detailed formulas and behavioral specifications for Pluto</p>
+          <h1 className="text-5xl sm:text-7xl font-bold leading-tight text-[#2B3A4A] max-w-3xl tracking-tight">
+            Pluto — <span className="text-[#748DAE]">Your desk pet</span>
+          </h1>
+
+          <p className="text-[#2B3A4A]/80 text-xl sm:text-2xl leading-relaxed max-w-2xl mx-auto font-sans font-semibold">
+            A living, interactive pixel-art cat that sits on your Mac Dock. She chases your cursor, sleeps when idle, slams paws to keyboard speed, and stretches like mochi!
+          </p>
+
+          {/* Central Mascot Cat Sprite & Interactive Typing Stage */}
+          <div className="w-full max-w-xl my-4 bg-[#FFFFFF] border-2 border-[#2B3A4A] shadow-[6px_6px_0px_#2B3A4A] rounded-2xl p-6 relative flex flex-col items-center space-y-4">
+            <div className="bg-[#F5CBCB] border-2 border-[#2B3A4A] shadow-[2px_2px_0px_#2B3A4A] px-4 py-2 rounded-xl text-base font-bold text-[#2B3A4A]">
+              {speechBubble}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="pastel-card p-8 space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#9ECAD6] border-2 border-[#2B3A4A] flex items-center justify-center text-[#2B3A4A]">
-                  <MousePointer className="w-6 h-6" />
-                </div>
-                <h2 className="text-2xl font-bold text-[#2B3A4A]">1. Cursor Pursuit & Running Stride</h2>
-                <p className="text-base text-[#2B3A4A]/80 font-sans leading-relaxed">
-                  When your mouse moves further than 45px away, Pluto runs towards target coordinates with smooth stride math and directional face flipping (<code className="text-[#748DAE] font-mono">scaleX * faceDir</code>). Dynamic sine-wave stride bounce is computed via <code className="text-[#748DAE] font-mono">Math.sin(Date.now() * 0.018) * 3</code>.
-                </p>
-              </div>
-
-              <div className="pastel-card p-8 space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#F5CBCB] border-2 border-[#2B3A4A] flex items-center justify-center text-[#2B3A4A]">
-                  <Bed className="w-6 h-6" />
-                </div>
-                <h2 className="text-2xl font-bold text-[#2B3A4A]">2. Dock Sleeping & Click-to-Wake</h2>
-                <p className="text-base text-[#2B3A4A]/80 font-sans leading-relaxed">
-                  Move cursor down near bottom screen Dock (<code className="text-[#748DAE] font-mono">mouseY ≥ window.innerHeight - 80</code>) to trigger Dock Sleeping mode with blue Zzz particles. Hover over her sleeping body and click to restore normal IDLE state!
-                </p>
-              </div>
-
-              <div className="pastel-card p-8 space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#9ECAD6] border-2 border-[#2B3A4A] flex items-center justify-center text-[#2B3A4A]">
-                  <Keyboard className="w-6 h-6" />
-                </div>
-                <h2 className="text-2xl font-bold text-[#2B3A4A]">3. Keyboard Typing & WebM Animation</h2>
-                <p className="text-base text-[#2B3A4A]/80 font-sans leading-relaxed">
-                  Real keydown events switch Pluto to her 12-frame typing animation, seamlessly scaled 1.38x using hardware key identifier filtering (<code className="text-[#748DAE] font-mono">kVK_ANSI_</code>) to prevent trackpad click confusion.
-                </p>
-              </div>
-
-              <div className="pastel-card p-8 space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#F5CBCB] border-2 border-[#2B3A4A] flex items-center justify-center text-[#2B3A4A]">
-                  <Smile className="w-6 h-6" />
-                </div>
-                <h2 className="text-2xl font-bold text-[#2B3A4A]">4. Mochi Drag & Mood Petting</h2>
-                <p className="text-base text-[#2B3A4A]/80 font-sans leading-relaxed">
-                  Click-and-drag vertically stretches Pluto like soft mochi (<code className="text-[#748DAE] font-mono">scaleY = 1 + min(dragY / 100, 0.7)</code>). Mouseup instantly snaps proportions back 1-to-1 with heart particle bursts!
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* PAGE 3: ARCHITECTURE VIEW */}
-        {currentPage === 'architecture' && (
-          <div className="space-y-12">
-            <div className="text-center max-w-2xl mx-auto space-y-2">
-              <h1 className="text-4xl font-bold text-[#748DAE]">System Architecture</h1>
-              <p className="text-[#2B3A4A]/70 text-lg font-sans">Under the hood of Pluto's native macOS process</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="pastel-card p-6 space-y-3">
-                <Cpu className="w-8 h-8 text-[#748DAE]" />
-                <h2 className="text-xl font-bold">0.1% CPU Redraw</h2>
-                <p className="text-sm text-[#2B3A4A]/80 font-sans">Single HTML5 Canvas loop with zero DOM redrawing or procedural overlay math.</p>
-              </div>
-              <div className="pastel-card p-6 space-y-3">
-                <HardDrive className="w-8 h-8 text-[#748DAE]" />
-                <h2 className="text-xl font-bold">15MB Memory Footprint</h2>
-                <p className="text-sm text-[#2B3A4A]/80 font-sans">Ultra lightweight memory allocation optimized for Apple Silicon M1/M2/M3 and Intel chips.</p>
-              </div>
-              <div className="pastel-card p-6 space-y-3">
-                <ShieldCheck className="w-8 h-8 text-[#748DAE]" />
-                <h2 className="text-xl font-bold">100% Offline & Secure</h2>
-                <p className="text-sm text-[#2B3A4A]/80 font-sans">Zero analytics, zero telemetry data, zero background web sockets.</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* PAGE 4: SPRITE LIBRARY VIEW */}
-        {currentPage === 'sprites' && (
-          <div className="space-y-12">
-            <div className="text-center max-w-2xl mx-auto space-y-2">
-              <h1 className="text-4xl font-bold text-[#748DAE]">Sprite Asset Library</h1>
-              <p className="text-[#2B3A4A]/70 text-lg font-sans">Transparent PNG pixel art assets driving Pluto's animations</p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="pastel-card p-6 text-center space-y-3">
-                <div className="w-20 h-20 mx-auto bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl flex items-center justify-center">
-                  <img src="/assets/pepperino.png" alt="Resting" className="w-14 h-14 rendering-pixelated object-contain" />
-                </div>
-                <div className="text-sm font-bold text-[#2B3A4A]">pepperino.png</div>
-                <div className="text-xs text-[#2B3A4A]/70 font-sans">Standard resting & walking sprite.</div>
-              </div>
-
-              <div className="pastel-card p-6 text-center space-y-3">
-                <div className="w-20 h-20 mx-auto bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl flex items-center justify-center">
-                  <img src="/assets/sleep.png" alt="Sleep" className="w-14 h-14 rendering-pixelated object-contain" />
-                </div>
-                <div className="text-sm font-bold text-[#2B3A4A]">sleep.png</div>
-                <div className="text-xs text-[#2B3A4A]/70 font-sans">Dock sleeping pose sprite.</div>
-              </div>
-
-              <div className="pastel-card p-6 text-center space-y-3">
-                <div className="w-20 h-20 mx-auto bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl flex items-center justify-center gap-1">
-                  <img src="/assets/tyoe_left.png" alt="Left" className="w-8 h-8 rendering-pixelated object-contain" />
-                  <img src="/assets/tyoe_right.png" alt="Right" className="w-8 h-8 rendering-pixelated object-contain" />
-                </div>
-                <div className="text-sm font-bold text-[#2B3A4A]">tyoe_left/right.png</div>
-                <div className="text-xs text-[#2B3A4A]/70 font-sans">Bongo cat typing paws.</div>
-              </div>
-
-              <div className="pastel-card p-6 text-center space-y-3">
-                <div className="w-20 h-20 mx-auto bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl flex items-center justify-center">
-                  <img src="/assets/bongo_cat_frames/tyoe_frame_2.png" alt="Sequence" className="w-12 h-12 rendering-pixelated object-contain" />
-                </div>
-                <div className="text-sm font-bold text-[#2B3A4A]">12-Frame Sequence</div>
-                <div className="text-xs text-[#2B3A4A]/70 font-sans">Full WebM keyboard animation.</div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* PAGE 5: PRICING VIEW */}
-        {currentPage === 'pricing' && (
-          <div className="space-y-12">
-            <div className="text-center max-w-2xl mx-auto space-y-2">
-              <h1 className="text-4xl font-bold text-[#748DAE]">Open Source Packages</h1>
-              <p className="text-[#2B3A4A]/70 text-lg font-sans">Choose your desktop package. 100% free under MIT license.</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="pastel-card p-8 space-y-6 flex flex-col justify-between">
-                <div className="space-y-4">
-                  <div className="text-xl font-bold text-[#748DAE]">Free Kitten</div>
-                  <div className="text-4xl font-bold">$0 <span className="text-xs text-[#2B3A4A]/60">forever</span></div>
-                  <ul className="space-y-2 text-sm text-[#2B3A4A] font-sans">
-                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Standard Resting & Walking</li>
-                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Cursor Chasing & Stride Math</li>
-                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Dock Sleeping Physics</li>
-                  </ul>
-                </div>
-                <button onClick={() => navigateTo('home')} className="pastel-btn-blue w-full py-3 text-center text-sm font-bold">Download Free</button>
-              </div>
-
-              <div className="pastel-card p-8 space-y-6 flex flex-col justify-between">
-                <div className="space-y-4">
-                  <div className="text-xl font-bold text-[#748DAE]">Developer Pro</div>
-                  <div className="text-4xl font-bold">$9 <span className="text-xs text-[#2B3A4A]/60">one-time</span></div>
-                  <ul className="space-y-2 text-sm text-[#2B3A4A] font-sans">
-                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> 12-Frame Bongo Cat WebM</li>
-                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Mochi Vertical Drag Stretch</li>
-                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Hardware Key Guarding (kVK_)</li>
-                  </ul>
-                </div>
-                <button onClick={() => navigateTo('home')} className="pastel-btn-pink w-full py-3 text-center text-sm font-bold">Get Pro Version</button>
-              </div>
-
-              <div className="pastel-card p-8 space-y-6 flex flex-col justify-between">
-                <div className="space-y-4">
-                  <div className="text-xl font-bold text-[#748DAE]">Supporter Pack</div>
-                  <div className="text-4xl font-bold">$25 <span className="text-xs text-[#2B3A4A]/60">lifetime</span></div>
-                  <ul className="space-y-2 text-sm text-[#2B3A4A] font-sans">
-                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> All Pro Features</li>
-                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Custom Sprite Importer</li>
-                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Priority GitHub Support</li>
-                  </ul>
-                </div>
-                <button onClick={() => navigateTo('contact')} className="pastel-btn-blue w-full py-3 text-center text-sm font-bold">Support Pluto</button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* PAGE 6: FAQ & DOCS VIEW */}
-        {currentPage === 'faq' && (
-          <div className="space-y-8 max-w-3xl mx-auto">
-            <div className="text-center space-y-2">
-              <h1 className="text-4xl font-bold text-[#748DAE]">Documentation & FAQ</h1>
-              <p className="text-[#2B3A4A]/70 text-lg font-sans font-semibold">Technical execution contract specifications</p>
-            </div>
-
-            {/* Search Input */}
-            <div className="relative">
-              <Search className="w-5 h-5 absolute left-4 top-3.5 text-[#748DAE]" />
-              <input
-                type="text"
-                value={faqQuery}
-                onChange={(e) => setFaqQuery(e.target.value)}
-                placeholder="Search documentation and FAQ..."
-                className="w-full bg-[#FFFFFF] border-2 border-[#2B3A4A] rounded-2xl pl-12 pr-4 py-3 text-sm text-[#2B3A4A] focus:outline-none"
+            <div className="relative group cursor-pointer" onClick={handlePet}>
+              <div className="w-24 h-4 bg-[#2B3A4A]/20 rounded-full blur-xs absolute -bottom-1 left-1/2 transform -translate-x-1/2" />
+              <img 
+                src={activeTab === 'sleep' ? '/assets/sleep.png' : activeTab === 'bongo' ? BONGO_FRAMES[bongoFrameIdx] : '/assets/pepperino.png'} 
+                alt="Pluto Cat Mascot" 
+                className="w-28 h-28 rendering-pixelated object-contain relative z-10 transform group-hover:scale-110 transition-transform duration-200" 
               />
             </div>
 
-            <div className="space-y-4">
-              {filteredFaqs.map((faq, i) => (
-                <div key={i} className="pastel-card overflow-hidden">
-                  <button
-                    onClick={() => setOpenFaqIdx(openFaqIdx === i ? null : i)}
-                    className="w-full p-6 text-left text-sm sm:text-base font-bold text-[#2B3A4A] flex items-center justify-between gap-4"
-                  >
-                    <span>{faq.q}</span>
-                    <ChevronDown className={`w-5 h-5 text-[#748DAE] transition-transform ${openFaqIdx === i ? 'rotate-180' : ''}`} />
-                  </button>
-                  {openFaqIdx === i && (
-                    <div className="px-6 pb-6 text-sm text-[#2B3A4A]/80 font-sans border-t-2 border-[#748DAE]/20 pt-4 leading-relaxed">
-                      {faq.a}
-                    </div>
-                  )}
-                </div>
-              ))}
+            <div 
+              onMouseDown={handleMouseDownStage}
+              onMouseMove={handleMouseMoveStage}
+              onMouseUp={handleMouseUpStage}
+              onClick={handlePet}
+              className="w-full h-44 bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl flex items-center justify-center cursor-pointer overflow-hidden relative shadow-inner"
+            >
+              <canvas ref={canvasRef} width={640} height={210} className="w-full h-full rendering-pixelated" />
+              <div className="absolute top-3 right-3 bg-[#9ECAD6] border border-[#2B3A4A] px-3 py-1 rounded-full text-xs font-bold text-[#2B3A4A]">
+                ⚡ {kps > 0 ? `${kps} KPS Typing!` : 'Press keys to type!'}
+              </div>
+            </div>
+
+            <div className="w-full flex items-center justify-between text-xs font-bold text-[#748DAE] pt-2 border-t border-[#748DAE]/20">
+              <span>🥁 Real-time Hardware Key Event Guard</span>
+              <span className="text-[#2B3A4A]">Key: [{lastKeyTyped}]</span>
             </div>
           </div>
-        )}
 
-        {/* PAGE 7: CONTACT VIEW */}
-        {currentPage === 'contact' && (
-          <div className="space-y-8 max-w-2xl mx-auto">
-            <div className="text-center space-y-2">
-              <h1 className="text-4xl font-bold text-[#748DAE]">Contact Development Team</h1>
-              <p className="text-[#2B3A4A]/70 text-lg font-sans">Have questions or bug reports? Transmit a terminal message.</p>
+          {/* Action Buttons */}
+          <div className="flex flex-wrap justify-center gap-4">
+            <a
+              href="#sandbox"
+              onClick={scrollToSection('sandbox')}
+              className="pastel-btn-blue px-7 py-3.5 text-lg font-bold flex items-center gap-2"
+            >
+              <Play className="w-5 h-5 fill-current" />
+              <span>Launch Live Sandbox</span>
+            </a>
+            <a
+              href="#mechanics"
+              onClick={scrollToSection('mechanics')}
+              className="pastel-btn-pink px-7 py-3.5 text-lg font-bold flex items-center gap-2"
+            >
+              <span>Explore 4 Mechanics ↓</span>
+            </a>
+          </div>
+
+          {/* Quick Metrics */}
+          <div className="pt-6 border-t-2 border-[#748DAE]/30 flex flex-wrap justify-center gap-8 text-sm font-bold text-[#748DAE]">
+            <div>⚡ 0.1% CPU Redraw</div>
+            <div>💾 ~15MB Memory Footprint</div>
+            <div>🔒 100% Offline & Private</div>
+          </div>
+        </section>
+
+        {/* SECTION 2: 4 CORE MECHANICS */}
+        <section id="mechanics" className="space-y-12">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#748DAE]">4 Core Technical Mechanics</h2>
+            <p className="text-[#2B3A4A]/70 text-lg font-sans">Detailed formulas and behavioral specifications for Pluto</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="pastel-card p-8 space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#9ECAD6] border-2 border-[#2B3A4A] flex items-center justify-center text-[#2B3A4A]">
+                <MousePointer className="w-6 h-6" />
+              </div>
+              <h3 className="text-2xl font-bold text-[#2B3A4A]">1. Cursor Pursuit & Running Stride</h3>
+              <p className="text-base text-[#2B3A4A]/80 font-sans leading-relaxed">
+                When your mouse moves further than 45px away, Pluto runs towards target coordinates with smooth stride math and directional face flipping (<code className="text-[#748DAE] font-mono">scaleX * faceDir</code>). Dynamic sine-wave stride bounce is computed via <code className="text-[#748DAE] font-mono">Math.sin(Date.now() * 0.018) * 3</code>.
+              </p>
             </div>
 
-            <div className="pastel-card p-8">
-              {formSubmitted ? (
-                <div className="p-6 rounded-2xl bg-[#9ECAD6] border-2 border-[#2B3A4A] text-[#2B3A4A] text-center text-base font-bold space-y-2">
-                  <CheckCircle2 className="w-8 h-8 mx-auto text-[#2B3A4A]" />
-                  <div>Message Transmitted Successfully!</div>
-                  <p className="text-xs text-[#2B3A4A]/80 font-sans">We will reply to your email within 24 hours.</p>
-                </div>
-              ) : (
-                <form onSubmit={handleContactSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-bold text-[#2B3A4A] mb-1">Your Name</label>
-                    <input
-                      type="text"
-                      value={contactForm.name}
-                      onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
-                      placeholder="e.g. Maithili Pawar"
-                      className="w-full bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl p-3 text-sm text-[#2B3A4A] focus:outline-none"
-                      required
-                    />
-                  </div>
+            <div className="pastel-card p-8 space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#F5CBCB] border-2 border-[#2B3A4A] flex items-center justify-center text-[#2B3A4A]">
+                <Bed className="w-6 h-6" />
+              </div>
+              <h3 className="text-2xl font-bold text-[#2B3A4A]">2. Dock Sleeping & Click-to-Wake</h3>
+              <p className="text-base text-[#2B3A4A]/80 font-sans leading-relaxed">
+                Move cursor down near bottom screen Dock (<code className="text-[#748DAE] font-mono">mouseY ≥ window.innerHeight - 80</code>) to trigger Dock Sleeping mode with blue Zzz particles. Hover over her sleeping body and click to restore normal IDLE state!
+              </p>
+            </div>
 
-                  <div>
-                    <label className="block text-xs font-bold text-[#2B3A4A] mb-1">Work Email</label>
-                    <input
-                      type="email"
-                      value={contactForm.email}
-                      onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                      placeholder="e.g. developer@company.com"
-                      className="w-full bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl p-3 text-sm text-[#2B3A4A] focus:outline-none"
-                      required
-                    />
-                  </div>
+            <div className="pastel-card p-8 space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#9ECAD6] border-2 border-[#2B3A4A] flex items-center justify-center text-[#2B3A4A]">
+                <Keyboard className="w-6 h-6" />
+              </div>
+              <h3 className="text-2xl font-bold text-[#2B3A4A]">3. Keyboard Typing & WebM Animation</h3>
+              <p className="text-base text-[#2B3A4A]/80 font-sans leading-relaxed">
+                Real keydown events switch Pluto to her 12-frame typing animation, seamlessly scaled 1.38x using hardware key identifier filtering (<code className="text-[#748DAE] font-mono">kVK_ANSI_</code>) to prevent trackpad click confusion.
+              </p>
+            </div>
 
-                  <div>
-                    <label className="block text-xs font-bold text-[#2B3A4A] mb-1">Subject</label>
-                    <input
-                      type="text"
-                      value={contactForm.subject}
-                      onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
-                      placeholder="e.g. Feature Request"
-                      className="w-full bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl p-3 text-sm text-[#2B3A4A] focus:outline-none"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-[#2B3A4A] mb-1">Message</label>
-                    <textarea
-                      rows={4}
-                      value={contactForm.message}
-                      onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                      placeholder="Type your message here..."
-                      className="w-full bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl p-3 text-sm text-[#2B3A4A] focus:outline-none"
-                      required
-                    />
-                  </div>
-
-                  <button type="submit" className="pastel-btn-blue w-full py-3 text-sm font-bold flex items-center justify-center gap-2">
-                    <Send className="w-4 h-4" /> Transmit Message
-                  </button>
-                </form>
-              )}
+            <div className="pastel-card p-8 space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#F5CBCB] border-2 border-[#2B3A4A] flex items-center justify-center text-[#2B3A4A]">
+                <Smile className="w-6 h-6" />
+              </div>
+              <h3 className="text-2xl font-bold text-[#2B3A4A]">4. Mochi Drag & Mood Petting</h3>
+              <p className="text-base text-[#2B3A4A]/80 font-sans leading-relaxed">
+                Click-and-drag vertically stretches Pluto like soft mochi (<code className="text-[#748DAE] font-mono">scaleY = 1 + min(dragY / 100, 0.7)</code>). Mouseup instantly snaps proportions back 1-to-1 with heart particle bursts!
+              </p>
             </div>
           </div>
-        )}
+        </section>
+
+        {/* SECTION 3: SYSTEM ARCHITECTURE */}
+        <section id="architecture" className="space-y-12">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#748DAE]">System Architecture</h2>
+            <p className="text-[#2B3A4A]/70 text-lg font-sans">Under the hood of Pluto's native macOS process</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="pastel-card p-6 space-y-3">
+              <Cpu className="w-8 h-8 text-[#748DAE]" />
+              <h3 className="text-xl font-bold">0.1% CPU Redraw</h3>
+              <p className="text-sm text-[#2B3A4A]/80 font-sans">Single HTML5 Canvas loop with zero DOM redrawing or procedural overlay math.</p>
+            </div>
+            <div className="pastel-card p-6 space-y-3">
+              <HardDrive className="w-8 h-8 text-[#748DAE]" />
+              <h3 className="text-xl font-bold">15MB Memory Footprint</h3>
+              <p className="text-sm text-[#2B3A4A]/80 font-sans">Ultra lightweight memory allocation optimized for Apple Silicon M1/M2/M3 and Intel chips.</p>
+            </div>
+            <div className="pastel-card p-6 space-y-3">
+              <ShieldCheck className="w-8 h-8 text-[#748DAE]" />
+              <h3 className="text-xl font-bold">100% Offline & Secure</h3>
+              <p className="text-sm text-[#2B3A4A]/80 font-sans">Zero analytics, zero telemetry data, zero background web sockets.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 4: INTERACTIVE PLAYGROUND SANDBOX */}
+        <section id="sandbox" className="space-y-8">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#748DAE]">Interactive Live Playground</h2>
+            <p className="text-[#2B3A4A]/70 text-lg font-sans">Type, pet, feed fish treats, or drag vertically to stretch Pluto like Mochi!</p>
+          </div>
+
+          <div className="pastel-card p-6 sm:p-8 space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b-2 border-[#748DAE]">
+              <div className="text-xl font-bold text-[#2B3A4A] flex items-center gap-2">
+                <span>⚡ Typing Speed:</span>
+                <span className="px-3 py-1 rounded-full bg-[#9ECAD6] text-[#2B3A4A] font-mono text-sm border border-[#2B3A4A]">{kps} KPS</span>
+              </div>
+
+              <div className="text-sm font-bold text-[#748DAE]">
+                Last Key Pressed: <span className="font-mono font-bold text-[#2B3A4A]">[{lastKeyTyped}]</span>
+              </div>
+            </div>
+
+            <div>
+              <input
+                type="text"
+                value={testInputText}
+                onChange={(e) => setTestInputText(e.target.value)}
+                placeholder="Type anything here to make Pluto slam paws on her bongo drums..."
+                className="w-full bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-2xl px-5 py-4 text-xl text-[#2B3A4A] placeholder-[#2B3A4A]/50 focus:outline-none shadow-inner"
+              />
+            </div>
+
+            <div className="flex flex-wrap gap-3 font-bold text-sm">
+              <button 
+                onClick={() => { setActiveTab('walk'); setSpeechBubble("Pluto is walking... 🐾"); }}
+                className={`px-4 py-2 rounded-full border-2 border-[#2B3A4A] shadow-[2px_2px_0px_#2B3A4A] transition-all ${activeTab === 'walk' ? 'bg-[#9ECAD6] text-[#2B3A4A]' : 'bg-[#FFEAEA] text-[#2B3A4A]'}`}
+              >
+                🐾 Walk Mode
+              </button>
+              <button 
+                onClick={() => { setActiveTab('sleep'); setSpeechBubble("Shhh... Pluto is sleeping! Zzz... 💤"); }}
+                className={`px-4 py-2 rounded-full border-2 border-[#2B3A4A] shadow-[2px_2px_0px_#2B3A4A] transition-all ${activeTab === 'sleep' ? 'bg-[#9ECAD6] text-[#2B3A4A]' : 'bg-[#FFEAEA] text-[#2B3A4A]'}`}
+              >
+                💤 Dock Sleep
+              </button>
+              <button 
+                onClick={() => { setActiveTab('bongo'); setSpeechBubble("Bongo paw typing mode! 🥁"); }}
+                className={`px-4 py-2 rounded-full border-2 border-[#2B3A4A] shadow-[2px_2px_0px_#2B3A4A] transition-all ${activeTab === 'bongo' ? 'bg-[#9ECAD6] text-[#2B3A4A]' : 'bg-[#FFEAEA] text-[#2B3A4A]'}`}
+              >
+                🥁 Bongo Drums
+              </button>
+              <button 
+                onClick={handlePet}
+                className="px-4 py-2 rounded-full bg-[#F5CBCB] border-2 border-[#2B3A4A] text-[#2B3A4A] shadow-[2px_2px_0px_#2B3A4A] flex items-center gap-1"
+              >
+                ❤️ Pet Pluto
+              </button>
+              <button 
+                onClick={handleFeed}
+                className="px-4 py-2 rounded-full bg-[#9ECAD6] text-[#2B3A4A] border-2 border-[#2B3A4A] shadow-[2px_2px_0px_#2B3A4A] flex items-center gap-1"
+              >
+                🐟 Feed Fish ({treatsCount})
+              </button>
+            </div>
+
+            <div className="pt-4 border-t-2 border-[#748DAE] flex flex-wrap items-center justify-between text-xl font-bold text-[#2B3A4A] gap-4">
+              <div className="flex items-center gap-3">
+                <span>Happiness:</span>
+                <div className="w-36 h-4 bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-full overflow-hidden">
+                  <div className="h-full bg-[#748DAE] transition-all duration-300" style={{ width: `${happiness}%` }} />
+                </div>
+                <span>{happiness}%</span>
+              </div>
+              <div>Keystrokes Typed: <span className="text-[#748DAE]">{keystrokesCount}</span></div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 5: SPRITE ASSET LIBRARY */}
+        <section id="sprites" className="space-y-12">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#748DAE]">Sprite Asset Library</h2>
+            <p className="text-[#2B3A4A]/70 text-lg font-sans">Transparent PNG pixel art assets driving Pluto's animations</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="pastel-card p-6 text-center space-y-3">
+              <div className="w-20 h-20 mx-auto bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl flex items-center justify-center">
+                <img src="/assets/pepperino.png" alt="Resting" className="w-14 h-14 rendering-pixelated object-contain" />
+              </div>
+              <div className="text-sm font-bold text-[#2B3A4A]">pepperino.png</div>
+              <div className="text-xs text-[#2B3A4A]/70 font-sans">Standard resting & walking sprite.</div>
+            </div>
+
+            <div className="pastel-card p-6 text-center space-y-3">
+              <div className="w-20 h-20 mx-auto bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl flex items-center justify-center">
+                <img src="/assets/sleep.png" alt="Sleep" className="w-14 h-14 rendering-pixelated object-contain" />
+              </div>
+              <div className="text-sm font-bold text-[#2B3A4A]">sleep.png</div>
+              <div className="text-xs text-[#2B3A4A]/70 font-sans">Dock sleeping pose sprite.</div>
+            </div>
+
+            <div className="pastel-card p-6 text-center space-y-3">
+              <div className="w-20 h-20 mx-auto bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl flex items-center justify-center gap-1">
+                <img src="/assets/tyoe_left.png" alt="Left" className="w-8 h-8 rendering-pixelated object-contain" />
+                <img src="/assets/tyoe_right.png" alt="Right" className="w-8 h-8 rendering-pixelated object-contain" />
+              </div>
+              <div className="text-sm font-bold text-[#2B3A4A]">tyoe_left/right.png</div>
+              <div className="text-xs text-[#2B3A4A]/70 font-sans">Bongo cat typing paws.</div>
+            </div>
+
+            <div className="pastel-card p-6 text-center space-y-3">
+              <div className="w-20 h-20 mx-auto bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl flex items-center justify-center">
+                <img src="/assets/bongo_cat_frames/tyoe_frame_2.png" alt="Sequence" className="w-12 h-12 rendering-pixelated object-contain" />
+              </div>
+              <div className="text-sm font-bold text-[#2B3A4A]">12-Frame Sequence</div>
+              <div className="text-xs text-[#2B3A4A]/70 font-sans">Full WebM keyboard animation.</div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 6: PRICING PACKAGES */}
+        <section id="pricing" className="space-y-12">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#748DAE]">Open Source Packages</h2>
+            <p className="text-[#2B3A4A]/70 text-lg font-sans">Choose your desktop package. 100% free under MIT license.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="pastel-card p-8 space-y-6 flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="text-xl font-bold text-[#748DAE]">Free Kitten</div>
+                <div className="text-4xl font-bold">$0 <span className="text-xs text-[#2B3A4A]/60">forever</span></div>
+                <ul className="space-y-2 text-sm text-[#2B3A4A] font-sans">
+                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Standard Resting & Walking</li>
+                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Cursor Chasing & Stride Math</li>
+                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Dock Sleeping Physics</li>
+                </ul>
+              </div>
+              <a href="#hero" onClick={scrollToSection('hero')} className="pastel-btn-blue w-full py-3 text-center text-sm font-bold block">Download Free</a>
+            </div>
+
+            <div className="pastel-card p-8 space-y-6 flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="text-xl font-bold text-[#748DAE]">Developer Pro</div>
+                <div className="text-4xl font-bold">$9 <span className="text-xs text-[#2B3A4A]/60">one-time</span></div>
+                <ul className="space-y-2 text-sm text-[#2B3A4A] font-sans">
+                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> 12-Frame Bongo Cat WebM</li>
+                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Mochi Vertical Drag Stretch</li>
+                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Hardware Key Guarding (kVK_)</li>
+                </ul>
+              </div>
+              <a href="#hero" onClick={scrollToSection('hero')} className="pastel-btn-pink w-full py-3 text-center text-sm font-bold block">Get Pro Version</a>
+            </div>
+
+            <div className="pastel-card p-8 space-y-6 flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="text-xl font-bold text-[#748DAE]">Supporter Pack</div>
+                <div className="text-4xl font-bold">$25 <span className="text-xs text-[#2B3A4A]/60">lifetime</span></div>
+                <ul className="space-y-2 text-sm text-[#2B3A4A] font-sans">
+                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> All Pro Features</li>
+                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Custom Sprite Importer</li>
+                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Priority GitHub Support</li>
+                </ul>
+              </div>
+              <a href="#contact" onClick={scrollToSection('contact')} className="pastel-btn-blue w-full py-3 text-center text-sm font-bold block">Support Pluto</a>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 7: DOCS & FAQ ACCORDION */}
+        <section id="faq" className="space-y-8 max-w-3xl mx-auto">
+          <div className="text-center space-y-2">
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#748DAE]">Documentation & FAQ</h2>
+            <p className="text-[#2B3A4A]/70 text-lg font-sans font-semibold">Technical execution contract specifications</p>
+          </div>
+
+          <div className="relative">
+            <Search className="w-5 h-5 absolute left-4 top-3.5 text-[#748DAE]" />
+            <input
+              type="text"
+              value={faqQuery}
+              onChange={(e) => setFaqQuery(e.target.value)}
+              placeholder="Search documentation and FAQ..."
+              className="w-full bg-[#FFFFFF] border-2 border-[#2B3A4A] rounded-2xl pl-12 pr-4 py-3 text-sm text-[#2B3A4A] focus:outline-none"
+            />
+          </div>
+
+          <div className="space-y-4">
+            {filteredFaqs.map((faq, i) => (
+              <div key={i} className="pastel-card overflow-hidden">
+                <button
+                  onClick={() => setOpenFaqIdx(openFaqIdx === i ? null : i)}
+                  className="w-full p-6 text-left text-sm sm:text-base font-bold text-[#2B3A4A] flex items-center justify-between gap-4"
+                >
+                  <span>{faq.q}</span>
+                  <ChevronDown className={`w-5 h-5 text-[#748DAE] transition-transform ${openFaqIdx === i ? 'rotate-180' : ''}`} />
+                </button>
+                {openFaqIdx === i && (
+                  <div className="px-6 pb-6 text-sm text-[#2B3A4A]/80 font-sans border-t-2 border-[#748DAE]/20 pt-4 leading-relaxed">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* SECTION 8: CONTACT FORM */}
+        <section id="contact" className="space-y-8 max-w-2xl mx-auto">
+          <div className="text-center space-y-2">
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#748DAE]">Contact Development Team</h2>
+            <p className="text-[#2B3A4A]/70 text-lg font-sans">Have questions or bug reports? Transmit a terminal message.</p>
+          </div>
+
+          <div className="pastel-card p-8">
+            {formSubmitted ? (
+              <div className="p-6 rounded-2xl bg-[#9ECAD6] border-2 border-[#2B3A4A] text-[#2B3A4A] text-center text-base font-bold space-y-2">
+                <CheckCircle2 className="w-8 h-8 mx-auto text-[#2B3A4A]" />
+                <div>Message Transmitted Successfully!</div>
+                <p className="text-xs text-[#2B3A4A]/80 font-sans">We will reply to your email within 24 hours.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleContactSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-[#2B3A4A] mb-1">Your Name</label>
+                  <input
+                    type="text"
+                    value={contactForm.name}
+                    onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                    placeholder="e.g. Maithili Pawar"
+                    className="w-full bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl p-3 text-sm text-[#2B3A4A] focus:outline-none"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#2B3A4A] mb-1">Work Email</label>
+                  <input
+                    type="email"
+                    value={contactForm.email}
+                    onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                    placeholder="e.g. developer@company.com"
+                    className="w-full bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl p-3 text-sm text-[#2B3A4A] focus:outline-none"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#2B3A4A] mb-1">Subject</label>
+                  <input
+                    type="text"
+                    value={contactForm.subject}
+                    onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
+                    placeholder="e.g. Feature Request"
+                    className="w-full bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl p-3 text-sm text-[#2B3A4A] focus:outline-none"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#2B3A4A] mb-1">Message</label>
+                  <textarea
+                    rows={4}
+                    value={contactForm.message}
+                    onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                    placeholder="Type your message here..."
+                    className="w-full bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl p-3 text-sm text-[#2B3A4A] focus:outline-none"
+                    required
+                  />
+                </div>
+
+                <button type="submit" className="pastel-btn-blue w-full py-3 text-sm font-bold flex items-center justify-center gap-2">
+                  <Send className="w-4 h-4" /> Transmit Message
+                </button>
+              </form>
+            )}
+          </div>
+        </section>
 
       </main>
 
