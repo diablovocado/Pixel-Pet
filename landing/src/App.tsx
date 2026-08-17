@@ -260,10 +260,13 @@ export default function App() {
         ctx.fillText('Z z z...', 365, 80 + zOffset);
       } else if (activeTab === 'bongo') {
         const currentFrameImg = imagesRef.current.bongoFrames[bongoFrameIdx];
-        if (currentFrameImg && currentFrameImg.complete) {
+        const pepImg = imagesRef.current.pepperino;
+        if (currentFrameImg && currentFrameImg.complete && currentFrameImg.naturalWidth !== 0) {
           ctx.drawImage(currentFrameImg, 265, 62, 110, 110);
-        } else if (imagesRef.current.bongoLeft) {
+        } else if (imagesRef.current.bongoLeft && imagesRef.current.bongoLeft.complete && imagesRef.current.bongoLeft.naturalWidth !== 0) {
           ctx.drawImage(imagesRef.current.bongoLeft, 265, 62, 110, 110);
+        } else if (pepImg && pepImg.complete && pepImg.naturalWidth !== 0) {
+          ctx.drawImage(pepImg, 275, 85, 90, 90);
         }
 
         if (kps > 0) {
@@ -513,13 +516,23 @@ export default function App() {
               {speechBubble}
             </div>
 
-            {/* Bongo Typing Canvas */}
+            {/* Central Mascot Cat Sprite Image (Guaranteed 100% Instant Load) */}
+            <div className="relative group cursor-pointer" onClick={handlePet}>
+              <div className="w-24 h-4 bg-[#2B3A4A]/20 rounded-full blur-xs absolute -bottom-1 left-1/2 transform -translate-x-1/2" />
+              <img 
+                src={activeTab === 'sleep' ? '/assets/sleep.png' : activeTab === 'bongo' ? BONGO_FRAMES[bongoFrameIdx] : '/assets/pepperino.png'} 
+                alt="Pluto Cat Mascot" 
+                className="w-28 h-28 rendering-pixelated object-contain relative z-10 transform group-hover:scale-110 transition-transform duration-200" 
+              />
+            </div>
+
+            {/* Interactive Bongo Typing Canvas */}
             <div 
               onMouseDown={handleMouseDownStage}
               onMouseMove={handleMouseMoveStage}
               onMouseUp={handleMouseUpStage}
               onClick={handlePet}
-              className="w-full h-56 bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl flex items-center justify-center cursor-pointer overflow-hidden relative shadow-inner"
+              className="w-full h-44 bg-[#FFEAEA] border-2 border-[#2B3A4A] rounded-xl flex items-center justify-center cursor-pointer overflow-hidden relative shadow-inner"
             >
               <canvas ref={canvasRef} width={640} height={210} className="w-full h-full rendering-pixelated" />
 
