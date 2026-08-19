@@ -57,17 +57,17 @@ function Rule() {
 
 const REPO_URL = "https://github.com/diablovocado/Pixel-Pet";
 const RELEASES_URL = `${REPO_URL}/releases/latest`;
+const MAC_ZIP_URL = "/Pixel-Pet-Mac.zip";
 
 function DownloadButtons({ compact = false }: { compact?: boolean }) {
   return (
     <div className="flex flex-wrap items-center gap-4">
       <a
-        href={RELEASES_URL}
-        target="_blank"
-        rel="noreferrer"
+        href={MAC_ZIP_URL}
+        download="Pixel-Pet-Mac.zip"
         className="pixel-btn bg-primary px-6 py-3 text-[11px] uppercase tracking-widest text-primary-foreground"
       >
-        Download for Mac
+        Download for Mac (.zip)
       </a>
       <a
         href={RELEASES_URL}
