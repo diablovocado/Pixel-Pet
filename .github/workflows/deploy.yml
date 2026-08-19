@@ -25,6 +25,8 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: Build landing page
+        env:
+          GITHUB_PAGES: 'true'
         run: npm run build
 
       - name: Deploy to GitHub Pages Branch
