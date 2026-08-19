@@ -57,7 +57,7 @@ function Rule() {
 
 const REPO_URL = "https://github.com/diablovocado/Pixel-Pet";
 const RELEASES_URL = `${REPO_URL}/releases/latest`;
-const MAC_ZIP_URL = "/Pixel-Pet-Mac.zip";
+const MAC_ZIP_URL = `${import.meta.env.BASE_URL}Pixel-Pet-Mac.zip`;
 
 function DownloadButtons({ compact = false }: { compact?: boolean }) {
   return (

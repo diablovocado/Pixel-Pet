@@ -35,7 +35,7 @@ export function PixelCat({
       {pose === "type" ? (
         <video
           style={media}
-          src="/assets/tyoe.webm"
+          src={`${import.meta.env.BASE_URL}assets/tyoe.webm`}
           autoPlay
           loop
           muted
@@ -45,7 +45,7 @@ export function PixelCat({
       ) : (
         <img
           style={media}
-          src={pose === "sleep" ? "/assets/sleep.png" : "/assets/pepperino.png"}
+          src={pose === "sleep" ? `${import.meta.env.BASE_URL}assets/sleep.png` : `${import.meta.env.BASE_URL}assets/pepperino.png`}
           width={size}
           alt=""
           aria-hidden="true"
