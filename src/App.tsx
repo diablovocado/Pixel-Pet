@@ -429,8 +429,9 @@ export default function App() {
           {/* Right Action Button */}
           <div className="flex items-center gap-3">
             <a
-              href="/Pixel-Pet-Mac.zip"
-              download="Pixel-Pet-Mac.zip"
+              href="https://github.com/diablovocado/Pixel-Pet"
+              target="_blank"
+              rel="noopener noreferrer"
               className="pastel-btn-blue px-4 py-2 text-xs flex items-center gap-2"
             >
               <Download className="w-3.5 h-3.5" />
@@ -753,7 +754,7 @@ export default function App() {
                   <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Dock Sleeping Physics</li>
                 </ul>
               </div>
-              <a href="/Pixel-Pet-Mac.zip" download="Pixel-Pet-Mac.zip" className="pastel-btn-blue w-full py-3 text-center text-sm font-bold block">Download Free (.zip)</a>
+              <a href="#hero" onClick={scrollToSection('hero')} className="pastel-btn-blue w-full py-3 text-center text-sm font-bold block">Download Free</a>
             </div>
 
             <div className="pastel-card p-8 space-y-6 flex flex-col justify-between">
@@ -766,7 +767,7 @@ export default function App() {
                   <li className="flex items-center gap-2"><Check className="w-4 h-4 text-[#748DAE]" /> Hardware Key Guarding (kVK_)</li>
                 </ul>
               </div>
-              <a href="/Pixel-Pet-Mac.zip" download="Pixel-Pet-Mac.zip" className="pastel-btn-pink w-full py-3 text-center text-sm font-bold block">Get Pro Version (.zip)</a>
+              <a href="#hero" onClick={scrollToSection('hero')} className="pastel-btn-pink w-full py-3 text-center text-sm font-bold block">Get Pro Version</a>
             </div>
 
             <div className="pastel-card p-8 space-y-6 flex flex-col justify-between">
