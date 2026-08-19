@@ -1,35 +1,17 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Pixel Deskpet</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    html, body {
-      width: 100vw;
-      height: 100vh;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: transparent !important;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-    #catCanvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-      image-rendering: pixelated;
-      image-rendering: crisp-edges;
-    }
-  </style>
-</head>
-<body>
-  <canvas id="catCanvas"></canvas>
-  <script src="renderer.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pluto — Your desk pet | Pastel Terminal Desktop Companion</title>
+    <meta name="description" content="Pluto — Your desk pet. A living pixel cat desktop companion for macOS. Terminal & hacker aesthetic with soft pastel colors." />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Fredoka:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Press+Start+2P&family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-[#FFEAEA] text-[#2B3A4A] font-mono antialiased selection:bg-[#9ECAD6] selection:text-[#2B3A4A] overflow-x-hidden">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

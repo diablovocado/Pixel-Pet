@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
   const emitSourcemaps = mode === 'development'
 
   return {
-    root: path.resolve(process.cwd(), 'landing'),
+    root: process.cwd(),
     base: process.env.FIGMA_PUBLIC_URL 
       ? `${process.env.FIGMA_PUBLIC_URL}/` 
       : mode === 'production' 
@@ -44,7 +44,7 @@ export default defineConfig(({ mode }) => {
     ],
     resolve: {
       alias: {
-        '@': path.resolve(process.cwd(), './landing/src'),
+        '@': path.resolve(process.cwd(), './src'),
       },
     },
     server: {
