@@ -6,7 +6,7 @@
   "main": "main.js",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "vite build && mkdir -p dist && (cp -R .output/public/* dist/ 2>/dev/null || true) && (cp public/Pixel-Pet-Mac.zip dist/ 2>/dev/null || true)",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "start": "electron .",
