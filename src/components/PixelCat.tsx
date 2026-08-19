@@ -1,7 +1,3 @@
-import catSprite from "@/assets/pepperino.png.asset.json";
-import sleepSprite from "@/assets/sleep.png.asset.json";
-import typingClip from "@/assets/typing.mp4.asset.json";
-
 export type CatPose = "idle" | "type" | "sleep";
 
 /**
@@ -39,7 +35,7 @@ export function PixelCat({
       {pose === "type" ? (
         <video
           style={media}
-          src={typingClip.url}
+          src="/assets/tyoe.webm"
           autoPlay
           loop
           muted
@@ -49,7 +45,7 @@ export function PixelCat({
       ) : (
         <img
           style={media}
-          src={pose === "sleep" ? sleepSprite.url : catSprite.url}
+          src={pose === "sleep" ? "/assets/sleep.png" : "/assets/pepperino.png"}
           width={size}
           alt=""
           aria-hidden="true"
