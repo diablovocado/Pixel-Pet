@@ -215,12 +215,6 @@ const FEATURES: {
     meta: "keystroke timing, never text",
   },
   {
-    name: "Mochi Drag",
-    pose: "idle",
-    copy: "Grab her and drag her anywhere on screen. She stretches like dough, then springs back into shape when you let go.",
-    meta: "snaps to any display edge",
-  },
-  {
     name: "Sleeps at the Dock",
     pose: "sleep",
     copy: "Idle for a while and she wanders down to the dock or taskbar, curls up, and breathes slowly until you come back.",
@@ -341,25 +335,14 @@ function Landing() {
 
         {/* features */}
         <section id="features">
-          <Label>Six small behaviours</Label>
+          <Label>Core behaviours</Label>
           <h2 className="mt-4 max-w-xl font-display text-xl leading-relaxed">
             She reacts to what you are already doing
           </h2>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {FEATURES.map((f) => (
               <FeatureCard key={f.name} f={f} />
             ))}
-            <article className="pixel-box flex flex-col justify-between bg-card p-5">
-              <div className="flex h-28 items-center justify-center font-display text-[10px] leading-loose tracking-widest text-muted-foreground">
-                more<br />
-                behaviours<br />
-                arriving
-              </div>
-              <p className="mt-5 text-xs leading-relaxed text-muted-foreground">
-                Snacks, window-sill naps and a second cat are in the works.
-                Updates land quietly, in place.
-              </p>
-            </article>
           </div>
         </section>
 
